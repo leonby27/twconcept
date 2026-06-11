@@ -11,6 +11,9 @@ import Reviews from "@/components/Reviews";
 import Ecosystem from "@/components/Ecosystem";
 import Blog from "@/components/Blog";
 import Partners from "@/components/Partners";
+import FinalCta from "@/components/FinalCta";
+import Faq from "@/components/Faq";
+import Footer from "@/components/Footer";
 import GsapEffects from "@/components/GsapEffects";
 
 export default function Home() {
@@ -30,7 +33,10 @@ export default function Home() {
         <Ecosystem />
         <Blog />
         <Partners />
+        <FinalCta />
+        <Faq />
       </main>
+      <Footer />
       <GsapEffects />
     </>
   );
