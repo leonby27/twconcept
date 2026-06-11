@@ -778,6 +778,36 @@ button {
   }
 }
 
+/* Шапка секции со ссылкой справа */
+.section-head-row {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.section-link {
+  flex-shrink: 0;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 20px;
+  color: var(--color-accent);
+  white-space: nowrap;
+}
+
+.section-link:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+@media (max-width: 768px) {
+  .section-head-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+}
+
 /* ============================================
    Products — экосистема: хостинг (главный),
    домены, почта + полоса Timeweb Cloud
@@ -1750,6 +1780,491 @@ button {
 
   .audience__rec {
     max-width: none;
+  }
+}
+
+/* ============================================
+   Reviews — отзывы клиентов
+   ============================================ */
+
+.reviews {
+  margin-top: var(--section-gap);
+}
+
+.reviews__grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-top: 40px;
+}
+
+.reviews__card {
+  display: flex;
+  flex-direction: column;
+  padding: 28px;
+  background: var(--color-white);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card-s);
+}
+
+.reviews__person {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.reviews__avatar {
+  border-radius: 50%;
+}
+
+.reviews__name {
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 20px;
+  color: var(--color-text-main);
+}
+
+.reviews__role {
+  margin-top: 2px;
+  font-size: 14px;
+  line-height: 18px;
+  color: var(--color-text-main-60);
+}
+
+.reviews__stars {
+  display: flex;
+  gap: 2px;
+  margin-top: 16px;
+}
+
+.reviews__star--empty {
+  filter: grayscale(1);
+  opacity: 0.35;
+}
+
+.reviews__text {
+  margin-top: 12px;
+  font-size: 15px;
+  line-height: 22px;
+  color: var(--color-text-main-80);
+}
+
+.reviews__footer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: auto;
+  padding-top: 20px;
+}
+
+.reviews__switched {
+  padding: 5px 10px;
+  background: rgba(46, 158, 96, 0.1);
+  border-radius: 8px;
+  font-size: 13px;
+  line-height: 16px;
+  font-weight: 500;
+  color: var(--color-success);
+  white-space: nowrap;
+}
+
+.reviews__source {
+  font-size: 13px;
+  line-height: 16px;
+  color: var(--color-text-main-50);
+}
+
+@media (max-width: 1024px) {
+  .reviews__grid {
+    grid-template-columns: 1fr;
+    max-width: 640px;
+  }
+}
+
+@media (max-width: 768px) {
+  .reviews__grid {
+    margin-top: 28px;
+  }
+}
+
+/* ============================================
+   Ecosystem — «Все продукты Timeweb», табы услуг
+   ============================================ */
+
+.eco {
+  margin-top: var(--section-gap);
+  padding: 80px 0;
+  background: var(--color-surface);
+}
+
+.eco__tabs {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 28px;
+  padding: 4px;
+  background: var(--color-white);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-button-s);
+}
+
+.eco__tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-radius: 9px;
+  font-family: var(--font-text);
+  font-weight: 500;
+  font-size: 15px;
+  line-height: 18px;
+  color: var(--color-black-100);
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.eco__tab-icon {
+  width: 18px;
+  height: 18px;
+  color: var(--color-text-main-50);
+}
+
+.eco__tab--active {
+  background: var(--color-text-main);
+  color: var(--color-white);
+}
+
+.eco__tab--active .eco__tab-icon {
+  color: var(--color-white);
+}
+
+.eco__panel {
+  display: grid;
+  grid-template-columns: 1fr 1.1fr;
+  gap: 64px;
+  align-items: center;
+  margin-top: 36px;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .eco__panel {
+    animation: audience-tab-in 0.25s ease both;
+  }
+}
+
+.eco__title {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 26px;
+  line-height: 32px;
+  color: var(--color-text-main);
+}
+
+.eco__text {
+  margin-top: 12px;
+  font-size: 16px;
+  line-height: 24px;
+  color: var(--color-text-main-80);
+}
+
+.eco__rows {
+  margin-top: 20px;
+  list-style: none;
+}
+
+.eco__row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 0;
+  border-top: 1px solid var(--color-border);
+}
+
+.eco__row:last-child {
+  border-bottom: 1px solid var(--color-border);
+}
+
+.eco__row-label {
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 20px;
+  color: var(--color-text-main);
+}
+
+.eco__row-price {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 17px;
+  line-height: 22px;
+  color: var(--color-accent);
+}
+
+.eco__points {
+  display: grid;
+  gap: 12px;
+  margin-top: 20px;
+  list-style: none;
+}
+
+.eco__point {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 16px;
+  line-height: 22px;
+  color: var(--color-text-main);
+}
+
+.eco__check {
+  width: 16px;
+  height: 16px;
+  margin-top: 3px;
+  color: var(--color-success);
+}
+
+.eco__cta {
+  margin-top: 28px;
+}
+
+/* Мок поля поиска домена (декоративный) */
+.eco__search-field {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 10px 10px 10px 20px;
+  background: var(--color-white);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-button-l);
+}
+
+.eco__search-placeholder {
+  font-size: 16px;
+  color: var(--color-text-main-50);
+}
+
+.eco__search-placeholder b {
+  color: var(--color-text-main);
+}
+
+.eco__search-btn {
+  pointer-events: none;
+}
+
+.eco__search-zones {
+  margin-top: 12px;
+  text-align: center;
+  font-size: 14px;
+  color: var(--color-text-main-50);
+}
+
+.eco__media {
+  aspect-ratio: 4 / 3;
+  max-height: 320px;
+  width: 100%;
+  background: var(--color-white);
+}
+
+@media (max-width: 1024px) {
+  .eco {
+    padding: 56px 0;
+  }
+
+  .eco__panel {
+    grid-template-columns: 1fr;
+    gap: 36px;
+  }
+}
+
+@media (max-width: 480px) {
+  .eco {
+    padding: 40px 0;
+  }
+
+  .eco__tabs {
+    display: flex;
+  }
+
+  .eco__tab {
+    flex: 1 1 auto;
+    justify-content: center;
+  }
+}
+
+/* ============================================
+   Blog — полезные материалы
+   ============================================ */
+
+.blog {
+  margin-top: var(--section-gap);
+}
+
+.blog__grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-top: 40px;
+}
+
+.blog__card {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--color-white);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card-s);
+}
+
+.blog__cover {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 160px;
+  background: var(--color-surface);
+}
+
+.blog__cover-icon {
+  width: 40px;
+  height: 40px;
+  color: var(--color-accent);
+}
+
+.blog__body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  padding: 20px 24px 24px;
+}
+
+.blog__category {
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 16px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+}
+
+.blog__title {
+  margin-top: 8px;
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 18px;
+  line-height: 24px;
+  color: var(--color-text-main);
+}
+
+.blog__meta {
+  margin-top: auto;
+  padding-top: 12px;
+  font-size: 14px;
+  line-height: 18px;
+  color: var(--color-text-main-50);
+}
+
+@media (max-width: 1024px) {
+  .blog__grid {
+    grid-template-columns: 1fr;
+    max-width: 640px;
+  }
+
+  .blog__cover {
+    height: 140px;
+  }
+}
+
+@media (max-width: 768px) {
+  .blog__grid {
+    margin-top: 28px;
+  }
+}
+
+/* ============================================
+   Partners — партнёрская программа (тёмный баннер)
+   ============================================ */
+
+.partners {
+  margin-top: var(--section-gap);
+}
+
+.partners__banner {
+  display: flex;
+  align-items: center;
+  gap: 48px;
+  padding: 40px 48px;
+  background: var(--color-text-main);
+  border-radius: var(--radius-card);
+}
+
+.partners__info {
+  flex: 1;
+}
+
+.partners__title {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 26px;
+  line-height: 32px;
+  color: var(--color-white);
+}
+
+.partners__text {
+  margin-top: 10px;
+  max-width: 560px;
+  font-size: 15px;
+  line-height: 22px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.partners__stats {
+  display: flex;
+  gap: 40px;
+  flex-shrink: 0;
+}
+
+.partners__stat-value {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 32px;
+  line-height: 38px;
+  color: var(--color-accent);
+}
+
+.partners__stat-label {
+  margin-top: 4px;
+  max-width: 110px;
+  font-size: 13px;
+  line-height: 17px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.partners__cta {
+  flex-shrink: 0;
+}
+
+@media (max-width: 1024px) {
+  .partners__banner {
+    flex-wrap: wrap;
+    gap: 28px;
+    padding: 32px;
+  }
+}
+
+@media (max-width: 480px) {
+  .partners__banner {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 28px 24px;
+    border-radius: var(--radius-card-s);
+  }
+
+  .partners__stats {
+    gap: 32px;
+  }
+
+  .partners__cta {
+    width: 100%;
   }
 }
 
