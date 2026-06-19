@@ -518,6 +518,32 @@ button {
   align-items: center;
 }
 
+/* Цветные иллюстрации по бокам — слой за центральным контентом.
+   Параллакс от курсора задаёт HeroDecor.tsx (transform). Ассеты 2x → ~½. */
+.hero__decor {
+  position: absolute;
+  top: -20px;
+  z-index: 0;
+  width: clamp(200px, 28vw, 420px);
+  height: auto;
+  pointer-events: none;
+  user-select: none;
+}
+
+.hero__decor--left {
+  left: 0;
+}
+
+.hero__decor--right {
+  right: 0;
+}
+
+@media (max-width: 1024px) {
+  .hero__decor {
+    display: none;
+  }
+}
+
 /* Тех-паттерн на фоне — слой за центральным контентом.
    Ассет 2x (heropat), контент по краям и чистый центр под текст. */
 .hero__pattern {
@@ -569,6 +595,11 @@ button {
   .hero__brands,
   .hero__stats {
     animation: hero-rise 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  /* Плавный параллакс иллюстраций за курсором (transform из HeroDecor.tsx) */
+  .hero__decor {
+    transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
   }
 
   .hero__rating {
@@ -1666,8 +1697,9 @@ button {
   margin-top: 48px;
 }
 
-/* Тёмная карточка-якорь: сплошное фото серверов */
+/* Тёмная карточка-якорь с фото серверов + эффект «фонарика». */
 .why__hero {
+  position: relative;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -1675,8 +1707,54 @@ button {
   min-height: 368px;
   padding: 32px;
   border-radius: 32px;
+  overflow: hidden;
   background: #1c1a1a url(/assets/photos/why-servers.png) center / cover no-repeat;
   color: var(--color-white);
+}
+
+/* Фонарик: фон приглушён тёмным слоем, по ховеру в нём «прорезается»
+   мягкое радиальное пятно у курсора (--mx/--my из WhyHero.tsx). */
+@property --spot {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
+.why__hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: #000;
+  opacity: 0.55;
+  pointer-events: none;
+  -webkit-mask: radial-gradient(
+    circle var(--spot, 0px) at var(--mx, 50%) var(--my, 50%),
+    transparent 0,
+    transparent 45%,
+    #000 100%
+  );
+  mask: radial-gradient(
+    circle var(--spot, 0px) at var(--mx, 50%) var(--my, 50%),
+    transparent 0,
+    transparent 45%,
+    #000 100%
+  );
+}
+
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .why__hero::before {
+    transition: --spot 0.35s ease, opacity 0.35s ease;
+  }
+
+  .why__hero:hover::before {
+    --spot: 280px;
+  }
+}
+
+.why__hero > * {
+  position: relative;
+  z-index: 1;
 }
 
 .why__hero-value {
@@ -2275,21 +2353,17 @@ button {
   margin-top: var(--section-gap);
 }
 
-.infra__heading {
-  text-align: center;
-}
-
-/* Тёмная «серверная»: градиент + фото ЦОД (50%), факты — карточки с blur */
+/* Тёмная «серверная»: градиент + фото ЦОД (50%), факты — карточки с blur.
+   Сверху заголовок + описание, факты — ниже (по Figma). */
 .infra__card {
   position: relative;
   display: flex;
   flex-direction: column;
-  min-height: 400px;
   margin-top: 48px;
   padding: 40px;
   border-radius: var(--radius-card);
   overflow: hidden;
-  background: linear-gradient(156deg, #252120 8%, #000 92%);
+  background: linear-gradient(154deg, #252120 8%, #000 92%);
   color: var(--color-white);
 }
 
@@ -2298,18 +2372,29 @@ button {
   position: absolute;
   inset: 0;
   z-index: 0;
-  background: url(/assets/photos/infra.png) center / cover no-repeat;
+  background: url(/assets/photos/infra.webp) center / cover no-repeat;
   opacity: 0.5;
 }
 
-.infra__lead {
+.infra__heading {
   position: relative;
   z-index: 1;
-  max-width: 548px;
   font-family: var(--font-heading);
   font-weight: 700;
-  font-size: 32px;
-  line-height: 40px;
+  font-size: 40px;
+  line-height: 48px;
+  letter-spacing: -1px;
+  color: var(--color-white);
+}
+
+.infra__desc {
+  position: relative;
+  z-index: 1;
+  max-width: 440px;
+  margin-top: 16px;
+  font-size: 20px;
+  line-height: 24px;
+  color: var(--color-white);
 }
 
 .infra__grid {
@@ -2318,7 +2403,7 @@ button {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 12px;
-  margin-top: auto;
+  margin-top: 80px;
   list-style: none;
 }
 

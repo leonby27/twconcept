@@ -19,7 +19,7 @@
 | `illustrations/benefit-trial.webp`, `benefit-domain.webp`, `benefit-discount.webp` | Бонусы под hero | 3D-иллюстрация (PNG с альфой) | 1.png / 3.png / 2.png | ✅ на месте |
 | `photos/panel.webp` | Панель управления | скриншот | Filemanager.png | ✅ на месте |
 | `photos/migration.webp` | Переход с другого хостинга | фото | Moveproject.png | ✅ на месте |
-| `photos/why-servers.webp` | Карточка «700 000» (Почему) | фон (под градиентом) | Sites.png | ✅ на месте |
+| `photos/why-servers.png` | Карточка «700 000» (Почему) | фон + эффект «фонарика» (маска ::before) | Sites.png | ✅ на месте |
 | `photos/vds.webp` | Карточка VDS/VPS (Продукты) | фон | VDS.png | ✅ на месте |
 | `photos/infra.webp` | Инфраструктура | фон (под градиентом) | Infra.png | ✅ на месте |
 | `photos/support.webp` | Поддержка | фото | support.png | ✅ на месте |
