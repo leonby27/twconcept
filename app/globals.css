@@ -328,6 +328,25 @@ button {
 }
 
 /* ============================================
+   Появление блоков при скролле (RevealOnScroll.tsx).
+   Класс .reveal ставит JS только блокам ниже первого экрана,
+   поэтому без мигания. Без JS / при reduced-motion — контент
+   сразу виден (класс не добавляется).
+   ============================================ */
+@media (prefers-reduced-motion: no-preference) {
+  .reveal {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+
+  .reveal.is-revealed {
+    opacity: 1;
+    transform: none;
+    transition: opacity 0.3s ease-out, transform 0.3s ease-out;
+  }
+}
+
+/* ============================================
    Header — 72px, white
    ============================================ */
 
