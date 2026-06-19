@@ -2,59 +2,71 @@ import type { CSSProperties } from "react";
 
 const ARTICLES = [
   {
-    icon: "lightning",
-    category: "WordPress",
+    category: "Маркетинг",
     title: "Как ускорить сайт на WordPress: 10 проверенных способов",
-    time: "15 мин",
-    views: "12 400 просмотров",
+    likes: 12,
+    comments: 12,
+    date: "10 окт 2026",
   },
   {
-    icon: "rocket-launch",
     category: "Начало работы",
     title: "Как создать сайт самостоятельно: пошаговая инструкция 2026",
-    time: "20 мин",
-    views: "45 200 просмотров",
+    likes: 12,
+    comments: 12,
+    date: "10 окт 2026",
   },
   {
-    icon: "lock-key",
     category: "Безопасность",
     title: "Как защитить сайт от взлома: базовые меры безопасности",
-    time: "12 мин",
-    views: "8 700 просмотров",
+    likes: 12,
+    comments: 12,
+    date: "10 окт 2026",
   },
 ];
+
+const icon = (name: string) =>
+  ({ "--icon": `url(/assets/icons/solid/${name}.svg)` } as CSSProperties);
 
 export default function Blog() {
   return (
     <section className="blog">
       <div className="container">
-        <div className="section-head-row" data-animate="fade-up">
-          <div className="section-head">
-            <h2 className="section-head__title">Полезные материалы</h2>
-            <p className="section-head__sub">Гайды, инструкции, обновления — для владельцев сайтов</p>
-          </div>
-          <a href="#" className="section-link">Все статьи →</a>
-        </div>
+        <h2 className="section-head__title blog__heading">Полезные материалы</h2>
 
-        <div className="blog__grid" data-animate-group>
+        <div className="blog__grid">
           {ARTICLES.map((a) => (
-            <a key={a.title} href="#" className="blog__card hover-lift" data-animate-child>
-              <div className="blog__cover">
-                <span
-                  className="icon blog__cover-icon"
-                  aria-hidden="true"
-                  style={{ "--icon": `url(/assets/icons/duotone/${a.icon}.svg)` } as CSSProperties}
-                />
+            <a key={a.title} href="#" className="blog__card hover-lift">
+              <div className="blog__top">
+                <span className="blog__category">{a.category}</span>
+                <span className="blog__stars" aria-label="Оценка 5 из 5">
+                  {[1, 2, 3, 4, 5].map((n) => (
+                    <img key={n} src="/assets/star-full.svg" alt="" width={15} height={15} />
+                  ))}
+                </span>
               </div>
-              <div className="blog__body">
-                <p className="blog__category">{a.category}</p>
-                <h3 className="blog__title">{a.title}</h3>
-                <p className="blog__meta">
-                  {a.time} · {a.views}
-                </p>
+
+              <h3 className="blog__title">{a.title}</h3>
+
+              <div className="blog__meta">
+                <span className="blog__meta-item">
+                  <span className="icon blog__meta-icon" aria-hidden="true" style={icon("thumbs-up")} />
+                  {a.likes}
+                </span>
+                <span className="blog__meta-item">
+                  <span className="icon blog__meta-icon" aria-hidden="true" style={icon("chat-circle")} />
+                  {a.comments}
+                </span>
+                <span className="blog__meta-item blog__meta-date">
+                  <span className="icon blog__meta-icon" aria-hidden="true" style={icon("calendar-dots")} />
+                  {a.date}
+                </span>
               </div>
             </a>
           ))}
+        </div>
+
+        <div className="blog__foot">
+          <a href="#" className="btn btn--m btn--white">Перейти в блог компании</a>
         </div>
       </div>
     </section>

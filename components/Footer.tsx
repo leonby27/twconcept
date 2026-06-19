@@ -2,37 +2,48 @@ import type { CSSProperties } from "react";
 
 const COLUMNS = [
   {
+    title: "Клиентам",
+    links: ["Цены на хостинг", "Сравнить услуги", "Вопросы и ответы", "Договор", "Новости", "Акции"],
+  },
+  {
+    title: "Партнерам",
+    links: ["Вебмастерам", "Интеграторам", "Наш логотип", "Договор вебмастера", "Peering policy"],
+  },
+  {
     title: "Продукты",
     links: [
-      "Виртуальный хостинг",
-      "Конструктор сайтов",
+      "Хостинг",
+      "VDS и VPS",
+      "Почта для бизнеса",
       "Домены",
-      "Почта на домене",
-      "SSL-сертификаты",
-      "PRO-решения",
+      "Выделенные серверы",
+      "Виджет отзывов",
+      "Конструктор сайтов",
+      "Ускоритель сайтов",
     ],
   },
   {
-    title: "Клиентам",
-    links: ["Панель управления", "База знаний", "Сообщество", "Статус серверов", "Оплата"],
-  },
-  {
-    title: "Партнёрам",
-    links: ["Партнёрская программа", "HostFriends", "Реселлинг", "Агентствам"],
-  },
-  {
     title: "О компании",
-    links: ["О нас", "Команда", "Блог", "Новости", "Вакансии", "Контакты"],
+    links: ["О нас", "Контакты", "Команда", "Комьюнити", "Программа «Bug Bounty»", "Карта сайта", "Блог"],
   },
 ];
 
-const SOCIALS = ["TG", "VK", "ДЗ"];
+const CRUMBS = ["Главная", "Название страницы", "Название страницы"];
 
 export default function Footer() {
   return (
     <footer className="footer">
       <div className="container">
-        <div className="footer__top">
+        <nav className="footer__crumbs" aria-label="Хлебные крошки">
+          {CRUMBS.map((c, i) => (
+            <span key={i} className="footer__crumb">
+              {i < CRUMBS.length - 1 ? <a href="#">{c}</a> : <span aria-current="page">{c}</span>}
+              {i < CRUMBS.length - 1 && <span className="footer__crumb-sep" aria-hidden="true">›</span>}
+            </span>
+          ))}
+        </nav>
+
+        <div className="footer__main">
           <div className="footer__brand">
             <span
               className="icon footer__logo"
@@ -40,32 +51,21 @@ export default function Footer() {
               aria-label="Timeweb"
               style={{ "--icon": "url(/assets/timeweb-logo.svg)" } as CSSProperties}
             />
-            <p className="footer__tagline">
-              Надёжный хостинг для сайтов и бизнеса с 2006 года
-            </p>
-            <p className="footer__contact">
+            <p className="footer__phone-label">Бесплатно по России</p>
+            <a href="tel:88007001081" className="footer__phone">8 (800) 700-10-81</a>
+            <a href="#" className="footer__tg" aria-label="Telegram">
               <span
-                className="icon footer__contact-icon"
+                className="icon footer__tg-icon"
                 aria-hidden="true"
-                style={{ "--icon": "url(/assets/icons/solid/chats-circle.svg)" } as CSSProperties}
+                style={{ "--icon": "url(/assets/icons/solid/telegram-logo.svg)" } as CSSProperties}
               />
-              Поддержка 24/7
+            </a>
+            <p className="footer__legal">
+              © 2006-2025 АО «ТаймВэб».
+              <br />
+              Зарегистрированный товарный знак N461919. Лицензия РОСКОМНАДЗОР N142739. Политика АО
+              «ТаймВэб» в отношении обработки персональных данных
             </p>
-            <p className="footer__contact">
-              <span
-                className="icon footer__contact-icon"
-                aria-hidden="true"
-                style={{ "--icon": "url(/assets/icons/solid/phone.svg)" } as CSSProperties}
-              />
-              8-800-700-10-81 (бесплатно)
-            </p>
-            <div className="footer__socials">
-              {SOCIALS.map((s) => (
-                <a key={s} href="#" className="footer__social" aria-label={s}>
-                  {s}
-                </a>
-              ))}
-            </div>
           </div>
 
           <nav className="footer__columns" aria-label="Карта сайта">
@@ -82,17 +82,6 @@ export default function Footer() {
               </div>
             ))}
           </nav>
-        </div>
-
-        <div className="footer__bottom">
-          <p className="footer__copyright">© 2006–2026 Timeweb.com — хостинг для сайта</p>
-          <p className="footer__legal">
-            <a href="#" className="footer__link">Политика конфиденциальности</a>
-            {" · "}
-            <a href="#" className="footer__link">Договор</a>
-            {" · "}
-            <a href="#" className="footer__link">Реквизиты</a>
-          </p>
         </div>
       </div>
     </footer>

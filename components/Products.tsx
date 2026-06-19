@@ -1,40 +1,41 @@
 import type { CSSProperties } from "react";
 
-type Product = {
-  icon: string;
-  title: string;
-  price: string;
-  text: string;
-  chips: string[];
-  cta: string;
-  featured?: boolean;
-};
-
-const PRODUCTS: Product[] = [
+// Продуктовая сетка: хостинг — главный (широкая карточка), затем
+// домены, почта, ускоритель и тёмная карточка VDS/VPS. Вся карточка —
+// ссылка, стрелка в углу обозначает переход.
+const PRODUCTS = [
   {
     icon: "hard-drives",
-    title: "Хостинг для сайта",
     price: "от 180 ₽/мес",
+    title: "Хостинг для сайта",
     text: "Виртуальный хостинг для сайтов любой сложности. Быстрые NVMe-диски, изоляция, автобэкапы.",
-    chips: ["10 дней бесплатно", "SSL в подарок", "WordPress", "1С-Битрикс", "Joomla"],
-    cta: "Попробовать бесплатно",
-    featured: true,
+    wide: true,
   },
   {
     icon: "globe-hemisphere-west",
-    title: "Домены",
     price: "от 199 ₽/год",
-    text: "325+ зон. .RU, .COM, .РФ и тысячи других.",
-    chips: ["3 домена в подарок"],
-    cta: "Найти домен",
+    title: "Домены",
+    text: "325+ зон. .RU, .COM, .РФ и другие",
+    text2: "Скидки на популярные доменные зоны",
   },
   {
     icon: "envelope-simple",
-    title: "Почта на домене",
-    price: "Входит в хостинг",
-    text: "yourname@yourdomain.ru — профессионально и бесплатно. Веб-интерфейс и мобильное приложение.",
-    chips: ["Бесплатно"],
-    cta: "Подробнее",
+    price: "Бесплатно",
+    title: "Почта для бизнеса",
+    text: "Простой веб-интерфейс и мобильное приложение для ведения почты.",
+  },
+  {
+    icon: "rocket-launch",
+    price: "от 4 ₽/день",
+    title: "Ускоритель",
+    text: "Поможет улучшить скорость работы сайта без изменений в коде.",
+  },
+  {
+    icon: "cloud",
+    price: "от 882 ₽/мес",
+    title: "VDS / VPS",
+    text: "Выделенные серверы, GPU, Kubernetes, облачные базы данных.",
+    dark: true,
   },
 ];
 
@@ -42,54 +43,49 @@ export default function Products() {
   return (
     <section className="products">
       <div className="container">
-        <div className="section-head" data-animate="fade-up">
-          <h2 className="section-head__title">Всё для вашего сайта&nbsp;— в&nbsp;одном аккаунте</h2>
-          <p className="section-head__sub">Домен, хостинг, почта, SSL — настройте за 15 минут</p>
-        </div>
+        <h2 className="section-head__title products__heading">
+          Всё для вашего сайта&nbsp;— в&nbsp;одном аккаунте
+        </h2>
 
-        <div className="products__grid" data-animate-group>
+        <div className="products__grid">
           {PRODUCTS.map((p) => (
-            <article
+            <a
               key={p.title}
-              className={`products__card${p.featured ? " products__card--featured" : ""}`}
-              data-animate-child
+              href="#"
+              className={[
+                "products__card",
+                p.wide ? "products__card--wide" : "",
+                p.dark ? "products__card--dark" : "",
+              ]
+                .filter(Boolean)
+                .join(" ")}
             >
-              <div className="products__head">
+              <div className="products__top">
                 <span
                   className="icon products__icon"
                   aria-hidden="true"
                   style={{ "--icon": `url(/assets/icons/duotone/${p.icon}.svg)` } as CSSProperties}
                 />
-                <h3 className="products__title">{p.title}</h3>
+                <span
+                  className="icon products__arrow"
+                  aria-hidden="true"
+                  style={{ "--icon": "url(/assets/icons/solid/arrow-up-right.svg)" } as CSSProperties}
+                />
               </div>
               <p className="products__price">{p.price}</p>
-              <p className="products__text">{p.text}</p>
-              <ul className="products__chips">
-                {p.chips.map((chip) => (
-                  <li key={chip} className="products__chip">{chip}</li>
-                ))}
-              </ul>
-              <a
-                href="#"
-                className={`btn btn--m products__cta ${p.featured ? "btn--primary" : "btn--outline"}`}
-              >
-                {p.cta}
-              </a>
-            </article>
+              <h3 className="products__name">{p.title}</h3>
+              <p className="products__text">
+                {p.text}
+                {p.text2 ? (
+                  <>
+                    <br />
+                    {p.text2}
+                  </>
+                ) : null}
+              </p>
+            </a>
           ))}
         </div>
-
-        <aside className="products__cloud" data-animate="fade-up">
-          <div className="products__cloud-info">
-            <h3 className="products__cloud-title">Нужна облачная инфраструктура или VPS/VDS?</h3>
-            <p className="products__cloud-text">
-              Выделенные серверы, GPU, Kubernetes, облачные базы данных — в Timeweb Cloud
-            </p>
-          </div>
-          <a href="#" className="btn btn--m btn--primary products__cloud-cta">
-            Смотреть PRO-решения →
-          </a>
-        </aside>
       </div>
     </section>
   );

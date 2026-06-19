@@ -3,18 +3,20 @@ import Hero from "@/components/Hero";
 import Benefits from "@/components/Benefits";
 import Products from "@/components/Products";
 import Pricing from "@/components/Pricing";
-import Migration from "@/components/Migration";
 import Why from "@/components/Why";
+import Cms from "@/components/Cms";
+import Migration from "@/components/Migration";
 import Panel from "@/components/Panel";
-import Audience from "@/components/Audience";
+import Infrastructure from "@/components/Infrastructure";
+import Security from "@/components/Security";
 import Reviews from "@/components/Reviews";
-import Ecosystem from "@/components/Ecosystem";
+import Support from "@/components/Support";
 import Blog from "@/components/Blog";
 import Partners from "@/components/Partners";
 import FinalCta from "@/components/FinalCta";
 import Faq from "@/components/Faq";
 import Footer from "@/components/Footer";
-import GsapEffects from "@/components/GsapEffects";
+import RevealOnScroll from "@/components/RevealOnScroll";
 
 export default function Home() {
   return (
@@ -24,20 +26,26 @@ export default function Home() {
         <Hero />
         <Benefits />
         <Products />
-        <Pricing />
+        <div className="band">
+          <Pricing />
+          <Why />
+        </div>
         <Migration />
-        <Why />
+        <Cms />
         <Panel />
-        <Audience />
+        <Security />
+        <Infrastructure />
         <Reviews />
-        <Ecosystem />
-        <Blog />
+        <Support />
         <Partners />
-        <FinalCta />
-        <Faq />
+        <Blog />
+        <div className="band band--footer">
+          <FinalCta />
+          <Faq />
+          <Footer />
+        </div>
       </main>
-      <Footer />
-      <GsapEffects />
+      <RevealOnScroll />
     </>
   );
 }

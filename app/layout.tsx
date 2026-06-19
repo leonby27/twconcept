@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Roboto } from "next/font/google";
+import { Roboto, Inter } from "next/font/google";
 import "./globals.css";
 
 const roboto = Roboto({
@@ -7,6 +7,15 @@ const roboto = Roboto({
   subsets: ["latin", "cyrillic"],
   display: "swap",
   variable: "--font-roboto",
+});
+
+// Дисплейный шрифт заголовков: загруженный Inter вместо системного
+// Helvetica-стека — нейтральный гротеск, но рендерится одинаково на всех ОС.
+const inter = Inter({
+  weight: ["400", "500", "600", "700", "800"],
+  subsets: ["latin", "cyrillic"],
+  display: "swap",
+  variable: "--font-inter",
 });
 
 export const metadata: Metadata = {
@@ -21,16 +30,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ru" className={roboto.variable} suppressHydrationWarning>
-      <head>
-        <script
-          // До первой отрисовки: включаем стартовые состояния анимаций,
-          // только если JS работает и нет prefers-reduced-motion
-          dangerouslySetInnerHTML={{
-            __html: `if(!matchMedia('(prefers-reduced-motion: reduce)').matches){document.documentElement.classList.add('js-anim')}`,
-          }}
-        />
-      </head>
+    <html lang="ru" className={`${roboto.variable} ${inter.variable}`}>
       <body>{children}</body>
     </html>
   );

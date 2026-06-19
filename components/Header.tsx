@@ -36,7 +36,15 @@ export default function Header() {
 
   return (
     <header className="header">
-      <a href="#" className="header__logo" aria-label="Timeweb">
+      <a
+        href="/"
+        className="header__logo"
+        aria-label="Timeweb"
+        onClick={(e) => {
+          e.preventDefault();
+          window.location.reload();
+        }}
+      >
         <img src="/assets/timeweb-logo.svg" alt="Timeweb" width={138} height={23} />
       </a>
       <nav className="header__nav" aria-label="Основная навигация">

@@ -1,6 +1,6 @@
 # Timeweb concept
 
-Лендинг по макету Figma «Timeweb. Website» (file key `Z1HMlhKYOQ6gcnKut6b0wO`, десктопный фрейм 1432px). Стек: **Next.js (App Router) + TypeScript**, без Tailwind — своя токен-система в `app/globals.css`. Анимации — GSAP (`@gsap/react`). Дальнейшие блоки строим **без Figma** по [docs/PLAYBOOK.md](docs/PLAYBOOK.md).
+Лендинг по макету Figma «Timeweb. Website» (file key `Z1HMlhKYOQ6gcnKut6b0wO`, десктопный фрейм 1432px). Стек: **Next.js (App Router) + TypeScript**, без Tailwind — своя токен-система в `app/globals.css`. JS-анимаций нет: reveal-по-скроллу на GSAP убран по решению владельца, осталась только лёгкая CSS-микроанимация (hover кнопок/карточек, аккордеон FAQ, фейд при смене табов). Дальнейшие блоки строим **без Figma** по [docs/PLAYBOOK.md](docs/PLAYBOOK.md).
 
 ## Запуск
 
@@ -9,7 +9,7 @@
 ## Структура
 
 - `app/` — layout (шрифт Roboto через next/font, анти-FOUC скрипт), page, `globals.css` (вся стилизация, BEM)
-- `components/` — секции и UI: `Header.tsx` (client, бургер), `Hero.tsx`, `GsapEffects.tsx` (client, вся анимация)
+- `components/` — секции и UI: `Header.tsx` (client, бургер), `Hero.tsx` и др. серверные секции
 - `public/assets/` — ассеты из Figma; `public/assets/icons/{duotone|solid}/` — Phosphor
 - `docs/PLAYBOOK.md` — структура будущей страницы, правила анимаций/дизайна, иконки
 - `docs/MEDIA.md` — реестр фото/иллюстраций (заглушки → ассеты от владельца)
@@ -21,7 +21,7 @@
 1. Сверяемся с порядком и принципами в PLAYBOOK (один primary CTA, proof возле CTA, заголовок = выгода, премиум-слой эффектов).
 2. Секция = серверный компонент `components/<Name>.tsx` + блок стилей в `globals.css` с комментарием-заголовком. Клиентскими делаем только интерактивные (state/effects).
 3. Медиа: слот в `docs/MEDIA.md`, в разметке заглушка `data-media="<id>"`. Фото рендерим через `next/image`.
-4. Анимации — только data-атрибутами (`data-animate`, `data-animate-group/child`, `data-intro` — последний только выше фолда). Кастомные эффекты — в `GsapEffects.tsx`.
+4. Анимации: JS-reveal не используем. Допустима только лёгкая CSS-микроанимация (hover, аккордеон, фейд табов) — без появления контента по скроллу.
 5. Иконки: duotone — фич-карточки, solid — мелкий UI. Докачка: `curl -sfL -o public/assets/icons/duotone/<name>.svg "https://unpkg.com/@phosphor-icons/core@2.1.1/assets/duotone/<name>-duotone.svg"`.
 
 ## CSS-конвенции
@@ -29,8 +29,10 @@
 - BEM: `.hero__stat-value`, модификаторы `--` (`.btn--primary`).
 - Цвета, шрифты, радиусы, гаттеры — только токены из `:root`. Новые значения — сначала токеном.
 - Контентная ширина: `.container` или `width: min(var(--container-max), 100% - var(--page-gutter) * 2)`; `--container-max: 1214px`.
-- Шрифты: заголовки/цифры — `--font-heading` (Helvetica Neue, системная), текст/UI — `--font-text` (Roboto через next/font, веса 400/500).
+- Шрифты: заголовки/цифры — `--font-heading` (Inter через next/font, веса 600/700/800; системный Helvetica-стек как fallback), текст/UI — `--font-text` (Roboto через next/font, веса 400/500).
 - Фоны секций чередуем: белый / `--color-surface`.
+- **Акцент `#DC6655` бережём**: только CTA, сигнал «рекомендуем» и текст-ссылки. Функциональные инлайн-иконки — `--color-icon` (тёплый ink), НЕ акцент. Брендовые duotone-плитки (`.icon-tile`) остаются акцентными. Зелёный `--color-success` — только деньги/подарки/успех, не для чекмарков списков (они ink).
+- Карточки на белом — с `box-shadow: var(--shadow-card)` (мягкая глубина). Единый сигнал выделения (Products featured / Pricing popular / Audience rec) — акцентная рамка + `var(--shadow-accent)`.
 
 ## Адаптив (desktop-first)
 
@@ -40,4 +42,4 @@
 
 ## Анимации (правила)
 
-UI-фидбек 100–200ms; reveal 500–700ms, `power2.out`; только transform/opacity; stagger 60–100ms; один reveal на секцию, `once: true`; `prefers-reduced-motion` уважается глобально (класс `js-anim` на `<html>` ставится только без reduced motion — см. layout.tsx). Анимация должна нести функцию, не украшать.
+JS-анимации (GSAP reveal-по-скроллу) убраны по решению владельца — контент рендерится статично. Осталась только CSS-микроанимация: UI-фидбек 100–200ms (hover кнопок/карточек, аккордеон FAQ через grid-rows, фейд при смене табов). Только transform/opacity; `prefers-reduced-motion` уважается (микроанимации обёрнуты в media-запрос). Новые секции reveal-эффектами не оснащаем.

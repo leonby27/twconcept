@@ -5,146 +5,196 @@ import type { CSSProperties } from "react";
 
 type Period = "month" | "year" | "three";
 
-const PERIODS: { id: Period; label: string; discount?: string }[] = [
-  { id: "month", label: "За месяц" },
-  { id: "year", label: "За год", discount: "−37%" },
-  { id: "three", label: "За 3 года", discount: "−55%" },
+const PERIODS: { id: Period; label: string; discount?: string; months: number; off: number }[] = [
+  { id: "month", label: "За месяц", months: 1, off: 0 },
+  { id: "year", label: "За год", discount: "−30%", months: 12, off: 0.3 },
+  { id: "three", label: "За 3 года", discount: "−50%", months: 36, off: 0.5 },
 ];
 
+// Каждая фича: [b] — выделенная жирным величина, [r] — пояснение.
+type Feature = [string, string];
 type Plan = {
   name: string;
-  desc: string;
-  prices: Record<Period, number>;
-  features: string[];
+  base: number; // цена/мес без скидки; за год даёт значения макета (164/248/347/482)
+  features: Feature[];
   popular?: boolean;
 };
 
 const PLANS: Plan[] = [
   {
-    name: "Year",
-    desc: "Идеальное решение для сайта-визитки",
-    prices: { month: 393, year: 248, three: 180 },
+    name: "Year+",
+    base: 234,
     features: [
-      "2 сайта с изоляцией",
-      "15 ГБ NVMe-диск",
-      "2 базы данных",
-      "Бесплатный SSL",
-      "Безлимитная почта",
-      "Бэкапы ежедневно",
+      ["2 сайта", "с изоляцией"],
+      ["15 ГБ", "на NVMe-дисках"],
+      ["5 Баз Данных", ""],
+      ["10 ГБ", "почтовой квоты"],
+      ["Стандартный", "CPU и MySQL"],
     ],
   },
   {
-    name: "Optimo",
-    desc: "Выбор блогеров и сайтов-галерей",
-    prices: { month: 634, year: 399, three: 272 },
-    features: [
-      "15 сайтов с изоляцией",
-      "40 ГБ NVMe-диск",
-      "Безлимитные базы данных",
-      "Бесплатный SSL",
-      "Безлимитная почта",
-      "Бэкапы ежедневно",
-    ],
-  },
-  {
-    name: "Century",
-    desc: "Наилучший вариант для сайта компании",
-    prices: { month: 887, year: 559, three: 381 },
+    name: "Optimo+",
+    base: 354,
     popular: true,
     features: [
-      "35 сайтов с изоляцией",
-      "50 ГБ NVMe-диск",
-      "Безлимитные базы данных",
-      "Бесплатный SSL",
-      "Безлимитная почта",
-      "Приоритетная поддержка",
+      ["5 сайтов", "с изоляцией"],
+      ["40 ГБ", "на NVMe-дисках"],
+      ["8 Баз Данных", ""],
+      ["10 ГБ", "почтовой квоты"],
+      ["+250%", "CPU и MySQL"],
     ],
   },
   {
-    name: "Millennium",
-    desc: "Для крупных e-commerce проектов",
-    prices: { month: 1285, year: 810, three: 554 },
+    name: "Century+",
+    base: 496,
     features: [
-      "60 сайтов с изоляцией",
-      "60 ГБ NVMe-диск",
-      "Безлимитные базы данных",
-      "Бесплатный SSL",
-      "Безлимитная почта",
-      "Выделенный IP",
+      ["35 сайтов", "с изоляцией"],
+      ["50 ГБ", "на NVMe-дисках"],
+      ["∞ Баз Данных", ""],
+      ["10 ГБ", "почтовой квоты"],
+      ["+350%", "CPU и MySQL"],
+    ],
+  },
+  {
+    name: "Millenium+",
+    base: 689,
+    features: [
+      ["60 сайтов", "с изоляцией"],
+      ["60 ГБ", "на NVMe-дисках"],
+      ["∞ Баз Данных", ""],
+      ["10 ГБ", "почтовой квоты"],
+      ["+550%", "CPU и MySQL"],
     ],
   },
 ];
 
+const ALL_PLANS_INCLUDE = [
+  "∞ кол-во почтовых ящиков",
+  "Ежедневные резервные копии",
+  "Бесплатный DNS-хостинг",
+  "Бесплатный SSL",
+];
+
 const checkIcon = { "--icon": "url(/assets/icons/solid/check.svg)" } as CSSProperties;
-const giftIcon = { "--icon": "url(/assets/icons/duotone/gift.svg)" } as CSSProperties;
+const icon = (name: string) =>
+  ({ "--icon": `url(/assets/icons/solid/${name}.svg)` } as CSSProperties);
+const fmt = (n: number) => n.toLocaleString("ru-RU");
 
 export default function Pricing() {
-  const [period, setPeriod] = useState<Period>("three");
+  const [period, setPeriod] = useState<Period>("year");
+  const [category, setCategory] = useState<"classic" | "premium">("classic");
+
+  const p = PERIODS.find((x) => x.id === period)!;
 
   return (
     <section className="pricing">
       <div className="container">
-        <div className="section-head" data-animate="fade-up">
-          <h2 className="section-head__title">Тарифы виртуального хостинга</h2>
-        </div>
+        <h2 className="section-head__title pricing__heading">Тарифы хостинга</h2>
 
-        <div className="pricing__tabs" role="group" aria-label="Период оплаты" data-animate="fade">
-          {PERIODS.map((p) => (
+        <div className="pricing__controls">
+          <div className="pricing__seg" role="group" aria-label="Категория тарифов">
             <button
-              key={p.id}
               type="button"
-              className={`pricing__tab${period === p.id ? " pricing__tab--active" : ""}`}
-              aria-pressed={period === p.id}
-              onClick={() => setPeriod(p.id)}
+              className={`pricing__seg-btn${category === "classic" ? " pricing__seg-btn--active" : ""}`}
+              aria-pressed={category === "classic"}
+              onClick={() => setCategory("classic")}
             >
-              {p.label}
-              {p.discount && <span className="pricing__tab-discount">{p.discount}</span>}
+              <span className="icon pricing__seg-icon" aria-hidden="true" style={icon("squares")} />
+              Классический
             </button>
-          ))}
-        </div>
-
-        <div className="pricing__grid" data-animate-group>
-          {PLANS.map((plan) => (
-            <article
-              key={plan.name}
-              className={`pricing__card${plan.popular ? " pricing__card--popular" : ""}`}
-              data-animate-child
+            <button
+              type="button"
+              className={`pricing__seg-btn${category === "premium" ? " pricing__seg-btn--active" : ""}`}
+              aria-pressed={category === "premium"}
+              onClick={() => setCategory("premium")}
             >
-              {plan.popular && <span className="pricing__badge">Популярный выбор</span>}
-              <h3 className="pricing__name">{plan.name}</h3>
-              <p className="pricing__desc">{plan.desc}</p>
-              <p className="pricing__price-old">
-                {period !== "month" ? `${plan.prices.month} ₽/мес` : " "}
-              </p>
-              <p className="pricing__price">
-                <span className="pricing__price-value">{plan.prices[period]}&nbsp;₽</span>
-                <span className="pricing__price-suffix">/мес</span>
-              </p>
-              <p className="pricing__gift">
-                <span className="icon pricing__gift-icon" aria-hidden="true" style={giftIcon} />
-                3 домена .RU/.РФ в подарок
-              </p>
-              <ul className="pricing__features">
-                {plan.features.map((f) => (
-                  <li key={f} className="pricing__feature">
-                    <span className="icon pricing__check" aria-hidden="true" style={checkIcon} />
-                    {f}
-                  </li>
-                ))}
-              </ul>
-              <a
-                href="#"
-                className={`btn btn--m pricing__cta ${plan.popular ? "btn--primary" : "btn--outline"}`}
+              <span className="icon pricing__seg-icon" aria-hidden="true" style={icon("star-outline")} />
+              Премиум
+            </button>
+          </div>
+
+          <div className="pricing__seg pricing__seg--period" role="group" aria-label="Период оплаты">
+            {PERIODS.map((per) => (
+              <button
+                key={per.id}
+                type="button"
+                className={`pricing__seg-btn${period === per.id ? " pricing__seg-btn--active" : ""}`}
+                aria-pressed={period === per.id}
+                onClick={() => setPeriod(per.id)}
               >
-                Начать бесплатно
-              </a>
-            </article>
-          ))}
+                {per.label}
+                {per.discount && <span className="pricing__seg-off">{per.discount}</span>}
+              </button>
+            ))}
+          </div>
+
+          <a href="#" className="pricing__pick">
+            <span className="icon pricing__pick-icon" aria-hidden="true" style={icon("navigation")} />
+            Подобрать тариф в один клик
+          </a>
         </div>
 
-        <div className="pricing__links" data-animate="fade">
-          <a href="#" className="pricing__link">Все тарифы списком →</a>
-          <a href="#" className="pricing__link">Сравнить тарифы →</a>
+        <div className="pricing__grid">
+          {PLANS.map((plan) => {
+            const price = Math.round(plan.base * (1 - p.off));
+            const total = price * p.months;
+            const save = (plan.base - price) * p.months;
+            return (
+              <article
+                key={plan.name}
+                className={`pricing__card${plan.popular ? " pricing__card--popular" : ""}`}
+              >
+                {plan.popular && <span className="pricing__badge">Выбор клиентов</span>}
+                <h3 className="pricing__name">{plan.name}</h3>
+                {save > 0 ? (
+                  <span className="pricing__save">Экономия {fmt(save)} ₽</span>
+                ) : (
+                  <span className="pricing__save pricing__save--empty" />
+                )}
+                <p className="pricing__price">
+                  <span className="pricing__price-value">{fmt(price)}&nbsp;₽</span>
+                  <span className="pricing__price-suffix">/мес</span>
+                </p>
+                <p className="pricing__total">
+                  {fmt(total)} ₽ за {p.months} {p.months === 1 ? "месяц" : "месяцев"}
+                </p>
+
+                <a
+                  href="#"
+                  className={`btn pricing__cta ${plan.popular ? "btn--primary" : "btn--dark"}`}
+                >
+                  Начать бесплатно
+                </a>
+
+                <ul className="pricing__features">
+                  {plan.features.map(([b, r], idx) => (
+                    <li key={b} className="pricing__feature">
+                      <span className="icon pricing__check" aria-hidden="true" style={checkIcon} />
+                      <span className="pricing__feature-text">
+                        <b className="pricing__feature-b">{b}</b>
+                        {r ? ` ${r}` : ""}
+                        {idx < 2 && (
+                          <span className="icon pricing__info" aria-hidden="true" style={icon("info")} />
+                        )}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </article>
+            );
+          })}
+        </div>
+
+        <div className="pricing__included">
+          <span className="pricing__included-label">А также в каждом тарифе:</span>
+          <ul className="pricing__included-list">
+            {ALL_PLANS_INCLUDE.map((f) => (
+              <li key={f} className="pricing__included-item">
+                <span className="icon pricing__check" aria-hidden="true" style={checkIcon} />
+                {f}
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
     </section>

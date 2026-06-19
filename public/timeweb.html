@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Timeweb — Хостинг для сайта</title>
+  <meta name="description" content="Домен, хостинг, SSL и почта в одном месте. Запустите сайт за 15 минут.">
+
+  <!-- Шрифты: те же, что в React-версии (Inter — заголовки, Roboto — текст) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@600;700;800&family=Roboto:wght@400;500&display=swap&subset=cyrillic,latin" rel="stylesheet">
+
+  <!-- Стили: копия токен-системы проекта -->
+  <link rel="stylesheet" href="/page.css">
+
+  <style>
+    /* Привязываем шрифтовые токены к загруженным Google Fonts
+       (в React-версии их подставляет next/font). */
+    :root {
+      --font-inter: "Inter";
+      --font-roboto: "Roboto";
+    }
+    /* Хелпер скрытия неактивных табов (перебивает display:grid панелей) */
+    .x-hidden { display: none !important; }
+  </style>
+</head>
+<body>
+
+<!-- ============ Header ============ -->
+<header class="header">
+  <a href="#" class="header__logo" aria-label="Timeweb">
+    <img src="/assets/timeweb-logo.svg" alt="Timeweb" width="138" height="23">
+  </a>
+  <nav class="header__nav" aria-label="Основная навигация">
+    <a href="#" class="header__nav-link">Хостинг</a>
+    <a href="#" class="header__nav-link">VDS/VPS</a>
+    <a href="#" class="header__nav-link">Почта</a>
+    <a href="#" class="header__nav-link">Домены</a>
+    <a href="#" class="header__nav-link">Выделенные серверы</a>
+    <a href="#" class="header__nav-link">Партнёрам</a>
+    <a href="#" class="header__nav-link">Ещё</a>
+  </nav>
+  <div class="header__actions">
+    <a href="#" class="btn btn--white btn--s">Войти</a>
+    <a href="#" class="btn btn--primary btn--s">Регистрация</a>
+  </div>
+  <button class="header__burger" type="button" aria-label="Открыть меню" aria-expanded="false" aria-controls="mobile-menu">
+    <span class="header__burger-line"></span>
+    <span class="header__burger-line"></span>
+    <span class="header__burger-line"></span>
+  </button>
+  <div class="header__menu" id="mobile-menu" hidden>
+    <nav class="header__menu-nav" aria-label="Мобильная навигация">
+      <a href="#" class="header__menu-link">Хостинг</a>
+      <a href="#" class="header__menu-link">VDS/VPS</a>
+      <a href="#" class="header__menu-link">Почта</a>
+      <a href="#" class="header__menu-link">Домены</a>
+      <a href="#" class="header__menu-link">Выделенные серверы</a>
+      <a href="#" class="header__menu-link">Партнёрам</a>
+      <a href="#" class="header__menu-link">Ещё</a>
+    </nav>
+    <div class="header__menu-actions">
+      <a href="#" class="btn btn--white btn--s">Войти</a>
+      <a href="#" class="btn btn--primary btn--s">Регистрация</a>
+    </div>
+  </div>
+</header>
+
+<main>
+
+  <!-- ============ Hero ============ -->
+  <section class="hero">
+    <div class="hero__rating">
+      <div class="hero__rating-avatars">
+        <img src="/assets/avatar-1.png" alt="" width="24" height="24">
+        <img src="/assets/avatar-2.png" alt="" width="24" height="24">
+        <img src="/assets/avatar-3.png" alt="" width="24" height="24">
+        <img src="/assets/avatar-4.png" alt="" width="24" height="24">
+        <img src="/assets/avatar-5.png" alt="" width="24" height="24">
+      </div>
+      <div class="hero__rating-info">
+        <p class="hero__rating-text">
+          <span class="hero__rating-score">4.9</span>
+          <span> на основе </span>
+          <span class="hero__rating-reviews">4302 отзывов</span>
+        </p>
+        <div class="hero__rating-stars">
+          <img src="/assets/star-full.svg" alt="" width="20" height="20">
+          <img src="/assets/star-full.svg" alt="" width="20" height="20">
+          <img src="/assets/star-full.svg" alt="" width="20" height="20">
+          <img src="/assets/star-full.svg" alt="" width="20" height="20">
+          <img src="/assets/star-last.svg" alt="" width="20" height="20">
+        </div>
+      </div>
+    </div>
+
+    <div class="hero__heading">
+      <h1 class="hero__title">Запустите сайт за&nbsp;15&nbsp;минут на&nbsp;надёжном хостинге</h1>
+      <p class="hero__subtitle">Домен, хостинг, SSL и&nbsp;почта&nbsp;— всё в&nbsp;одном аккаунте.</p>
+    </div>
+
+    <div class="hero__cta">
+      <div class="hero__cta-buttons">
+        <a href="#" class="btn btn--primary btn--l">Начать бесплатно</a>
+        <a href="#" class="btn btn--outline btn--l">Смотреть тарифы</a>
+      </div>
+      <p class="hero__cta-note">10 дней на тест без оплаты и привязки карты</p>
+    </div>
+
+    <div class="hero__brands">
+      <p class="hero__brands-label">Уже с нами</p>
+      <div class="hero__brands-row">
+        <img src="/assets/brand-nikon.svg" alt="Nikon" width="59" height="17">
+        <img src="/assets/brand-eset.svg" alt="ESET" width="45" height="18">
+        <img src="/assets/brand-otkrytie.svg" alt="Открытие" width="99" height="18">
+        <img src="/assets/brand-mts.svg" alt="МТС" width="59" height="16">
+        <img src="/assets/brand-alfa.svg" alt="Альфа Страхование" width="90" height="19">
+        <img src="/assets/brand-redmond.svg" alt="Redmond" width="89" height="17">
+      </div>
+    </div>
+
+    <div class="hero__stats">
+      <div class="hero__stat"><p class="hero__stat-value">20+ лет</p><p class="hero__stat-label">работаем в России и СНГ</p></div>
+      <div class="hero__stat"><p class="hero__stat-value">400к+</p><p class="hero__stat-label">клиентов</p></div>
+      <div class="hero__stat"><p class="hero__stat-value">24/7</p><p class="hero__stat-label">поддержка</p></div>
+      <div class="hero__stat"><p class="hero__stat-value">152 ФЗ</p><p class="hero__stat-label">Соответствие закону</p></div>
+    </div>
+  </section>
+
+  <!-- ============ Benefits ============ -->
+  <section class="benefits" aria-label="Бонусы и условия">
+    <div class="benefits__grid container">
+      <article class="benefits__card hover-lift">
+        <span class="icon-tile benefits__icon" aria-hidden="true" style="--icon:url(/assets/icons/duotone/calendar-check.svg)"></span>
+        <h3 class="benefits__title">10 дней бесплатно</h3>
+        <p class="benefits__text">Полноценное тестирование без привязки карты</p>
+      </article>
+      <article class="benefits__card hover-lift">
+        <span class="icon-tile benefits__icon" aria-hidden="true" style="--icon:url(/assets/icons/duotone/gift.svg)"></span>
+        <h3 class="benefits__title">3 домена .RU в подарок</h3>
+        <p class="benefits__text">При оплате хостинга за год или 3 года</p>
+      </article>
+      <article class="benefits__card hover-lift">
+        <span class="icon-tile benefits__icon" aria-hidden="true" style="--icon:url(/assets/icons/duotone/arrows-left-right.svg)"></span>
+        <h3 class="benefits__title">Бесплатная миграция</h3>
+        <p class="benefits__text">Перенесём сайты, домены и почту без потерь</p>
+      </article>
+      <article class="benefits__card hover-lift">
+        <span class="icon-tile benefits__icon" aria-hidden="true" style="--icon:url(/assets/icons/duotone/seal-percent.svg)"></span>
+        <h3 class="benefits__title">Скидка до 55%</h3>
+        <p class="benefits__text">При оплате за 3 года. Цена фиксируется навсегда</p>
+      </article>
+    </div>
+  </section>
+
+  <!-- ============ Products ============ -->
+  <section class="products">
+    <div class="container">
+      <div class="section-head">
+        <h2 class="section-head__title">Всё для вашего сайта&nbsp;— в&nbsp;одном аккаунте</h2>
+        <p class="section-head__sub">Домен, хостинг, почта, SSL — настройте за 15 минут</p>
+      </div>
+
+      <div class="products__grid">
+        <article class="products__card products__card--featured">
+          <div class="products__head">
+            <span class="icon products__icon" aria-hidden="true" style="--icon:url(/assets/icons/duotone/hard-drives.svg)"></span>
+            <h3 class="products__title">Хостинг для сайта</h3>
+          </div>
+          <p class="products__price">от 180 ₽/мес</p>
+          <p class="products__text">Виртуальный хостинг для сайтов любой сложности. Быстрые NVMe-диски, изоляция, автобэкапы.</p>
+          <ul class="products__chips">
+            <li class="products__chip">10 дней бесплатно</li>
+            <li class="products__chip">SSL в подарок</li>
+            <li class="products__chip">WordPress</li>
+            <li class="products__chip">1С-Битрикс</li>
+            <li class="products__chip">Joomla</li>
+          </ul>
+          <a href="#" class="btn btn--m products__cta btn--primary">Попробовать бесплатно</a>
+        </article>
+        <article class="products__card">
+          <div class="products__head">
+            <span class="icon products__icon" aria-hidden="true" style="--icon:url(/assets/icons/duotone/globe-hemisphere-west.svg)"></span>
+            <h3 class="products__title">Домены</h3>
+          </div>
+          <p class="products__price">от 199 ₽/год</p>
+          <p class="products__text">325+ зон. .RU, .COM, .РФ и тысячи других.</p>
+          <ul class="products__chips">
+            <li class="products__chip">3 домена в подарок</li>
+          </ul>
+          <a href="#" class="btn btn--m products__cta btn--outline">Найти домен</a>
+        </article>
+        <article class="products__card">
+          <div class="products__head">
+            <span class="icon products__icon" aria-hidden="true" style="--icon:url(/assets/icons/duotone/envelope-simple.svg)"></span>
+            <h3 class="products__title">Почта на домене</h3>
+          </div>
+          <p class="products__price">Входит в хостинг</p>
+          <p class="products__text">yourname@yourdomain.ru — профессионально и бесплатно. Веб-интерфейс и мобильное приложение.</p>
+          <ul class="products__chips">
+            <li class="products__chip">Бесплатно</li>
+          </ul>
+          <a href="#" class="btn btn--m products__cta btn--outline">Подробнее</a>
+        </article>
+      </div>
+
+      <aside class="products__cloud">
+        <div class="products__cloud-info">
+          <h3 class="products__cloud-title">Нужна облачная инфраструктура или VPS/VDS?</h3>
+          <p class="products__cloud-text">Выделенные серверы, GPU, Kubernetes, облачные базы данных — в Timeweb Cloud</p>
+        </div>
+        <a href="#" class="btn btn--m btn--primary products__cloud-cta">Смотреть PRO-решения →</a>
+      </aside>
+    </div>
+  </section>
+
+  <!-- ============ Pricing ============ -->
+  <section class="pricing">
+    <div class="container">
+      <div class="section-head">
+        <h2 class="section-head__title">Тарифы виртуального хостинга</h2>
+      </div>
+
+      <div class="pricing__tabs" role="group" aria-label="Период оплаты" id="pricing-tabs">
+        <button type="button" class="pricing__tab" data-period="month" aria-pressed="false">За месяц</button>
+        <button type="button" class="pricing__tab" data-period="year" aria-pressed="false">За год<span class="pricing__tab-discount">−37%</span></button>
+        <button type="button" class="pricing__tab pricing__tab--active" data-period="three" aria-pressed="true">За 3 года<span class="pricing__tab-discount">−55%</span></button>
+      </div>
+
+      <div class="pricing__grid">
+        <article class="pricing__card" data-m="393" data-y="248" data-t="180">
+          <h3 class="pricing__name">Year</h3>
+          <p class="pricing__desc">Идеальное решение для сайта-визитки</p>
+          <p class="pricing__price-old"></p>
+          <p class="pricing__price"><span class="pricing__price-value"></span><span class="pricing__price-suffix">/мес</span></p>
+          <p class="pricing__gift"><span class="icon pricing__gift-icon" aria-hidden="true" style="--icon:url(/assets/icons/duotone/gift.svg)"></span>3 домена .RU/.РФ в подарок</p>
+          <ul class="pricing__features">
+            <li class="pricing__feature"><span class="icon pricing__check" aria-hidden="true" style="--icon:url(/assets/icons/solid/check.svg)"></span>2 сайта с изоляцией</li>
+            <li class="pricing__feature"><span class="icon pricing__check" aria-hidden="true" style="--icon:url(/assets/icons/solid/check.svg)"></span>15 ГБ NVMe-диск</li>
+            <li class="pricing__feature"><span class="icon pricing__check" aria-hidden="true" style="--icon:url(/assets/icons/solid/check.svg)"></span>2 базы данных</li>
+            <li class="pricing__feature"><span class="icon pricing__check" aria-hidden="true" style="--icon:url(/assets/icons/solid/check.svg)"></span>Бесплатный SSL</li>
+            <li class="pricing__feature"><span class="icon pricing__check" aria-hidden="true" style="--icon:url(/assets/icons/solid/check.svg)"></span>Безлимитная почта</li>
+            <li class="pricing__feature"><span class="icon pricing__check" aria-hidden="true" style="--icon:url(/assets/icons/solid/check.svg)"></span>Бэкапы ежедневно</li>
+          </ul>
+          <a href="#" class="btn btn--m pricing__cta btn--outline">Начать бесплатно</a>
+        </article>
+
+        <article class="pricing__card" data-m="634" data-y="399" data-t="272">
+          <h3 class="pricing__name">Optimo</h3>
+          <p class="pricing__desc">Выбор блогеров и сайтов-галерей</p>
+          <p class="pricing__price-old"></p>
+          <p class="pricing__price"><span class="pricing__price-value"></span><span class="pricing__price-suffix">/мес</span></p>
+          <p class="pricing__gift"><span class="icon pricing__gift-icon" aria-hidden="true" style="--icon:url(/assets/icons/duotone/gift.svg)"></span>3 домена .RU/.РФ в подарок</p>
+          <ul class="pricing__features">
+            <li class="pricing__feature"><span class="icon pricing__check" aria-hidden="true" style="--icon:url(/assets/icons/solid/check.svg)"></span>15 сайтов с изоляцией</li>
+            <li class="pricing__feature"><span class="icon pricing__check" aria-hidden="true" style="--icon:url(/assets/icons/solid/check.svg)"></span>40 ГБ NVMe-диск</li>
+            <li class="pricing__feature"><span class="icon pricing__check" aria-hidden="true" style="--icon:url(/assets/icons/solid/check.svg)"></span>Безлимитные базы данных</li>
+            <li class="pricing__feature"><span class="icon pricing__check" aria-hidden="true" style="--icon:url(/assets/icons/solid/check.svg)"></span>Бесплатный SSL</li>
+            <li class="pricing__feature"><span class="icon pricing__check" aria-hidden="true" style="--icon:url(/assets/icons/solid/check.svg)"></span>Безлимитная почта</li>
+            <li class="pricing__feature"><span class="icon pricing__check" aria-hidden="true" style="--icon:url(/assets/icons/solid/check.svg)"></span>Бэкапы ежедневно</li>
+          </ul>
+          <a href="#" class="btn btn--m pricing__cta btn--outline">Начать бесплатно</a>
+        </article>
+
+        <article class="pricing__card pricing__card--popular" data-m="887" data-y="559" data-t="381">
+          <span class="pricing__badge">Популярный выбор</span>
+          <h3 class="pricing__name">Century</h3>
+          <p class="pricing__desc">Наилучший вариант для сайта компании</p>
+          <p class="pricing__price-old"></p>
+          <p class="pricing__price"><span class="pricing__price-value"></span><span class="pricing__price-suffix">/мес</span></p>
+          <p class="pricing__gift"><span class="icon pricing__gift-icon" aria-hidden="true" style="--icon:url(/assets/icons/duotone/gift.svg)"></span>3 домена .RU/.РФ в подарок</p>
+          <ul class="pricing__features">
+            <li class="pricing__feature"><span class="icon pricing__check" aria-hidden="true" style="--icon:url(/assets/icons/solid/check.svg)"></span>35 сайтов с изоляцией</li>
+            <li class="pricing__feature"><span class="icon pricing__check" aria-hidden="true" style="--icon:url(/assets/icons/solid/check.svg)"></span>50 ГБ NVMe-диск</li>
+            <li class="pricing__feature"><span class="icon pricing__check" aria-hidden="true" style="--icon:url(/assets/icons/solid/check.svg)"></span>Безлимитные базы данных</li>
+            <li class="pricing__feature"><span class="icon pricing__check" aria-hidden="true" style="--icon:url(/assets/icons/solid/check.svg)"></span>Бесплатный SSL</li>
+            <li class="pricing__feature"><span class="icon pricing__check" aria-hidden="true" style="--icon:url(/assets/icons/solid/check.svg)"></span>Безлимитная почта</li>
+            <li class="pricing__feature"><span class="icon pricing__check" aria-hidden="true" style="--icon:url(/assets/icons/solid/check.svg)"></span>Приоритетная поддержка</li>
+          </ul>
+          <a href="#" class="btn btn--m pricing__cta btn--primary">Начать бесплатно</a>
+        </article>
+
+        <article class="pricing__card" data-m="1285" data-y="810" data-t="554">
+          <h3 class="pricing__name">Millennium</h3>
+          <p class="pricing__desc">Для крупных e-commerce проектов</p>
+          <p class="pricing__price-old"></p>
+          <p class="pricing__price"><span class="pricing__price-value"></span><span class="pricing__price-suffix">/мес</span></p>
+          <p class="pricing__gift"><span class="icon pricing__gift-icon" aria-hidden="true" style="--icon:url(/assets/icons/duotone/gift.svg)"></span>3 домена .RU/.РФ в подарок</p>
+          <ul class="pricing__features">
+            <li class="pricing__feature"><span class="icon pricing__check" aria-hidden="true" style="--icon:url(/assets/icons/solid/check.svg)"></span>60 сайтов с изоляцией</li>
+            <li class="pricing__feature"><span class="icon pricing__check" aria-hidden="true" style="--icon:url(/assets/icons/solid/check.svg)"></span>60 ГБ NVMe-диск</li>
+            <li class="pricing__feature"><span class="icon pricing__check" aria-hidden="true" style="--icon:url(/assets/icons/solid/check.svg)"></span>Безлимитные базы данных</li>
+            <li class="pricing__feature"><span class="icon pricing__check" aria-hidden="true" style="--icon:url(/assets/icons/solid/check.svg)"></span>Бесплатный SSL</li>
+            <li class="pricing__feature"><span class="icon pricing__check" aria-hidden="true" style="--icon:url(/assets/icons/solid/check.svg)"></span>Безлимитная почта</li>
+            <li class="pricing__feature"><span class="icon pricing__check" aria-hidden="true" style="--icon:url(/assets/icons/solid/check.svg)"></span>Выделенный IP</li>
+          </ul>
+          <a href="#" class="btn btn--m pricing__cta btn--outline">Начать бесплатно</a>
+        </article>
+      </div>
+
+      <div class="pricing__links">
+        <a href="#" class="pricing__link">Все тарифы списком →</a>
+        <a href="#" class="pricing__link">Сравнить тарифы →</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ Migration ============ -->
+  <section class="migration">
+    <div class="container">
+      <div class="migration__banner">
+        <div class="migration__intro">
+          <h2 class="migration__title">Переходите с другого хостинга?</h2>
+          <p class="migration__text">Перенесём сайты, домены и почту бесплатно. Без простоев. Без потерь данных.</p>
+        </div>
+        <ul class="migration__offers">
+          <li class="migration__offer"><span class="icon migration__offer-icon" aria-hidden="true" style="--icon:url(/assets/icons/duotone/wallet.svg)"></span>Сохраним ваш баланс от другого хостера</li>
+          <li class="migration__offer"><span class="icon migration__offer-icon" aria-hidden="true" style="--icon:url(/assets/icons/duotone/gift.svg)"></span>Или дадим 3 месяца хостинга в подарок</li>
+          <li class="migration__offer"><span class="icon migration__offer-icon" aria-hidden="true" style="--icon:url(/assets/icons/duotone/arrows-clockwise.svg)"></span>Сайты работают без перерыва при переносе</li>
+        </ul>
+        <a href="#" class="btn btn--m btn--primary migration__cta">Перейти на Timeweb бесплатно</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ Why ============ -->
+  <section class="why">
+    <div class="container">
+      <div class="section-head">
+        <h2 class="section-head__title">Почему выбирают Timeweb</h2>
+        <p class="section-head__sub">Проверено 200 000 клиентов за 20 лет</p>
+      </div>
+      <div class="why__grid">
+        <article class="why__card why__card--lead">
+          <p class="why__stat">10 минут</p>
+          <div class="why__body"><p class="why__label">Поддержка 24/7</p><p class="why__text">80% вопросов решаем в первые 10 минут. Без выходных и праздников.</p></div>
+        </article>
+        <article class="why__card why__card--white">
+          <p class="why__stat">99.98%</p>
+          <div class="why__body"><p class="why__label">SLA uptime</p><p class="why__text">Гарантируем доступность по договору. Серверы на быстрых NVMe-дисках.</p></div>
+        </article>
+        <article class="why__card why__card--surface">
+          <p class="why__stat">700 000</p>
+          <div class="why__body"><p class="why__label">сайтов за 20 лет</p><p class="why__text">Работаем с 2006 года — крупнейший хостер РФ.</p></div>
+        </article>
+        <article class="why__card why__card--surface">
+          <p class="why__stat">1 клик</p>
+          <div class="why__body"><p class="why__label">восстановление из бэкапа</p><p class="why__text">Автоматические резервные копии каждый день, прямо из панели.</p></div>
+        </article>
+        <article class="why__card why__card--white">
+          <p class="why__stat">152-ФЗ</p>
+          <div class="why__body"><p class="why__label">защита персональных данных</p><p class="why__text">Дата-центры в России. Полное соответствие требованиям закона.</p></div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ Panel ============ -->
+  <section class="panel">
+    <div class="container panel__inner">
+      <div class="panel__content">
+        <div class="section-head">
+          <h2 class="section-head__title">Собственная панель управления&nbsp;— всё в&nbsp;одном окне</h2>
+        </div>
+        <ul class="panel__features">
+          <li class="panel__feature">
+            <span class="icon-tile panel__feature-icon" aria-hidden="true" style="--icon:url(/assets/icons/duotone/magic-wand.svg)"></span>
+            <div><h3 class="panel__feature-title">WordPress за 2 клика</h3><p class="panel__feature-text">Автоустановка любой CMS — WordPress, Joomla, Drupal, OpenCart и других</p></div>
+          </li>
+          <li class="panel__feature">
+            <span class="icon-tile panel__feature-icon" aria-hidden="true" style="--icon:url(/assets/icons/duotone/envelope-simple.svg)"></span>
+            <div><h3 class="panel__feature-title">Почта на домене без IT-специалиста</h3><p class="panel__feature-text">Создайте yourname@yoursite.ru за 1 минуту. Веб-интерфейс и мобильное приложение</p></div>
+          </li>
+          <li class="panel__feature">
+            <span class="icon-tile panel__feature-icon" aria-hidden="true" style="--icon:url(/assets/icons/duotone/clock-counter-clockwise.svg)"></span>
+            <div><h3 class="panel__feature-title">Восстановление бэкапа в 1 клик</h3><p class="panel__feature-text">Ежедневные резервные копии всех сайтов. Восстановление без обращения в поддержку</p></div>
+          </li>
+          <li class="panel__feature">
+            <span class="icon-tile panel__feature-icon" aria-hidden="true" style="--icon:url(/assets/icons/duotone/tree-structure.svg)"></span>
+            <div><h3 class="panel__feature-title">DNS без технических знаний</h3><p class="panel__feature-text">Удобный редактор DNS-записей. Подключите любой сервис в несколько кликов</p></div>
+          </li>
+        </ul>
+        <a href="#" class="panel__link">Смотреть все возможности панели →</a>
+      </div>
+      <div class="media-placeholder panel__media" data-media="panel-screenshot">
+        <span class="media-placeholder__label">panel-screenshot · 16:10</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ Audience ============ -->
+  <section class="audience">
+    <div class="container">
+      <div class="section-head">
+        <h2 class="section-head__title">Для кого Timeweb?</h2>
+        <p class="section-head__sub">Выберите свой сценарий</p>
+      </div>
+
+      <div class="audience__tabs" role="tablist" aria-label="Сценарии использования" id="audience-tabs">
+        <button type="button" role="tab" class="audience__tab audience__tab--active" data-tab="personal" aria-selected="true">
+          <span class="icon audience__tab-icon" aria-hidden="true" style="--icon:url(/assets/icons/solid/user.svg)"></span>Физлицам / блогерам
+        </button>
+        <button type="button" role="tab" class="audience__tab" data-tab="business" aria-selected="false">
+          <span class="icon audience__tab-icon" aria-hidden="true" style="--icon:url(/assets/icons/solid/briefcase.svg)"></span>Малому бизнесу
+        </button>
+        <button type="button" role="tab" class="audience__tab" data-tab="dev" aria-selected="false">
+          <span class="icon audience__tab-icon" aria-hidden="true" style="--icon:url(/assets/icons/solid/code.svg)"></span>Разработчикам
+        </button>
+      </div>
+
+      <div>
+        <div class="audience__panel" data-panel="personal" role="tabpanel">
+          <div class="audience__content">
+            <h3 class="audience__title">Запустите сайт за 15 минут</h3>
+            <p class="audience__text">Никакого программирования. Выберите шаблон в Конструкторе или установите WordPress в 2 клика — и ваш сайт уже онлайн.</p>
+            <ul class="audience__points">
+              <li class="audience__point"><span class="icon audience__check" aria-hidden="true" style="--icon:url(/assets/icons/solid/check.svg)"></span>Конструктор сайтов с 500+ шаблонами</li>
+              <li class="audience__point"><span class="icon audience__check" aria-hidden="true" style="--icon:url(/assets/icons/solid/check.svg)"></span>WordPress за 2 клика</li>
+              <li class="audience__point"><span class="icon audience__check" aria-hidden="true" style="--icon:url(/assets/icons/solid/check.svg)"></span>Домен .RU в подарок</li>
+              <li class="audience__point"><span class="icon audience__check" aria-hidden="true" style="--icon:url(/assets/icons/solid/check.svg)"></span>Поддержка 24/7 на русском</li>
+            </ul>
+            <a href="#" class="btn btn--m btn--outline audience__cta">Начать бесплатно</a>
+          </div>
+          <aside class="audience__rec">
+            <p class="audience__rec-label">Рекомендуем</p>
+            <h4 class="audience__rec-name">Тариф Year</h4>
+            <p class="audience__rec-price"><span class="audience__rec-value">180&nbsp;₽</span><span class="audience__rec-suffix">/мес</span></p>
+            <p class="audience__rec-note">при оплате за 3 года</p>
+            <p class="audience__rec-gift"><span class="icon audience__rec-gift-icon" aria-hidden="true" style="--icon:url(/assets/icons/duotone/gift.svg)"></span>3 домена .RU/.РФ в подарок</p>
+            <a href="#" class="btn btn--m btn--primary audience__rec-cta">Попробовать 10 дней бесплатно</a>
+          </aside>
+        </div>
+
+        <div class="audience__panel x-hidden" data-panel="business" role="tabpanel">
+          <div class="audience__content">
+            <h3 class="audience__title">Сайт компании — в одном аккаунте</h3>
+            <p class="audience__text">Домен, хостинг, SSL и корпоративная почта в одном месте. Работающий сайт перенесём с другого хостинга бесплатно.</p>
+            <ul class="audience__points">
+              <li class="audience__point"><span class="icon audience__check" aria-hidden="true" style="--icon:url(/assets/icons/solid/check.svg)"></span>Почта на домене компании бесплатно</li>
+              <li class="audience__point"><span class="icon audience__check" aria-hidden="true" style="--icon:url(/assets/icons/solid/check.svg)"></span>Бесплатный SSL и ежедневные бэкапы</li>
+              <li class="audience__point"><span class="icon audience__check" aria-hidden="true" style="--icon:url(/assets/icons/solid/check.svg)"></span>Соответствие 152-ФЗ</li>
+              <li class="audience__point"><span class="icon audience__check" aria-hidden="true" style="--icon:url(/assets/icons/solid/check.svg)"></span>Бесплатный перенос сайта</li>
+            </ul>
+            <a href="#" class="btn btn--m btn--outline audience__cta">Начать бесплатно</a>
+          </div>
+          <aside class="audience__rec">
+            <p class="audience__rec-label">Рекомендуем</p>
+            <h4 class="audience__rec-name">Тариф Century</h4>
+            <p class="audience__rec-price"><span class="audience__rec-value">381&nbsp;₽</span><span class="audience__rec-suffix">/мес</span></p>
+            <p class="audience__rec-note">при оплате за 3 года</p>
+            <p class="audience__rec-gift"><span class="icon audience__rec-gift-icon" aria-hidden="true" style="--icon:url(/assets/icons/duotone/gift.svg)"></span>3 домена .RU/.РФ в подарок</p>
+            <a href="#" class="btn btn--m btn--primary audience__rec-cta">Попробовать 10 дней бесплатно</a>
+          </aside>
+        </div>
+
+        <div class="audience__panel x-hidden" data-panel="dev" role="tabpanel">
+          <div class="audience__content">
+            <h3 class="audience__title">Инфраструктура, которая не мешает</h3>
+            <p class="audience__text">Быстрые NVMe-диски, изоляция сайтов и безлимитные базы данных. Для проектов посерьёзнее — VPS, GPU и Kubernetes в Timeweb Cloud.</p>
+            <ul class="audience__points">
+              <li class="audience__point"><span class="icon audience__check" aria-hidden="true" style="--icon:url(/assets/icons/solid/check.svg)"></span>NVMe-диски и изоляция сайтов</li>
+              <li class="audience__point"><span class="icon audience__check" aria-hidden="true" style="--icon:url(/assets/icons/solid/check.svg)"></span>Безлимитные базы данных</li>
+              <li class="audience__point"><span class="icon audience__check" aria-hidden="true" style="--icon:url(/assets/icons/solid/check.svg)"></span>Выделенный IP</li>
+              <li class="audience__point"><span class="icon audience__check" aria-hidden="true" style="--icon:url(/assets/icons/solid/check.svg)"></span>VPS, GPU и Kubernetes — в Timeweb Cloud</li>
+            </ul>
+            <a href="#" class="btn btn--m btn--outline audience__cta">Начать бесплатно</a>
+          </div>
+          <aside class="audience__rec">
+            <p class="audience__rec-label">Рекомендуем</p>
+            <h4 class="audience__rec-name">Тариф Millennium</h4>
+            <p class="audience__rec-price"><span class="audience__rec-value">554&nbsp;₽</span><span class="audience__rec-suffix">/мес</span></p>
+            <p class="audience__rec-note">при оплате за 3 года</p>
+            <p class="audience__rec-gift"><span class="icon audience__rec-gift-icon" aria-hidden="true" style="--icon:url(/assets/icons/duotone/gift.svg)"></span>3 домена .RU/.РФ в подарок</p>
+            <a href="#" class="btn btn--m btn--primary audience__rec-cta">Попробовать 10 дней бесплатно</a>
+          </aside>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ Infrastructure ============ -->
+  <section class="infra">
+    <div class="container infra__inner">
+      <div class="media-placeholder infra__media" data-media="datacenter-photo">
+        <span class="media-placeholder__label">datacenter-photo · 3:2</span>
+      </div>
+      <div class="infra__content">
+        <div class="section-head">
+          <h2 class="section-head__title">Инфраструктура, на которой держится ваш сайт</h2>
+          <p class="section-head__sub">Серверы под защитой и резервированием — вы платите за хостинг, а не за простои</p>
+        </div>
+        <ul class="infra__list">
+          <li class="infra__point">
+            <span class="icon infra__point-icon" aria-hidden="true" style="--icon:url(/assets/icons/duotone/globe-hemisphere-west.svg)"></span>
+            <div><h3 class="infra__point-title">Собственные дата-центры в РФ и Европе</h3><p class="infra__point-text">Площадки в Москве, Санкт-Петербурге и Амстердаме. Данные клиентов из РФ не покидают страну.</p></div>
+          </li>
+          <li class="infra__point">
+            <span class="icon infra__point-icon" aria-hidden="true" style="--icon:url(/assets/icons/duotone/lightning.svg)"></span>
+            <div><h3 class="infra__point-title">Резервирование уровня Tier III</h3><p class="infra__point-text">Дублированное питание и охлаждение — сайт не зависит от одного источника.</p></div>
+          </li>
+          <li class="infra__point">
+            <span class="icon infra__point-icon" aria-hidden="true" style="--icon:url(/assets/icons/duotone/shield-check.svg)"></span>
+            <div><h3 class="infra__point-title">Защита от DDoS на уровне сети</h3><p class="infra__point-text">Фильтруем вредоносный трафик до того, как он дойдёт до вашего сайта.</p></div>
+          </li>
+          <li class="infra__point">
+            <span class="icon infra__point-icon" aria-hidden="true" style="--icon:url(/assets/icons/duotone/gauge.svg)"></span>
+            <div><h3 class="infra__point-title">NVMe-диски и сеть с запасом</h3><p class="infra__point-text">Хранилище и каналы рассчитаны на пиковые нагрузки без просадок скорости.</p></div>
+          </li>
+        </ul>
+        <p class="infra__geo">
+          <span class="icon infra__geo-icon" aria-hidden="true" style="--icon:url(/assets/icons/solid/map-pin.svg)"></span>
+          Дата-центры: Москва · Санкт-Петербург · Амстердам
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ Reviews ============ -->
+  <section class="reviews">
+    <div class="container">
+      <div class="section-head-row">
+        <div class="section-head"><h2 class="section-head__title">Что говорят клиенты</h2></div>
+        <a href="#" class="section-link">Все отзывы →</a>
+      </div>
+      <div class="reviews__grid">
+        <article class="reviews__card hover-lift">
+          <div class="reviews__person">
+            <img class="reviews__avatar" src="/assets/avatar-1.png" alt="" width="44" height="44">
+            <div><p class="reviews__name">Алексей Морозов</p><p class="reviews__role">Владелец интернет-магазина · shop-example.ru</p></div>
+          </div>
+          <div class="reviews__stars" aria-label="Оценка 5 из 5">
+            <img src="/assets/star-full.svg" alt="" width="16" height="16"><img src="/assets/star-full.svg" alt="" width="16" height="16"><img src="/assets/star-full.svg" alt="" width="16" height="16"><img src="/assets/star-full.svg" alt="" width="16" height="16"><img src="/assets/star-full.svg" alt="" width="16" height="16">
+          </div>
+          <p class="reviews__text">«Работаем с Timeweb уже 6 лет. Ни разу не было серьёзных проблем с доступностью. Поддержка отвечает за 5 минут — это редкость. Рекомендую всем коллегам.»</p>
+          <p class="reviews__footer"><span class="reviews__switched">перешли с reg.ru</span><span class="reviews__source">Отзыв подтверждён</span></p>
+        </article>
+        <article class="reviews__card hover-lift">
+          <div class="reviews__person">
+            <img class="reviews__avatar" src="/assets/avatar-2.png" alt="" width="44" height="44">
+            <div><p class="reviews__name">Мария Кузнецова</p><p class="reviews__role">Фрилансер-разработчик · mkuznetsova.ru</p></div>
+          </div>
+          <div class="reviews__stars" aria-label="Оценка 5 из 5">
+            <img src="/assets/star-full.svg" alt="" width="16" height="16"><img src="/assets/star-full.svg" alt="" width="16" height="16"><img src="/assets/star-full.svg" alt="" width="16" height="16"><img src="/assets/star-full.svg" alt="" width="16" height="16"><img src="/assets/star-full.svg" alt="" width="16" height="16">
+          </div>
+          <p class="reviews__text">«Перенесла 15 проектов клиентов на Timeweb — всё прошло без единой проблемы. Панель удобная, цены адекватные. Особенно нравятся ежедневные бэкапы.»</p>
+          <p class="reviews__footer"><span class="reviews__switched">перешли с beget.com</span><span class="reviews__source">Яндекс.Отзывы</span></p>
+        </article>
+        <article class="reviews__card hover-lift">
+          <div class="reviews__person">
+            <img class="reviews__avatar" src="/assets/avatar-3.png" alt="" width="44" height="44">
+            <div><p class="reviews__name">Дмитрий Павлов</p><p class="reviews__role">Блогер · dpblog.ru</p></div>
+          </div>
+          <div class="reviews__stars" aria-label="Оценка 4 из 5">
+            <img src="/assets/star-full.svg" alt="" width="16" height="16"><img src="/assets/star-full.svg" alt="" width="16" height="16"><img src="/assets/star-full.svg" alt="" width="16" height="16"><img src="/assets/star-full.svg" alt="" width="16" height="16"><img src="/assets/star-full.svg" alt="" width="16" height="16" class="reviews__star--empty">
+          </div>
+          <p class="reviews__text">«Выбрал Timeweb для своего блога — всё работает стабильно уже 3 года. WordPress установил за 2 клика. Домен получил бесплатно при оплате за год.»</p>
+          <p class="reviews__footer"><span class="reviews__switched">перешли с sweb.ru</span><span class="reviews__source">otzovik.com</span></p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ Ecosystem ============ -->
+  <section class="eco">
+    <div class="container">
+      <div class="section-head">
+        <h2 class="section-head__title">Все продукты Timeweb</h2>
+        <p class="section-head__sub">Переключайтесь между услугами</p>
+      </div>
+
+      <div class="eco__tabs" role="tablist" aria-label="Продукты" id="eco-tabs">
+        <button type="button" role="tab" class="eco__tab eco__tab--active" data-tab="domains" aria-selected="true"><span class="icon eco__tab-icon" aria-hidden="true" style="--icon:url(/assets/icons/solid/globe-hemisphere-west.svg)"></span>Домены</button>
+        <button type="button" role="tab" class="eco__tab" data-tab="mail" aria-selected="false"><span class="icon eco__tab-icon" aria-hidden="true" style="--icon:url(/assets/icons/solid/envelope-simple.svg)"></span>Почта на домене</button>
+        <button type="button" role="tab" class="eco__tab" data-tab="ssl" aria-selected="false"><span class="icon eco__tab-icon" aria-hidden="true" style="--icon:url(/assets/icons/solid/lock-key.svg)"></span>SSL-сертификаты</button>
+        <button type="button" role="tab" class="eco__tab" data-tab="builder" aria-selected="false"><span class="icon eco__tab-icon" aria-hidden="true" style="--icon:url(/assets/icons/solid/magic-wand.svg)"></span>Конструктор</button>
+        <button type="button" role="tab" class="eco__tab" data-tab="ddos" aria-selected="false"><span class="icon eco__tab-icon" aria-hidden="true" style="--icon:url(/assets/icons/solid/shield-check.svg)"></span>Защита от DDoS</button>
+      </div>
+
+      <div>
+        <div class="eco__panel" data-panel="domains" role="tabpanel">
+          <div class="eco__content">
+            <h3 class="eco__title">Регистрация доменов</h3>
+            <p class="eco__text">Зарегистрируйте домен в 325+ зонах. .RU, .COM, .РФ, .STORE, .SHOP и тысячи других. Бесплатный DNS-хостинг.</p>
+            <ul class="eco__rows">
+              <li class="eco__row"><span class="eco__row-label">.RU / .РФ</span><span class="eco__row-price">от 199 ₽/год</span></li>
+              <li class="eco__row"><span class="eco__row-label">.COM / .NET</span><span class="eco__row-price">от 1 490 ₽/год</span></li>
+              <li class="eco__row"><span class="eco__row-label">.ORG / .INFO</span><span class="eco__row-price">от 699 ₽/год</span></li>
+            </ul>
+            <a href="#" class="btn btn--m btn--primary eco__cta">Найти домен</a>
+          </div>
+          <div class="eco__search" aria-hidden="true">
+            <div class="eco__search-field">
+              <span class="eco__search-placeholder">домен<b>yoursite</b>.ru</span>
+              <span class="btn btn--m btn--primary eco__search-btn">Найти</span>
+            </div>
+            <p class="eco__search-zones">.ru · .com · .рф · .store · .shop</p>
+          </div>
+        </div>
+
+        <div class="eco__panel x-hidden" data-panel="mail" role="tabpanel">
+          <div class="eco__content">
+            <h3 class="eco__title">Почта на вашем домене</h3>
+            <p class="eco__text">yourname@yourdomain.ru — профессионально и бесплатно. Входит в любой тариф хостинга.</p>
+            <ul class="eco__points">
+              <li class="eco__point"><span class="icon eco__check" aria-hidden="true" style="--icon:url(/assets/icons/solid/check.svg)"></span>Создание ящика за 1 минуту</li>
+              <li class="eco__point"><span class="icon eco__check" aria-hidden="true" style="--icon:url(/assets/icons/solid/check.svg)"></span>Веб-интерфейс и мобильное приложение</li>
+              <li class="eco__point"><span class="icon eco__check" aria-hidden="true" style="--icon:url(/assets/icons/solid/check.svg)"></span>Бесплатно с хостингом</li>
+            </ul>
+            <a href="#" class="btn btn--m btn--primary eco__cta">Подключить почту</a>
+          </div>
+          <div class="media-placeholder eco__media" data-media="eco-mail"><span class="media-placeholder__label">eco-mail · 4:3</span></div>
+        </div>
+
+        <div class="eco__panel x-hidden" data-panel="ssl" role="tabpanel">
+          <div class="eco__content">
+            <h3 class="eco__title">SSL-сертификаты</h3>
+            <p class="eco__text">Бесплатный SSL входит в каждый тариф хостинга — сайт работает по HTTPS из коробки.</p>
+            <ul class="eco__points">
+              <li class="eco__point"><span class="icon eco__check" aria-hidden="true" style="--icon:url(/assets/icons/solid/check.svg)"></span>Бесплатный SSL в каждом тарифе</li>
+              <li class="eco__point"><span class="icon eco__check" aria-hidden="true" style="--icon:url(/assets/icons/solid/check.svg)"></span>Автоматическая установка</li>
+              <li class="eco__point"><span class="icon eco__check" aria-hidden="true" style="--icon:url(/assets/icons/solid/check.svg)"></span>SSL в подарок при оплате за год</li>
+            </ul>
+            <a href="#" class="btn btn--m btn--primary eco__cta">Подробнее</a>
+          </div>
+          <div class="media-placeholder eco__media" data-media="eco-ssl"><span class="media-placeholder__label">eco-ssl · 4:3</span></div>
+        </div>
+
+        <div class="eco__panel x-hidden" data-panel="builder" role="tabpanel">
+          <div class="eco__content">
+            <h3 class="eco__title">Конструктор сайтов</h3>
+            <p class="eco__text">Без программистов. Выберите один из 500+ шаблонов — и готовый сайт за 15 минут.</p>
+            <ul class="eco__points">
+              <li class="eco__point"><span class="icon eco__check" aria-hidden="true" style="--icon:url(/assets/icons/solid/check.svg)"></span>500+ шаблонов</li>
+              <li class="eco__point"><span class="icon eco__check" aria-hidden="true" style="--icon:url(/assets/icons/solid/check.svg)"></span>От 199 ₽/мес</li>
+              <li class="eco__point"><span class="icon eco__check" aria-hidden="true" style="--icon:url(/assets/icons/solid/check.svg)"></span>Бесплатный период</li>
+            </ul>
+            <a href="#" class="btn btn--m btn--primary eco__cta">Создать сайт</a>
+          </div>
+          <div class="media-placeholder eco__media" data-media="eco-builder"><span class="media-placeholder__label">eco-builder · 4:3</span></div>
+        </div>
+
+        <div class="eco__panel x-hidden" data-panel="ddos" role="tabpanel">
+          <div class="eco__content">
+            <h3 class="eco__title">Защита от DDoS</h3>
+            <p class="eco__text">Фильтрация трафика на уровне инфраструктуры — сайты остаются онлайн даже под атакой.</p>
+            <ul class="eco__points">
+              <li class="eco__point"><span class="icon eco__check" aria-hidden="true" style="--icon:url(/assets/icons/solid/check.svg)"></span>Базовая защита во всех тарифах</li>
+              <li class="eco__point"><span class="icon eco__check" aria-hidden="true" style="--icon:url(/assets/icons/solid/check.svg)"></span>Мониторинг 24/7</li>
+              <li class="eco__point"><span class="icon eco__check" aria-hidden="true" style="--icon:url(/assets/icons/solid/check.svg)"></span>Без настройки со стороны клиента</li>
+            </ul>
+            <a href="#" class="btn btn--m btn--primary eco__cta">Подробнее</a>
+          </div>
+          <div class="media-placeholder eco__media" data-media="eco-ddos"><span class="media-placeholder__label">eco-ddos · 4:3</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ Blog ============ -->
+  <section class="blog">
+    <div class="container">
+      <div class="section-head-row">
+        <div class="section-head">
+          <h2 class="section-head__title">Полезные материалы</h2>
+          <p class="section-head__sub">Гайды, инструкции, обновления — для владельцев сайтов</p>
+        </div>
+        <a href="#" class="section-link">Все статьи →</a>
+      </div>
+      <div class="blog__grid">
+        <a href="#" class="blog__card hover-lift">
+          <div class="blog__cover"><span class="icon blog__cover-icon" aria-hidden="true" style="--icon:url(/assets/icons/duotone/lightning.svg)"></span></div>
+          <div class="blog__body"><p class="blog__category">WordPress</p><h3 class="blog__title">Как ускорить сайт на WordPress: 10 проверенных способов</h3><p class="blog__meta">15 мин · 12 400 просмотров</p></div>
+        </a>
+        <a href="#" class="blog__card hover-lift">
+          <div class="blog__cover"><span class="icon blog__cover-icon" aria-hidden="true" style="--icon:url(/assets/icons/duotone/rocket-launch.svg)"></span></div>
+          <div class="blog__body"><p class="blog__category">Начало работы</p><h3 class="blog__title">Как создать сайт самостоятельно: пошаговая инструкция 2026</h3><p class="blog__meta">20 мин · 45 200 просмотров</p></div>
+        </a>
+        <a href="#" class="blog__card hover-lift">
+          <div class="blog__cover"><span class="icon blog__cover-icon" aria-hidden="true" style="--icon:url(/assets/icons/duotone/lock-key.svg)"></span></div>
+          <div class="blog__body"><p class="blog__category">Безопасность</p><h3 class="blog__title">Как защитить сайт от взлома: базовые меры безопасности</h3><p class="blog__meta">12 мин · 8 700 просмотров</p></div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ Partners ============ -->
+  <section class="partners">
+    <div class="container">
+      <div class="partners__banner">
+        <div class="partners__info">
+          <h2 class="partners__title">Рекомендуйте Timeweb — зарабатывайте</h2>
+          <p class="partners__text">Партнёрская программа для вебмастеров, блогеров, IT-фрилансеров и агентств. Получайте доход пока клиент пользуется услугами.</p>
+        </div>
+        <div class="partners__stats">
+          <div class="partners__stat"><p class="partners__stat-value">30%</p><p class="partners__stat-label">с каждого платежа</p></div>
+          <div class="partners__stat"><p class="partners__stat-value">∞</p><p class="partners__stat-label">клиентов без лимита</p></div>
+        </div>
+        <a href="#" class="btn btn--m btn--primary partners__cta">Стать партнёром →</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ Support ============ -->
+  <section class="support">
+    <div class="container support__inner">
+      <div class="support__content">
+        <div class="section-head">
+          <h2 class="section-head__title">Реальные люди на связи круглосуточно</h2>
+          <p class="section-head__sub">Своя команда поддержки — без ботов и скриптов. Среднее время ответа — 10 минут, на русском.</p>
+        </div>
+        <ul class="support__channels">
+          <li class="support__channel"><span class="icon support__channel-icon" aria-hidden="true" style="--icon:url(/assets/icons/solid/chats-circle.svg)"></span><div><p class="support__channel-label">Онлайн-чат</p><p class="support__channel-note">в панели и на сайте</p></div></li>
+          <li class="support__channel"><span class="icon support__channel-icon" aria-hidden="true" style="--icon:url(/assets/icons/solid/telegram-logo.svg)"></span><div><p class="support__channel-label">Telegram</p><p class="support__channel-note">@timeweb_support</p></div></li>
+          <li class="support__channel"><span class="icon support__channel-icon" aria-hidden="true" style="--icon:url(/assets/icons/solid/phone.svg)"></span><div><p class="support__channel-label">8-800-700-10-81</p><p class="support__channel-note">бесплатно по РФ</p></div></li>
+          <li class="support__channel"><span class="icon support__channel-icon" aria-hidden="true" style="--icon:url(/assets/icons/solid/envelope-simple.svg)"></span><div><p class="support__channel-label">Почта</p><p class="support__channel-note">support@timeweb.com</p></div></li>
+        </ul>
+        <a href="#" class="support__link">Написать в поддержку →</a>
+      </div>
+      <div class="media-placeholder support__media" data-media="support-photo">
+        <span class="media-placeholder__label">support-photo · 4:3</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ Final CTA ============ -->
+  <section class="cta-final">
+    <div class="container">
+      <div class="cta-final__plate">
+        <div class="cta-final__pitch">
+          <h2 class="cta-final__title">Готовы запустить сайт?</h2>
+          <p class="cta-final__text">Начните с 10 бесплатных дней — без привязки карты и скрытых платежей. Поддержка 24/7 поможет разобраться с любым вопросом.</p>
+          <a href="#" class="btn btn--l btn--primary cta-final__btn">Начать бесплатно — 10 дней</a>
+          <p class="cta-final__note">Или напишите нам — ответим на почту или в мессенджер.</p>
+        </div>
+        <div class="cta-final__card" id="cta-card">
+          <h3 class="cta-final__card-title">Есть вопрос? Напишите нам</h3>
+          <form class="cta-final__form" id="cta-form">
+            <label class="cta-final__label" for="cta-question">Ваш вопрос</label>
+            <textarea id="cta-question" class="cta-final__textarea" rows="3" placeholder="Например: Какой тариф подойдёт для WordPress-блога?" required></textarea>
+            <label class="cta-final__label" for="cta-contact">Как с вами связаться</label>
+            <input id="cta-contact" class="cta-final__input" type="text" placeholder="Email или Telegram" required>
+            <button type="submit" class="btn btn--m btn--primary cta-final__submit">Отправить вопрос</button>
+            <p class="cta-final__hint">Ответим в течение 10–30 минут. В рабочее время — быстрее.</p>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ FAQ ============ -->
+  <section class="faq">
+    <div class="container faq__inner">
+      <div class="section-head">
+        <h2 class="section-head__title">Вопросы и ответы</h2>
+        <p class="section-head__sub">Самые частые вопросы о хостинге</p>
+      </div>
+      <div class="faq__list" id="faq-list">
+        <div class="faq__item faq__item--open">
+          <button type="button" class="faq__question" aria-expanded="true">Можно ли попробовать хостинг бесплатно?<span class="faq__plus" aria-hidden="true"></span></button>
+          <div class="faq__answer"><div class="faq__answer-inner"><p class="faq__answer-text">Да. Каждый тариф можно тестировать 10 дней — без оплаты и привязки карты. Если не подойдёт, ничего платить не нужно.</p></div></div>
+        </div>
+        <div class="faq__item">
+          <button type="button" class="faq__question" aria-expanded="false">Можно ли перенести сайт от другого хостера?<span class="faq__plus" aria-hidden="true"></span></button>
+          <div class="faq__answer"><div class="faq__answer-inner"><p class="faq__answer-text">Да, перенесём сайты, домены и почту бесплатно — без простоев и потерь данных. Сохраним ваш баланс от другого хостера или дадим 3 месяца хостинга в подарок.</p></div></div>
+        </div>
+        <div class="faq__item">
+          <button type="button" class="faq__question" aria-expanded="false">Сколько стоит хостинг для сайта?<span class="faq__plus" aria-hidden="true"></span></button>
+          <div class="faq__answer"><div class="faq__answer-inner"><p class="faq__answer-text">От 180 ₽/мес на тарифе Year при оплате за 3 года (без скидки — от 393 ₽/мес). В каждый тариф входят бесплатный SSL, почта на домене и ежедневные бэкапы.</p></div></div>
+        </div>
+        <div class="faq__item">
+          <button type="button" class="faq__question" aria-expanded="false">Есть ли бесплатный SSL-сертификат?<span class="faq__plus" aria-hidden="true"></span></button>
+          <div class="faq__answer"><div class="faq__answer-inner"><p class="faq__answer-text">Да, бесплатный SSL входит в каждый тариф — сайт сразу работает по HTTPS, установка автоматическая.</p></div></div>
+        </div>
+        <div class="faq__item">
+          <button type="button" class="faq__question" aria-expanded="false">Мой сайт точно не ляжет?<span class="faq__plus" aria-hidden="true"></span></button>
+          <div class="faq__answer"><div class="faq__answer-inner"><p class="faq__answer-text">Мы гарантируем доступность 99.98% по договору (SLA). Серверы на быстрых NVMe-дисках, ежедневные бэкапы с восстановлением в 1 клик из панели.</p></div></div>
+        </div>
+        <div class="faq__item">
+          <button type="button" class="faq__question" aria-expanded="false">Можно ли сменить тариф позже?<span class="faq__plus" aria-hidden="true"></span></button>
+          <div class="faq__answer"><div class="faq__answer-inner"><p class="faq__answer-text">Да, тариф можно сменить в любой момент из панели управления.</p></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ============ Footer ============ -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer__top">
+      <div class="footer__brand">
+        <span class="icon footer__logo" role="img" aria-label="Timeweb" style="--icon:url(/assets/timeweb-logo.svg)"></span>
+        <p class="footer__tagline">Надёжный хостинг для сайтов и бизнеса с 2006 года</p>
+        <p class="footer__contact"><span class="icon footer__contact-icon" aria-hidden="true" style="--icon:url(/assets/icons/solid/chats-circle.svg)"></span>Поддержка 24/7</p>
+        <p class="footer__contact"><span class="icon footer__contact-icon" aria-hidden="true" style="--icon:url(/assets/icons/solid/phone.svg)"></span>8-800-700-10-81 (бесплатно)</p>
+        <div class="footer__socials">
+          <a href="#" class="footer__social" aria-label="Telegram"><span class="icon footer__social-icon" aria-hidden="true" style="--icon:url(/assets/icons/social/telegram.svg)"></span></a>
+          <a href="#" class="footer__social" aria-label="ВКонтакте"><span class="icon footer__social-icon" aria-hidden="true" style="--icon:url(/assets/icons/social/vk.svg)"></span></a>
+          <a href="#" class="footer__social" aria-label="YouTube"><span class="icon footer__social-icon" aria-hidden="true" style="--icon:url(/assets/icons/social/youtube.svg)"></span></a>
+        </div>
+      </div>
+      <nav class="footer__columns" aria-label="Карта сайта">
+        <div class="footer__column"><p class="footer__column-title">Продукты</p><ul class="footer__links"><li><a href="#" class="footer__link">Виртуальный хостинг</a></li><li><a href="#" class="footer__link">Конструктор сайтов</a></li><li><a href="#" class="footer__link">Домены</a></li><li><a href="#" class="footer__link">Почта на домене</a></li><li><a href="#" class="footer__link">SSL-сертификаты</a></li><li><a href="#" class="footer__link">PRO-решения</a></li></ul></div>
+        <div class="footer__column"><p class="footer__column-title">Клиентам</p><ul class="footer__links"><li><a href="#" class="footer__link">Панель управления</a></li><li><a href="#" class="footer__link">База знаний</a></li><li><a href="#" class="footer__link">Сообщество</a></li><li><a href="#" class="footer__link">Статус серверов</a></li><li><a href="#" class="footer__link">Оплата</a></li></ul></div>
+        <div class="footer__column"><p class="footer__column-title">Партнёрам</p><ul class="footer__links"><li><a href="#" class="footer__link">Партнёрская программа</a></li><li><a href="#" class="footer__link">HostFriends</a></li><li><a href="#" class="footer__link">Реселлинг</a></li><li><a href="#" class="footer__link">Агентствам</a></li></ul></div>
+        <div class="footer__column"><p class="footer__column-title">О компании</p><ul class="footer__links"><li><a href="#" class="footer__link">О нас</a></li><li><a href="#" class="footer__link">Команда</a></li><li><a href="#" class="footer__link">Блог</a></li><li><a href="#" class="footer__link">Новости</a></li><li><a href="#" class="footer__link">Вакансии</a></li><li><a href="#" class="footer__link">Контакты</a></li></ul></div>
+      </nav>
+    </div>
+    <div class="footer__bottom">
+      <p class="footer__copyright">© 2006–2026 Timeweb.com — хостинг для сайта</p>
+      <p class="footer__legal"><a href="#" class="footer__link">Политика конфиденциальности</a> · <a href="#" class="footer__link">Договор</a> · <a href="#" class="footer__link">Реквизиты</a></p>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // ---- Бургер-меню ----
+  (function () {
+    var burger = document.querySelector(".header__burger");
+    var menu = document.getElementById("mobile-menu");
+    if (!burger || !menu) return;
+    burger.addEventListener("click", function () {
+      var open = burger.getAttribute("aria-expanded") === "true";
+      burger.setAttribute("aria-expanded", String(!open));
+      burger.setAttribute("aria-label", open ? "Открыть меню" : "Закрыть меню");
+      if (open) { menu.setAttribute("hidden", ""); } else { menu.removeAttribute("hidden"); }
+      document.body.classList.toggle("menu-open", !open);
+    });
+    addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && burger.getAttribute("aria-expanded") === "true") burger.click();
+    });
+  })();
+
+  // ---- Переключатель периода в тарифах ----
+  (function () {
+    var tabs = document.getElementById("pricing-tabs");
+    if (!tabs) return;
+    var cards = document.querySelectorAll(".pricing__card");
+    function render(period) {
+      cards.forEach(function (card) {
+        var price = card.getAttribute("data-" + period[0]); // m / y / t
+        card.querySelector(".pricing__price-value").innerHTML = price + "&nbsp;₽";
+        var old = card.querySelector(".pricing__price-old");
+        old.textContent = period === "month" ? "" : card.getAttribute("data-m") + " ₽/мес";
+      });
+    }
+    tabs.addEventListener("click", function (e) {
+      var btn = e.target.closest(".pricing__tab");
+      if (!btn) return;
+      tabs.querySelectorAll(".pricing__tab").forEach(function (t) {
+        t.classList.toggle("pricing__tab--active", t === btn);
+        t.setAttribute("aria-pressed", String(t === btn));
+      });
+      render(btn.getAttribute("data-period"));
+    });
+    render("three");
+  })();
+
+  // ---- Табы (Audience + Ecosystem): один обработчик на оба ----
+  function initTabs(tabsId, tabClass, activeClass) {
+    var tabs = document.getElementById(tabsId);
+    if (!tabs) return;
+    var scope = tabs.parentElement;
+    tabs.addEventListener("click", function (e) {
+      var btn = e.target.closest("." + tabClass);
+      if (!btn) return;
+      var id = btn.getAttribute("data-tab");
+      tabs.querySelectorAll("." + tabClass).forEach(function (t) {
+        var on = t === btn;
+        t.classList.toggle(activeClass, on);
+        t.setAttribute("aria-selected", String(on));
+      });
+      scope.querySelectorAll("[data-panel]").forEach(function (p) {
+        p.classList.toggle("x-hidden", p.getAttribute("data-panel") !== id);
+      });
+    });
+  }
+  initTabs("audience-tabs", "audience__tab", "audience__tab--active");
+  initTabs("eco-tabs", "eco__tab", "eco__tab--active");
+
+  // ---- Аккордеон FAQ ----
+  (function () {
+    var list = document.getElementById("faq-list");
+    if (!list) return;
+    list.addEventListener("click", function (e) {
+      var q = e.target.closest(".faq__question");
+      if (!q) return;
+      var item = q.parentElement;
+      var open = item.classList.contains("faq__item--open");
+      // одиночное раскрытие, как в React-версии (open === index)
+      list.querySelectorAll(".faq__item").forEach(function (it) {
+        it.classList.remove("faq__item--open");
+        it.querySelector(".faq__question").setAttribute("aria-expanded", "false");
+      });
+      if (!open) {
+        item.classList.add("faq__item--open");
+        q.setAttribute("aria-expanded", "true");
+      }
+    });
+  })();
+
+  // ---- Форма вопроса (фейк-сабмит) ----
+  (function () {
+    var form = document.getElementById("cta-form");
+    var card = document.getElementById("cta-card");
+    if (!form || !card) return;
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      var msg = document.createElement("p");
+      msg.className = "cta-final__sent";
+      msg.textContent = "Спасибо! Ответим в течение 10–30 минут. В рабочее время — быстрее.";
+      form.replaceWith(msg);
+    });
+  })();
+</script>
+
+</body>
+</html>
