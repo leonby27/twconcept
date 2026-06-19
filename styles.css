@@ -113,6 +113,11 @@ body {
   font-family: var(--font-text);
   color: var(--color-text-main);
   -webkit-font-smoothing: antialiased;
+  /* Декор hero + параллакс выходят за край вьюпорта — гасим
+     горизонтальный скролл. clip не создаёт scroll-контейнер,
+     поэтому sticky-хедер продолжает работать (hidden — фолбэк). */
+  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 body.menu-open {
