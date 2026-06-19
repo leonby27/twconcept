@@ -13,6 +13,8 @@
    Новые секции строим на .container и токенах из :root. */
 
 :root {
+  --font-inter: "Inter";
+  --font-roboto: "Roboto";
   /* Colors */
   --color-black-100: #4d3b3b;            /* Black/100% */
   --color-white: #ffffff;                /* White/100% */
@@ -162,7 +164,7 @@ button {
 }
 
 /* ---- Иконки (Phosphor): SVG как маска, цвет — через color ----
-   <span class="icon" style="--icon: url(/assets/icons/duotone/gift.svg)" />
+   <span class="icon" style="--icon: url(assets/icons/duotone/gift.svg)" />
    Слои duotone (opacity 0.2) сохраняются в одном оттенке. */
 
 .icon {
@@ -962,8 +964,8 @@ button {
   height: 36px;
   background-color: currentColor;
   opacity: 0.65;
-  -webkit-mask: url(/assets/icons/duotone/image.svg) no-repeat center / contain;
-  mask: url(/assets/icons/duotone/image.svg) no-repeat center / contain;
+  -webkit-mask: url(assets/icons/duotone/image.svg) no-repeat center / contain;
+  mask: url(assets/icons/duotone/image.svg) no-repeat center / contain;
 }
 
 .media-placeholder__label {
@@ -1085,7 +1087,7 @@ button {
 }
 
 .products__card--dark {
-  background: #161414 url(/assets/photos/vds.png) right center / cover no-repeat;
+  background: #161414 url(assets/photos/vds.png) right center / cover no-repeat;
   border-color: rgba(255, 255, 255, 0.08);
   color: var(--color-white);
 }
@@ -1727,7 +1729,7 @@ button {
   padding: 32px;
   border-radius: 32px;
   overflow: hidden;
-  background: #1c1a1a url(/assets/photos/why-servers.png) center / cover no-repeat;
+  background: #1c1a1a url(assets/photos/why-servers.png) center / cover no-repeat;
   color: var(--color-white);
 }
 
@@ -2391,7 +2393,7 @@ button {
   position: absolute;
   inset: 0;
   z-index: 0;
-  background: url(/assets/photos/infra.webp) center / cover no-repeat;
+  background: url(assets/photos/infra.webp) center / cover no-repeat;
   opacity: 0.5;
 }
 
