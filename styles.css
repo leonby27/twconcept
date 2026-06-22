@@ -528,6 +528,11 @@ button {
     display: none;
   }
 
+  /* Кнопки скрыты — прижимаем бургер к правому краю. */
+  .header__burger {
+    margin-left: auto;
+  }
+
   .header__menu-actions {
     display: flex;
   }
@@ -808,6 +813,41 @@ button {
   margin-left: 139px;
 }
 
+/* На десктопе обёртки прозрачны для лейаута (display:contents) — логотипы
+   остаются прямыми flex-детьми .hero__brands-row и переносятся как прежде.
+   Копия набора скрыта (нужна только для зацикленной дорожки на мобиле). */
+.hero__brands-track,
+.hero__brands-set {
+  display: contents;
+}
+
+.hero__brands-set--clone {
+  display: none;
+}
+
+/* Анимация дорожки — только при разрешённой анимации; иначе трек статичен,
+   а ряд остаётся горизонтально прокручиваемым (overflow вынужден auto). */
+@keyframes brands-marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@media (max-width: 768px) and (prefers-reduced-motion: no-preference) {
+  .hero__brands-track {
+    animation: brands-marquee 24s linear infinite;
+  }
+}
+
+@media (max-width: 768px) and (prefers-reduced-motion: reduce) {
+  .hero__brands-row {
+    overflow-x: auto;
+  }
+}
+
 /* ---- Stats bar: top 753 (20 below brands), 1214x116 ---- */
 
 .hero__stats {
@@ -917,22 +957,47 @@ button {
 }
 
 @media (max-width: 768px) {
+  /* Карточки сохраняют десктопную вёрстку (заголовок/текст сверху,
+     иллюстрация прибита в нижний-левый угол), но выстраиваются в
+     горизонтальную ленту со скроллом и снапом. Лента — во всю ширину,
+     боковой отступ задаём паддингом (как gutter у других блоков), а
+     паддинг сверху/снизу даёт место мягкой тени, чтобы её не срезал
+     скролл-контейнер. */
   .benefits__grid {
-    grid-template-columns: 1fr;
+    display: flex;
+    grid-template-columns: none;
+    width: 100%;
+    max-width: none;
+    margin-inline: 0;
+    gap: 16px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-padding-left: var(--page-gutter);
+    -webkit-overflow-scrolling: touch;
+    padding: 8px var(--page-gutter) 36px;
+    scrollbar-width: none;
+  }
+
+  .benefits__grid::-webkit-scrollbar {
+    display: none;
   }
 
   .benefits__card {
-    flex-direction: row;
-    align-items: center;
-    gap: 20px;
-    min-height: 0;
+    flex: 0 0 78%;
+    max-width: 300px;
+    min-height: 250px;
+    padding: 24px;
+    scroll-snap-align: start;
+  }
+
+  .benefits__title {
+    font-size: 20px;
+    line-height: 24px;
   }
 
   .benefits__media {
-    position: static;
-    order: -1;
-    width: 130px;
-    height: 90px;
+    width: 150px;
+    height: 104px;
   }
 }
 
@@ -942,6 +1007,7 @@ button {
   }
 
   .benefits__card {
+    flex-basis: 80%;
     padding: 20px;
   }
 }
@@ -1019,8 +1085,8 @@ button {
 
 @media (max-width: 480px) {
   .section-head__title {
-    font-size: 28px;
-    line-height: 34px;
+    font-size: 24px;
+    line-height: 30px;
   }
 }
 
@@ -1204,9 +1270,37 @@ button {
     grid-column: auto;
   }
 
+  /* Компактные карточки: меньше иконка, шрифты и отступы. */
   .products__card {
     min-height: 0;
-    padding: 24px;
+    padding: 20px;
+  }
+
+  .products__icon {
+    width: 36px;
+    height: 36px;
+  }
+
+  .products__arrow {
+    width: 20px;
+    height: 20px;
+  }
+
+  .products__price {
+    margin-top: 16px;
+    font-size: 16px;
+    line-height: 20px;
+  }
+
+  .products__name {
+    font-size: 22px;
+    line-height: 28px;
+  }
+
+  .products__text {
+    margin-top: 10px;
+    font-size: 14px;
+    line-height: 20px;
   }
 }
 
@@ -1521,6 +1615,64 @@ button {
   }
 }
 
+@media (max-width: 768px) {
+  /* Скидочные плашки в переключателе периода на мобиле убираем. */
+  .pricing__seg-off {
+    display: none;
+  }
+
+  /* Тарифы — горизонтальная лента со скроллом и снапом по центру.
+     Боковой паддинг + отрицательный margin дают место акцентной рамке
+     и тени карточек, чтобы скролл-контейнер их не срезал. По умолчанию
+     лента проскроллена к Optimo+ (см. app.js). */
+  .pricing__grid {
+    display: flex;
+    grid-template-columns: none;
+    gap: 16px;
+    margin-top: 28px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: 6px;
+    -webkit-overflow-scrolling: touch;
+    padding: 10px 6px 20px;
+    margin-inline: -6px;
+    scrollbar-width: none;
+  }
+
+  .pricing__grid::-webkit-scrollbar {
+    display: none;
+  }
+
+  .pricing__card {
+    flex: 0 0 80%;
+    max-width: 320px;
+    padding: 20px;
+    scroll-snap-align: center;
+  }
+
+  /* Мельче шрифт фич — чтобы строка с инфо-иконкой не переносилась. */
+  .pricing__feature {
+    gap: 10px;
+    font-size: 14px;
+    line-height: 20px;
+  }
+
+  .pricing__info {
+    width: 15px;
+    height: 15px;
+    margin-left: 3px;
+    vertical-align: -3px;
+  }
+
+  /* «Подобрать тариф» переносится под ленту тарифов (см. app.js). */
+  .pricing__pick--below {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    margin-top: 20px;
+  }
+}
+
 @media (max-width: 480px) {
   .pricing {
     padding-top: 40px;
@@ -1554,10 +1706,6 @@ button {
 
   .pricing__pick {
     justify-content: center;
-  }
-
-  .pricing__grid {
-    grid-template-columns: 1fr;
   }
 }
 
@@ -1657,8 +1805,12 @@ button {
 
   .migration__content {
     min-height: 0;
-    padding: 32px 28px;
+    /* Верхний отступ = боковому, чтобы зазор от картинки до заголовка
+       совпадал с боковыми полями. */
+    padding: 28px;
     order: 2;
+    /* Разделитель прямо под картинкой, во всю ширину (как рамка карточки). */
+    border-top: 1px solid var(--color-border-soft);
   }
 
   .migration__heading {
@@ -1673,28 +1825,58 @@ button {
 
   .migration__actions {
     margin-top: 40px;
+    gap: 10px;
+  }
+
+  /* Заметку «Сохраним баланс» переносим под кнопку, центрируем,
+     без иконки и мельче. */
+  .migration__cta {
+    order: 1;
+  }
+
+  .migration__note {
+    order: 2;
+    justify-content: center;
+    width: 100%;
+    text-align: center;
+    gap: 0;
+    font-size: 14px;
+    line-height: 20px;
+  }
+
+  .migration__note-icon {
+    display: none;
   }
 
   .migration__media {
     position: static;
     width: auto;
-    min-height: 240px;
+    /* min-height убираем: контейнер = высоте фото, чтобы линия примыкала
+       к картинке без зазора (фон карточки больше не выглядывает снизу). */
+    min-height: 0;
     order: 1;
   }
 
   .migration__media img {
+    display: block;
     object-position: center;
   }
 }
 
 @media (max-width: 480px) {
   .migration__content {
-    padding: 28px 20px;
+    padding: 20px;
   }
 
   .migration__heading {
-    font-size: 28px;
-    line-height: 34px;
+    font-size: 24px;
+    line-height: 30px;
+  }
+
+  .migration__desc {
+    margin-top: 8px;
+    font-size: 16px;
+    line-height: 22px;
   }
 
   .migration__cta {
@@ -1961,18 +2143,35 @@ button {
   }
 
   .cms__title {
-    font-size: 28px;
-    line-height: 34px;
+    margin-top: 20px;
+    font-size: 24px;
+    line-height: 30px;
+  }
+
+  .cms__text {
+    font-size: 16px;
+    line-height: 22px;
+  }
+
+  .cms__cta {
+    margin-top: 20px;
+  }
+
+  /* Все 6 логотипов в одну строку — уменьшаем и сжимаем отступ. */
+  .cms__logos {
+    flex-wrap: nowrap;
+    gap: 8px;
   }
 
   .cms__logo {
-    width: 60px;
-    height: 60px;
+    width: 48px;
+    height: 48px;
+    padding: 6px;
   }
 
   .cms__logo img {
-    width: 44px;
-    height: 44px;
+    width: 34px;
+    height: 34px;
   }
 
   .cms__cta {
@@ -2100,18 +2299,25 @@ button {
     margin-top: 48px;
   }
 
+  /* По образцу «Перенесём в Timeweb»: картинка сверху, под ней
+     разделитель во всю ширину, верхний отступ = боковому. */
   .panel__content {
-    padding: 32px 28px;
+    padding: 28px;
+    border-top: 1px solid var(--color-border-soft);
   }
 
   .panel__media {
     position: static;
     min-height: 0;
-    padding: 0 0 28px 28px;
+    /* Картинка чуть меньше: верхний и боковой отступ = паддингу контента,
+       снизу примыкает к разделителю. */
+    padding: 28px 28px 0;
+    order: -1;
   }
 
   .panel__media img {
     position: static;
+    display: block;
     width: 100%;
     height: auto;
   }
@@ -2119,12 +2325,22 @@ button {
 
 @media (max-width: 480px) {
   .panel__heading {
-    font-size: 28px;
-    line-height: 34px;
+    font-size: 24px;
+    line-height: 30px;
+  }
+
+  .panel__desc {
+    margin-top: 8px;
+    font-size: 16px;
+    line-height: 22px;
   }
 
   .panel__content {
-    padding: 28px 20px;
+    padding: 20px;
+  }
+
+  .panel__media {
+    padding: 20px 20px 0;
   }
 
   .panel__features {
@@ -2475,6 +2691,8 @@ button {
 
   .infra__desc {
     max-width: none;
+    font-size: 18px;
+    line-height: 28px;
   }
 
   .infra__grid {
@@ -2496,8 +2714,13 @@ button {
 
 @media (max-width: 480px) {
   .infra__heading {
-    font-size: 28px;
-    line-height: 34px;
+    font-size: 24px;
+    line-height: 30px;
+  }
+
+  .infra__desc {
+    font-size: 16px;
+    line-height: 22px;
   }
 }
 
@@ -2557,7 +2780,7 @@ button {
   font-weight: 400;
   font-size: 20px;
   line-height: 24px;
-  color: rgba(77, 59, 59, 0.9);
+  color: var(--color-text-main);
 }
 
 .security__link {
@@ -2569,7 +2792,7 @@ button {
   font-weight: 400;
   font-size: 20px;
   line-height: 24px;
-  color: var(--color-black-100);
+  color: var(--color-text-main);
   text-decoration: underline;
   text-underline-offset: 4px;
 }
@@ -2577,7 +2800,7 @@ button {
 .security__link-arrow {
   width: 24px;
   height: 24px;
-  color: var(--color-black-100);
+  color: var(--color-text-main);
 }
 
 @media (max-width: 768px) {
@@ -2585,12 +2808,29 @@ button {
     font-size: 32px;
     line-height: 40px;
   }
+
+  .security__text,
+  .security__link {
+    font-size: 18px;
+    line-height: 28px;
+  }
 }
 
 @media (max-width: 480px) {
   .security__title {
-    font-size: 28px;
-    line-height: 34px;
+    font-size: 24px;
+    line-height: 30px;
+  }
+
+  .security__text,
+  .security__link {
+    font-size: 16px;
+    line-height: 22px;
+  }
+
+  .security__link-arrow {
+    width: 18px;
+    height: 18px;
   }
 }
 
@@ -2863,8 +3103,31 @@ button {
   }
 
   .reviews__lead {
-    font-size: 26px;
-    line-height: 32px;
+    font-size: 24px;
+    line-height: 30px;
+  }
+
+  /* Площадки и фильтры — две отдельные горизонтальные ленты со скроллом.
+     Отрицательные поля + паддинг = бликид к краям панели. */
+  .reviews__platforms,
+  .reviews__filters {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    margin-left: -20px;
+    margin-right: -20px;
+    padding-left: 20px;
+    padding-right: 20px;
+    scrollbar-width: none;
+  }
+
+  .reviews__platforms::-webkit-scrollbar,
+  .reviews__filters::-webkit-scrollbar {
+    display: none;
+  }
+
+  .reviews__platform,
+  .reviews__chip {
+    flex-shrink: 0;
   }
 
   /* удобный тап-таргет на тач-устройствах (≈44px) */
@@ -2882,6 +3145,11 @@ button {
 }
 
 @media (max-width: 480px) {
+  .reviews__lead {
+    font-size: 22px;
+    line-height: 28px;
+  }
+
   .reviews__foot {
     flex-wrap: wrap;
     justify-content: center;
@@ -3325,28 +3593,38 @@ button {
   .partners__card {
     grid-template-columns: 1fr;
     padding: 32px 28px;
+    gap: 16px;
   }
 
   .partners__title {
-    font-size: 36px;
-    line-height: 44px;
+    font-size: 32px;
+    line-height: 40px;
   }
 
-  /* В одну колонку: визуал получает свою высоту, монеты по центру */
+  .partners__note {
+    font-size: 18px;
+    line-height: 28px;
+  }
+
+  /* На мобиле плавающие карточки выплат убираем — остаётся только монета. */
+  .partners__payout {
+    display: none;
+  }
+
+  /* Без карточек монету ставим статично по центру — визуал получает
+     высоту ровно по монете, без лишнего пустого места сверху/снизу. */
   .partners__visual {
-    min-height: 340px;
+    min-height: 0;
+    display: flex;
+    justify-content: center;
   }
 
   .partners__coins {
-    right: 0;
-  }
-
-  .partners__payout--a {
-    left: 0;
-  }
-
-  .partners__payout--b {
-    left: 18%;
+    position: static;
+    right: auto;
+    top: auto;
+    transform: none;
+    width: 260px;
   }
 }
 
@@ -3356,16 +3634,22 @@ button {
     border-radius: var(--radius-card-s);
   }
 
+  .partners__title {
+    font-size: 24px;
+    line-height: 30px;
+  }
+
+  .partners__note {
+    font-size: 16px;
+    line-height: 22px;
+  }
+
   .partners__cta {
     width: 100%;
   }
 
-  .partners__visual {
-    min-height: 300px;
-  }
-
   .partners__coins {
-    width: 320px;
+    width: 220px;
   }
 }
 
@@ -3469,9 +3753,69 @@ button {
   }
 }
 
+@media (max-width: 768px) {
+  /* Картинка над заголовком; тексты и кнопки по центру. */
+  .support__media-frame {
+    order: -1;
+  }
+
+  .support__content {
+    text-align: center;
+  }
+
+  .support__title {
+    text-align: center;
+  }
+
+  .support__sub {
+    margin-inline: auto;
+    font-size: 18px;
+    line-height: 28px;
+  }
+
+  /* Обе кнопки в одну строку по центру — уменьшаем. */
+  .support__chips {
+    flex-wrap: nowrap;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .support__chip {
+    height: 44px;
+    padding: 0 14px;
+    font-size: 15px;
+    gap: 6px;
+  }
+
+  .support__chip-icon {
+    width: 20px;
+    height: 20px;
+  }
+}
+
 @media (max-width: 480px) {
   .support__media-frame {
     padding: 10px;
+  }
+
+  .support__sub {
+    font-size: 16px;
+    line-height: 22px;
+  }
+
+  .support__chips {
+    gap: 6px;
+  }
+
+  .support__chip {
+    height: 40px;
+    padding: 0 12px;
+    font-size: 14px;
+  }
+
+  .support__chip-icon {
+    width: 18px;
+    height: 18px;
   }
 }
 
@@ -3637,6 +3981,10 @@ button {
   box-shadow: var(--shadow-card);
 }
 
+.reco-card--primary .reco-card__badge {
+  display: inline-flex;
+}
+
 /* Второстепенный — приглушённый фон, стоит чуть выше */
 .reco-card--secondary {
   background: rgba(255, 255, 255, 0.5);
@@ -3646,7 +3994,7 @@ button {
   position: absolute;
   top: -1px;
   right: -1px;
-  display: inline-flex;
+  display: none;
   align-items: center;
   height: 28px;
   padding: 0 16px;
@@ -3806,25 +4154,97 @@ button {
     margin-top: 20px;
   }
 
-  .reco__scenarios {
+  /* Чтобы ленты могли «вытечь» до краёв полосы (band). */
+  .reco__pitch {
     max-width: none;
+  }
+
+  /* Сценарии — одна строка с горизонтальным скроллом, во всю ширину полосы
+     (отрицательные поля убирают gutter контейнера — контент скроллится до
+     самого края, без «обрезков» с отступом). */
+  .reco__scenarios {
+    display: flex;
+    flex-wrap: nowrap;
+    max-width: none;
+    overflow-x: auto;
+    margin-inline: calc(-1 * var(--page-gutter));
+    padding: 4px var(--page-gutter) 8px;
+    scrollbar-width: none;
+  }
+
+  .reco__scenarios::-webkit-scrollbar {
+    display: none;
+  }
+
+  .reco-scenario {
+    flex: 0 0 auto;
+  }
+
+  /* Карточки тарифов — горизонтальная лента со всеми тарифами (как тарифная
+     сетка). По умолчанию проскроллена к рекомендуемому (см. app.js).
+     Вертикальные паддинги дают место тени, чтобы её не срезал контейнер;
+     боковой паддинг минимальный — без большого пустого отступа между карт. */
+  .reco__cards {
+    /* align-self:stretch (а не width:100%) — иначе центрирующий flex
+       родителя гасит отрицательные поля и лента не вытекает к краям. */
+    align-self: stretch;
+    flex-wrap: nowrap;
+    align-items: stretch;
+    gap: 10px;
+    overflow-x: auto;
+    scroll-snap-type: x proximity;
+    scroll-padding-left: var(--page-gutter);
+    -webkit-overflow-scrolling: touch;
+    margin-inline: calc(-1 * var(--page-gutter));
+    padding: 14px var(--page-gutter) 28px;
+    scrollbar-width: none;
+  }
+
+  .reco__cards::-webkit-scrollbar {
+    display: none;
+  }
+
+  .reco-card {
+    flex: 0 0 84%;
+    max-width: 300px;
+    gap: 16px;
+    padding: 20px;
+    scroll-snap-align: start;
+  }
+
+  /* В ленте сдвиг не нужен — карточки выровнены по верху. */
+  .reco-card:first-child {
+    margin-top: 0;
+  }
+
+  /* Фичи мельче — по аналогии с тарифной сеткой. */
+  .reco-card__feature {
+    gap: 10px;
+    font-size: 14px;
+    line-height: 20px;
+  }
+
+  .reco-card__check {
+    margin-top: 3px;
+  }
+
+  .reco-card__info {
+    width: 15px;
+    height: 15px;
+    margin-left: 3px;
+    vertical-align: -3px;
   }
 }
 
 @media (max-width: 480px) {
-  .reco__cards {
-    flex-direction: column;
-    align-items: stretch;
-    width: 100%;
+  .reco__title {
+    font-size: 24px;
+    line-height: 30px;
   }
 
-  .reco-card {
-    width: 100%;
-  }
-
-  /* В стопке сдвиг не нужен — обе карты выровнены, порядок: дешевле → дороже. */
-  .reco-card:first-child {
-    margin-top: 0;
+  .reco__text {
+    font-size: 16px;
+    line-height: 22px;
   }
 }
 
@@ -4109,6 +4529,11 @@ button {
     margin-top: 56px;
   }
 
+  /* Логотипы площадок-отзовиков убираем на мобиле — оставляем оценку. */
+  .hero__rating-soc {
+    display: none;
+  }
+
   .hero__title {
     font-size: 40px;
     line-height: 48px;
@@ -4131,13 +4556,53 @@ button {
     margin-top: 64px;
   }
 
+  /* На мобиле подпись убираем — дорожка логотипов говорит сама за себя. */
+  .hero__brands-label {
+    display: none;
+  }
+
+  /* Зацикленная «бегущая дорожка» логотипов: трек из двух одинаковых
+     наборов едет влево на -50% (= ширина одного набора) → бесшовный цикл.
+     Логотипы чуть уменьшены. Края растворяются маской. */
   .hero__brands-row {
-    gap: 24px 32px;
+    display: block;
+    width: 100%;
+    margin-left: 0;
+    overflow: hidden;
+    -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 8%, #000 92%, transparent 100%);
+    mask-image: linear-gradient(90deg, transparent 0, #000 8%, #000 92%, transparent 100%);
+  }
+
+  .hero__brands-track {
+    display: flex;
+    width: max-content;
+    align-items: center;
+  }
+
+  .hero__brands-set {
+    display: flex;
+    align-items: center;
+    gap: 40px;
+    padding: 0 20px;
+    flex-shrink: 0;
+  }
+
+  .hero__brands-set--clone {
+    display: flex;
+  }
+
+  .hero__brands-row img {
+    height: 20px;
+    width: auto;
   }
 
   .hero__stats {
     display: grid;
     grid-template-columns: 1fr 1fr;
+    /* В гриде сбрасываем унаследованный align-items:center (из базового
+       .hero__stats), иначе значения в ряду разъезжаются при разной высоте
+       подписей. Выравниваем по верху. */
+    align-items: start;
     gap: 24px 0;
     padding: 24px 16px;
   }
@@ -4154,8 +4619,8 @@ button {
   }
 
   .hero__title {
-    font-size: 32px;
-    line-height: 38px;
+    font-size: 28px;
+    line-height: 34px;
   }
 
   .hero__subtitle {
@@ -4193,9 +4658,12 @@ button {
     line-height: 34px;
   }
 
+  /* Подписи цифр — мельче и в одну строку (умещаем «работаем в России и
+     СНГ» / «Соответствие закону»). */
   .hero__stat-label {
-    font-size: 14px;
-    line-height: 18px;
-    padding: 0 8px;
+    font-size: 12px;
+    line-height: 15px;
+    padding: 0 2px;
+    white-space: nowrap;
   }
 }

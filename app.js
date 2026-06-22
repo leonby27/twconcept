@@ -85,6 +85,41 @@
       });
     });
 
+    // На мобиле тарифы — горизонтальная лента: по умолчанию центрируем
+    // Optimo+, а «Подобрать тариф» переносим вниз, под карточки.
+    (function () {
+      var grid = document.querySelector(".pricing__grid");
+      var popular = document.querySelector(".pricing__card--popular");
+      var pick = document.querySelector(".pricing__pick");
+      if (!grid || !popular) return;
+      var mq = window.matchMedia("(max-width: 768px)");
+      var pickHome = pick && pick.parentNode; // .pricing__controls
+
+      function placePick() {
+        if (!pick) return;
+        if (mq.matches) {
+          if (pick.parentNode !== grid.parentNode) {
+            grid.parentNode.insertBefore(pick, grid.nextSibling);
+            pick.classList.add("pricing__pick--below");
+          }
+        } else if (pickHome && pick.parentNode !== pickHome) {
+          pickHome.appendChild(pick);
+          pick.classList.remove("pricing__pick--below");
+        }
+      }
+      function centerPopular() {
+        if (!mq.matches) return;
+        var gridRect = grid.getBoundingClientRect();
+        var pRect = popular.getBoundingClientRect();
+        var delta = (pRect.left - gridRect.left) - (grid.clientWidth - popular.offsetWidth) / 2;
+        grid.scrollLeft += delta;
+      }
+      function sync() { placePick(); centerPopular(); }
+      requestAnimationFrame(sync);
+      window.addEventListener("load", sync);
+      mq.addEventListener("change", sync);
+    })();
+
     // Категория — только переключение активной кнопки
     var catSeg = document.querySelector(".pricing__seg:not(.pricing__seg--period)");
     if (catSeg) {
@@ -131,6 +166,8 @@
     var chips = document.querySelectorAll(".reco-scenario");
     if (!cardsWrap || !chips.length) return;
 
+    var recoMq = window.matchMedia("(max-width: 768px)");
+
     function featureHTML(f) {
       var info = f[2] ? '<span class="icon reco-card__info" aria-hidden="true" style="--icon: ' + INFO + '"></span>' : "";
       var rest = f[1] ? " " + f[1] : "";
@@ -138,11 +175,12 @@
         '<span class="icon reco-card__check" aria-hidden="true" style="--icon: ' + CHECK + '"></span>' +
         '<span class="reco-card__feature-text"><b class="reco-card__feature-b">' + f[0] + "</b>" + rest + info + "</span></li>";
     }
-    function cardHTML(plan, variant) {
-      var isPrimary = variant === "primary";
-      var badge = isPrimary ? '<span class="reco-card__badge">Рекомендуем</span>' : "";
+    // Бейдж рендерим всегда — видимость задаёт CSS по классу --primary.
+    function cardHTML(plan, isPrimary) {
+      var variant = isPrimary ? "primary" : "secondary";
       var cta = isPrimary ? "btn--dark" : "btn--white";
-      return '<article class="reco-card reco-card--' + variant + '">' + badge +
+      return '<article class="reco-card reco-card--' + variant + '">' +
+        '<span class="reco-card__badge">Рекомендуем</span>' +
         '<div class="reco-card__head">' +
           '<h3 class="reco-card__name">' + plan.name + "</h3>" +
           '<span class="reco-card__save">Экономия ' + fmt(plan.save) + " ₽</span>" +
@@ -154,25 +192,64 @@
         '<ul class="reco-card__features">' + plan.features.map(featureHTML).join("") + "</ul>" +
         "</article>";
     }
-    function pairKey(s) {
-      return [PLANS[s.primary], PLANS[s.secondary]]
-        .sort(function (a, b) { return a.price - b.price; })
-        .map(function (p) { return p.name; }).join("__");
-    }
 
-    var lastKey = pairKey(SCENARIOS[1]); // дефолт — «Сайт компании»
-    function select(i) {
-      var s = SCENARIOS[i];
-      var key = pairKey(s);
-      var animate = key !== lastKey;
-      lastKey = key;
+    var PLAN_ORDER = ["Year+", "Optimo+", "Century+", "Millenium+"];
+    var current = 1; // дефолт — «Сайт компании»
+    var builtMode = null; // "all" (мобайл, все тарифы) | "pair" (десктоп, 2 карты)
+
+    // Мобайл: показываем все 4 тарифа сразу.
+    function buildAll() {
+      var rec = SCENARIOS[current].primary;
+      cardsWrap.innerHTML = PLAN_ORDER.map(function (name) {
+        return cardHTML(PLANS[name], name === rec);
+      }).join("");
+      builtMode = "all";
+    }
+    // Десктоп: 2 рекомендации (дешевле → дороже).
+    function buildPair() {
+      var s = SCENARIOS[current];
       var cards = [
-        { plan: PLANS[s.primary], variant: "primary" },
-        { plan: PLANS[s.secondary], variant: "secondary" },
+        { plan: PLANS[s.primary], isP: true },
+        { plan: PLANS[s.secondary], isP: false },
       ].sort(function (a, b) { return a.plan.price - b.plan.price; });
-      cardsWrap.innerHTML = cards.map(function (c) { return cardHTML(c.plan, c.variant); }).join("");
-      if (!animate || reduce.matches) {
-        cardsWrap.querySelectorAll(".reco-card").forEach(function (el) { el.style.animation = "none"; });
+      cardsWrap.innerHTML = cards.map(function (c) { return cardHTML(c.plan, c.isP); }).join("");
+      builtMode = "pair";
+    }
+    // Без перерисовки переставляем «Рекомендуем» на нужный тариф.
+    function markRecommended(rec) {
+      PLAN_ORDER.forEach(function (name, idx) {
+        var card = cardsWrap.children[idx];
+        if (!card) return;
+        var isP = name === rec;
+        card.classList.toggle("reco-card--primary", isP);
+        card.classList.toggle("reco-card--secondary", !isP);
+        var cta = card.querySelector(".reco-card__cta");
+        if (cta) { cta.classList.toggle("btn--dark", isP); cta.classList.toggle("btn--white", !isP); }
+      });
+    }
+    function scrollToPrimary(smooth) {
+      if (!recoMq.matches) return;
+      var primary = cardsWrap.querySelector(".reco-card--primary");
+      if (!primary) return;
+      var wrapRect = cardsWrap.getBoundingClientRect();
+      var pRect = primary.getBoundingClientRect();
+      // Выравниваем рекомендуемую карточку к левому краю (под внутренний паддинг).
+      var pad = parseFloat(getComputedStyle(cardsWrap).paddingLeft) || 0;
+      var target = cardsWrap.scrollLeft + (pRect.left - wrapRect.left) - pad;
+      cardsWrap.scrollTo({ left: Math.max(0, target), behavior: (smooth && !reduce.matches) ? "smooth" : "auto" });
+    }
+    function build() {
+      if (recoMq.matches) buildAll(); else buildPair();
+      scrollToPrimary(false);
+    }
+    function select(i) {
+      current = i;
+      if (recoMq.matches) {
+        if (builtMode !== "all") buildAll();
+        markRecommended(SCENARIOS[i].primary);
+        scrollToPrimary(true); // плавно проскроллить к рекомендуемому
+      } else {
+        buildPair();
       }
     }
 
@@ -187,6 +264,22 @@
         select(i);
       });
     });
+
+    build();
+    requestAnimationFrame(function () { scrollToPrimary(false); });
+    window.addEventListener("load", function () { scrollToPrimary(false); });
+    recoMq.addEventListener("change", build);
+
+    // Когда лента впервые попадает в зону видимости — гарантированно
+    // ставим её на рекомендуемый тариф (к этому моменту лейаут готов).
+    if ("IntersectionObserver" in window) {
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+          if (e.isIntersecting) { scrollToPrimary(false); io.disconnect(); }
+        });
+      }, { threshold: 0.2 });
+      io.observe(cardsWrap);
+    }
   })();
 
   /* ---------- WhyHero: эффект «фонарика» ---------- */
