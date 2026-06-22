@@ -357,6 +357,60 @@ button {
    Header — 72px, white
    ============================================ */
 
+/* ---- Topbar: утилитарная полоса над хедером (Figma node 24078:25646) ---- */
+.topbar {
+  background: var(--color-surface);
+}
+
+.topbar__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 8px var(--header-gutter);
+}
+
+.topbar__group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.topbar__chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  background: var(--color-white);
+  border-radius: 8px;
+  font-family: var(--font-text);
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 16px;
+  white-space: nowrap;
+  color: var(--color-icon);
+  transition: color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.topbar__chip-icon {
+  width: 20px;
+  height: 20px;
+}
+
+@media (hover: hover) {
+  .topbar__chip:hover {
+    color: var(--color-accent);
+    box-shadow: var(--shadow-card);
+  }
+}
+
+/* Узкие экраны: полоса не помещается — прячем вместе с переходом на бургер */
+@media (max-width: 1024px) {
+  .topbar {
+    display: none;
+  }
+}
+
 .header {
   position: sticky;
   top: 0;
@@ -562,11 +616,11 @@ button {
 }
 
 .hero__decor--left {
-  left: 0;
+  left: clamp(-110px, -4vw, 0px);
 }
 
 .hero__decor--right {
-  right: 0;
+  right: clamp(-110px, -4vw, 0px);
 }
 
 @media (max-width: 1024px) {
@@ -740,7 +794,7 @@ button {
   flex-direction: column;
   align-items: center;
   gap: 21px;
-  width: 822px;
+  width: 1040px;
   max-width: calc(100% - var(--page-gutter) * 2);
   margin-top: 24px;
   text-align: center;
@@ -749,8 +803,8 @@ button {
 .hero__title {
   font-family: var(--font-heading);
   font-weight: 700;
-  font-size: 56px;
-  line-height: 64px;
+  font-size: 54px;
+  line-height: 62px;
   color: var(--color-text-main);
 }
 
@@ -1157,6 +1211,21 @@ button {
   grid-column: span 2;
 }
 
+/* Десктоп: первый ряд 50/50 (хостинг + домены), второй ряд — трети.
+   Сетка из 6 колонок: половина = span 3, треть = span 2. */
+@media (min-width: 1025px) {
+  .products__grid {
+    grid-template-columns: repeat(6, 1fr);
+  }
+  .products__card {
+    grid-column: span 2;
+  }
+  .products__card--wide,
+  .products__card:nth-child(2) {
+    grid-column: span 3;
+  }
+}
+
 .products__card--dark {
   background: #161414 url(assets/photos/vds.png) right center / cover no-repeat;
   border-color: rgba(255, 255, 255, 0.08);
@@ -1310,7 +1379,7 @@ button {
 
 /* Pricing + Why живут в кремовом .band; фон/радиус даёт обёртка. */
 .pricing {
-  padding-top: 80px;
+  padding: 80px 0;
 }
 
 .pricing__heading {
@@ -1564,41 +1633,90 @@ button {
 
 /* «А также в каждом тарифе» — лейбл по центру, ниже ряд белых пилюль */
 .pricing__included {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
   margin-top: 40px;
 }
 
 .pricing__included-label {
+  display: block;
+  text-align: center;
   font-size: 16px;
   line-height: 20px;
   color: var(--color-text-main-80);
 }
 
-.pricing__included-list {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 8px;
+/* Карточки «в каждом тарифе» (Figma node 24078:25794) */
+.pricing__incards {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 20px;
   margin-top: 24px;
-  list-style: none;
 }
 
-.pricing__included-item {
+.incard {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 24px;
+  background: var(--color-surface-2);
+  border-radius: var(--radius-card);
+}
+
+.incard__tile {
   display: inline-flex;
   align-items: center;
-  gap: 12px;
-  padding: 8px 20px;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
   background: var(--color-white);
-  border-radius: 38px;
-  font-size: 16px;
+  border: 1px solid var(--color-border-soft);
+}
+
+/* Иконка — duotone (две градации тёмного), рендерим как <img> */
+.incard__glyph {
+  display: block;
+  width: 22px;
+  height: 22px;
+  color: var(--color-text-main);
+}
+
+.incard__body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.incard__title {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 20px;
   line-height: 24px;
   color: var(--color-text-main);
 }
 
-.pricing__included-item .pricing__check {
-  margin-top: 0;
+.incard__text {
+  font-size: 16px;
+  line-height: 20px;
+  color: var(--color-text-main-80);
+}
+
+@media (max-width: 1024px) {
+  .pricing__incards {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .pricing__incards {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .pricing__incards {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
 }
 
 @media (max-width: 1024px) {
@@ -1916,9 +2034,9 @@ button {
    с цифрой 700 000 + 2×2 факта, ниже отзыв
    ============================================ */
 
-/* Заголовок + бенто; фон даёт кремовый .band. Отзыв вынесен ниже. */
+/* Заголовок + бенто. Стоит отдельной секцией на белом, под кремовым .band. */
 .why {
-  padding: 96px 0 80px;
+  margin-top: var(--section-gap);
 }
 
 .why__heading {
@@ -3435,12 +3553,25 @@ button {
 
 .blog__title {
   margin-top: 18px;
-  margin-bottom: 28px;
+  margin-bottom: 12px;
   font-family: var(--font-heading);
   font-weight: 700;
   font-size: 18px;
   line-height: 24px;
   color: var(--color-text-main);
+}
+
+/* Подзаголовок-анонс: ровно 2 строки, остальное — троеточие */
+.blog__excerpt {
+  margin-bottom: 28px;
+  font-size: 15px;
+  line-height: 22px;
+  color: var(--color-text-main-80);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .blog__meta {
@@ -4386,43 +4517,14 @@ button {
    ============================================ */
 
 .footer {
-  padding: 16px 0 56px;
-}
-
-.footer__crumbs {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  padding-bottom: 28px;
-  border-bottom: 1px solid var(--color-border);
-  font-size: 15px;
-  line-height: 20px;
-  color: var(--color-text-main-50);
-}
-
-.footer__crumb {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.footer__crumb a {
-  color: var(--color-text-main-80);
-}
-
-.footer__crumb a:hover {
-  color: var(--color-accent);
-}
-
-.footer__crumb-sep {
-  color: var(--color-text-main-50);
+  padding: 48px 0 56px;
+  border-top: 1px solid var(--color-border);
 }
 
 .footer__main {
   display: grid;
   grid-template-columns: 1.1fr 2.4fr;
   gap: 64px;
-  margin-top: 36px;
 }
 
 .footer__logo {

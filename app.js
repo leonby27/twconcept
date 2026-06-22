@@ -305,7 +305,7 @@
       var y = (e.clientY / window.innerHeight - 0.5) * 2;
       cancelAnimationFrame(raf);
       raf = requestAnimationFrame(function () {
-        var t = "translate(" + (x * 16).toFixed(1) + "px, " + (y * 10).toFixed(1) + "px)";
+        var t = "translate(" + (x * 9).toFixed(1) + "px, " + (y * 6).toFixed(1) + "px)";
         if (left) left.style.transform = t;
         if (right) right.style.transform = t;
       });
