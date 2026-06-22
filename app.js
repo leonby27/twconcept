@@ -343,4 +343,48 @@
     window.addEventListener("resize", reveal, { passive: true });
     reveal();
   })();
+
+  /* ---------- Migration: слово «бесплатно.» проявляется по буквам ---------- */
+  (function () {
+    var wrap = document.querySelector(".migration__type");
+    if (!wrap) return;
+    var textEl = wrap.querySelector(".migration__type-text");
+    var WORD = "бесплатно.";
+    var STAGGER = 55;  // мс между буквами
+
+    // Без анимации — сразу показываем слово целиком.
+    if (reduce.matches) {
+      textEl.textContent = WORD;
+      return;
+    }
+
+    var started = false;
+    function start() {
+      if (started) return;
+      started = true;
+
+      // Раскладываем слово по буквам, каждой — своя задержка.
+      textEl.textContent = "";
+      for (var i = 0; i < WORD.length; i++) {
+        var ch = document.createElement("span");
+        ch.className = "migration__char";
+        ch.textContent = WORD[i];
+        ch.style.animationDelay = (i * STAGGER) + "ms";
+        textEl.appendChild(ch);
+      }
+      wrap.classList.add("is-revealing");
+    }
+
+    // Триггер по скроллу (как у reveal-блоков) — надёжнее IntersectionObserver.
+    function check() {
+      if (wrap.getBoundingClientRect().top < window.innerHeight * 0.82) {
+        start();
+        window.removeEventListener("scroll", check);
+        window.removeEventListener("resize", check);
+      }
+    }
+    window.addEventListener("scroll", check, { passive: true });
+    window.addEventListener("resize", check, { passive: true });
+    check();
+  })();
 })();

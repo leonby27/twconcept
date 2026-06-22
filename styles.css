@@ -1748,6 +1748,33 @@ button {
   color: var(--color-text-main);
 }
 
+/* «Бесплатно.» проявляется по буквам при скролле, затем — мягкий блик */
+.migration__type {
+  white-space: nowrap;
+}
+
+.migration__type-text {
+  display: inline-block;
+}
+
+/* Каждая буква — отдельный спан со своей задержкой появления */
+.migration__char {
+  display: inline-block;
+  white-space: pre;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .migration__type.is-revealing .migration__char {
+    opacity: 0;
+    animation: migration-char-in 0.55s cubic-bezier(0.2, 0.7, 0.3, 1) both;
+  }
+}
+
+@keyframes migration-char-in {
+  from { opacity: 0; transform: translateY(0.32em); }
+  to   { opacity: 1; transform: none; }
+}
+
 .migration__desc {
   max-width: 440px;
   margin-top: 20px;
