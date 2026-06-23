@@ -575,6 +575,10 @@ button {
 
 .header__menu-actions .btn {
   flex: 1;
+  height: 48px;
+  border-radius: 16px;
+  font-size: 16px;
+  line-height: 20px;
 }
 
 @media (max-width: 1280px) {
@@ -1354,6 +1358,10 @@ button {
 }
 
 @media (max-width: 768px) {
+  /* Верхний отступ от заголовка — как нижний до карточек (32px). */
+  .domain-search {
+    margin-top: 32px;
+  }
   /* Инпут и кнопка — отдельными блоками, без общей обёртки. */
   .domain-search__bar {
     flex-direction: column;
@@ -1365,7 +1373,12 @@ button {
     box-shadow: none;
   }
   .domain-search__input {
-    padding: 16px 18px;
+    /* сбрасываем flex:1 0 0 из базы — иначе flex-basis:0 съедает height */
+    flex: 0 0 auto;
+    height: 56px;
+    padding: 0 18px;
+    font-size: 16px;
+    line-height: 20px;
     background: var(--color-white);
     border: 1px solid var(--color-border-card);
     border-radius: 16px;
@@ -1373,9 +1386,8 @@ button {
   }
   .domain-search__submit {
     width: 100%;
-    /* По высоте как инпут (24 строка + 16×2 паддинг + 1×2 рамка = 58px,
-       у кнопки рамки нет → паддинг 19px). */
-    padding-block: 19px;
+    height: 56px;
+    padding-block: 0;
   }
   /* Чипы доменных зон и перенос — на мобиле прячем. */
   .domain-search__row {
@@ -2055,6 +2067,8 @@ button {
     scroll-snap-type: x mandatory;
     margin-inline: calc(var(--page-gutter) * -1);
     padding-inline: var(--page-gutter);
+    /* без него снап «съедал» начальный отступ — лента стартовала вплотную к краю */
+    scroll-padding-inline: var(--page-gutter);
     scrollbar-width: none;
   }
 
@@ -2101,7 +2115,7 @@ button {
     scroll-snap-type: x mandatory;
     scroll-padding-inline: var(--page-gutter);
     -webkit-overflow-scrolling: touch;
-    padding: 10px var(--page-gutter) 20px;
+    padding: 14px var(--page-gutter) 36px;
     margin-inline: calc(var(--page-gutter) * -1);
     scrollbar-width: none;
   }
@@ -2111,8 +2125,8 @@ button {
   }
 
   .pricing__card {
-    flex: 0 0 80%;
-    max-width: 320px;
+    flex: 0 0 90%;
+    max-width: 360px;
     padding: 20px;
     scroll-snap-align: center;
   }
@@ -2143,6 +2157,8 @@ button {
 @media (max-width: 480px) {
   .pricing {
     padding-top: 40px;
+    /* нижний отступ ленты карточек — как боковой инсет (page-gutter) */
+    padding-bottom: var(--page-gutter);
   }
 
   .why__band {
@@ -2152,6 +2168,8 @@ button {
   .pricing__controls {
     flex-direction: column;
     align-items: stretch;
+    /* Верхний отступ от заголовка — как нижний до карточек (28 margin + 14 padding ленты). */
+    margin-top: 42px;
   }
 
   .pricing__seg {
@@ -2588,9 +2606,15 @@ button {
   }
 
   /* На мобиле текст переносим (на десктопе он в одну строку). */
-  .migration__note,
-  .migration__desc {
+  .migration__note {
     white-space: normal;
+  }
+
+  /* Подпись под кнопкой — в одну строку, мельче и по центру. */
+  .migration__desc {
+    font-size: 13px;
+    line-height: 18px;
+    text-align: center;
   }
 
   .migration__note {
@@ -2602,7 +2626,8 @@ button {
   .migration__actions {
     margin-top: 32px;
     flex-direction: column;
-    align-items: flex-start;
+    align-items: stretch;
+    width: 100%;
     gap: 12px;
   }
 }
@@ -2899,6 +2924,12 @@ button {
   .cms__text {
     font-size: 18px;
     line-height: 28px;
+  }
+
+  /* CTA приводим к общей высоте 56px, как у остальных кнопок. */
+  .cms__cta {
+    height: 56px;
+    padding-block: 0;
   }
 }
 
@@ -3860,6 +3891,7 @@ button {
 
   .reviews__cta {
     width: 100%;
+    height: 56px;
     order: -1;
   }
 }
@@ -4179,9 +4211,10 @@ button {
     display: flex;
     grid-template-columns: none;
     max-width: none;
-    margin-top: 28px;
+    margin-top: 16px;
     margin-inline: calc(-1 * var(--page-gutter));
-    padding-inline: var(--page-gutter);
+    /* overflow-x обрезает и по вертикали — вертикальный паддинг даёт месту тени */
+    padding: 8px var(--page-gutter) 36px;
     overflow-x: auto;
     scroll-snap-type: x mandatory;
     scroll-padding-inline: var(--page-gutter);
@@ -4195,6 +4228,10 @@ button {
   .blog__card {
     flex: 0 0 300px;
     scroll-snap-align: start;
+  }
+
+  .blog__foot {
+    margin-top: 12px;
   }
 }
 
@@ -4795,8 +4832,13 @@ button {
     min-height: 0;
     padding: 12px 18px;
     justify-content: center;
-    font-size: 18px;
-    line-height: 24px;
+    font-size: 15px;
+    line-height: 20px;
+  }
+
+  /* У активного чипа убираем акцентную обводку (остаётся белый фон + тень). */
+  .reco-scenario--active {
+    border-color: transparent;
   }
 
   .reco-scenario__mark {
