@@ -52,7 +52,94 @@
     if (!cards.length || !periodSeg) return;
 
     var order = ["month", "year", "three"];
-    function render(periodId) {
+
+    /* Бегунок сегмент-контролов: белая плашка переезжает к активной кнопке. */
+    function setupThumb(seg) {
+      if (!seg) return null;
+      var thumb = document.createElement("span");
+      thumb.className = "pricing__seg-thumb";
+      thumb.setAttribute("aria-hidden", "true");
+      seg.insertBefore(thumb, seg.firstChild);
+      seg.classList.add("pricing__seg--thumbed");
+      return thumb;
+    }
+    function moveThumb(thumb, btn, animate) {
+      if (!thumb || !btn) return;
+      var keep;
+      if (!animate) { keep = thumb.style.transition; thumb.style.transition = "none"; }
+      thumb.style.width = btn.offsetWidth + "px";
+      thumb.style.height = btn.offsetHeight + "px";
+      thumb.style.transform = "translate(" + btn.offsetLeft + "px, " + btn.offsetTop + "px)";
+      if (!animate) { void thumb.offsetHeight; thumb.style.transition = keep; }
+    }
+    function activeBtn(seg) {
+      return seg.querySelector(".pricing__seg-btn--active") ||
+        seg.querySelector(".pricing__seg-btn");
+    }
+
+    /* Одометр цены: строим колонки 0–9 для каждой цифры и катаем их к нужной
+       цифре через translateY. Высоту ячейки берём из line-height значения. */
+    function buildOdo(valueEl) {
+      var cell = parseFloat(getComputedStyle(valueEl).lineHeight) || 44;
+      valueEl.textContent = "";
+      var odo = document.createElement("span");
+      odo.className = "price-odo";
+      odo.setAttribute("aria-hidden", "true");
+      var sr = document.createElement("span");
+      sr.className = "visually-hidden";
+      valueEl.appendChild(odo);
+      valueEl.appendChild(sr);
+      valueEl.appendChild(document.createTextNode(" ₽"));
+      return { odo: odo, sr: sr, cols: [], cell: cell };
+    }
+
+    function setOdo(state, num, animate) {
+      var str = String(num);
+      state.sr.textContent = str + " ₽";
+      if (state.cols.length !== str.length) {
+        state.odo.textContent = "";
+        state.cols = [];
+        for (var i = 0; i < str.length; i++) {
+          var digit = document.createElement("span");
+          digit.className = "price-odo__digit";
+          digit.style.height = state.cell + "px";
+          var track = document.createElement("span");
+          track.className = "price-odo__track";
+          for (var d = 0; d <= 9; d++) {
+            var s = document.createElement("span");
+            s.style.height = state.cell + "px";
+            s.style.lineHeight = state.cell + "px";
+            s.textContent = String(d);
+            track.appendChild(s);
+          }
+          digit.appendChild(track);
+          state.odo.appendChild(digit);
+          state.cols.push(track);
+        }
+      }
+      for (var j = 0; j < str.length; j++) {
+        var dv = parseInt(str.charAt(j), 10);
+        var trk = state.cols[j];
+        var y = "translateY(" + (-dv * state.cell) + "px)";
+        if (animate) {
+          trk.style.transform = y;
+        } else {
+          var keep = trk.style.transition;
+          trk.style.transition = "none";
+          trk.style.transform = y;
+          void trk.offsetHeight; // зафиксировать без анимации
+          trk.style.transition = keep;
+        }
+      }
+    }
+
+    var odos = [];
+    cards.forEach(function (card) {
+      var pv = card.querySelector(".pricing__price-value");
+      odos.push(pv ? buildOdo(pv) : null);
+    });
+
+    function render(periodId, animate) {
       var p = PERIODS[periodId];
       var word = p.months === 1 ? "месяц" : "месяцев";
       cards.forEach(function (card, i) {
@@ -61,10 +148,9 @@
         var price = Math.round(base * (1 - p.off));
         var total = price * p.months;
         var save = (base - price) * p.months;
-        var pv = card.querySelector(".pricing__price-value");
         var tt = card.querySelector(".pricing__total");
         var sv = card.querySelector(".pricing__save");
-        if (pv) pv.innerHTML = fmt(price) + "&nbsp;₽";
+        if (odos[i]) setOdo(odos[i], price, animate);
         if (tt) tt.textContent = fmt(total) + " ₽ за " + p.months + " " + word;
         if (sv) {
           if (save > 0) { sv.textContent = "Экономия " + fmt(save) + " ₽"; sv.classList.remove("pricing__save--empty"); }
@@ -73,6 +159,7 @@
       });
     }
 
+    var periodThumb = setupThumb(periodSeg);
     periodSeg.querySelectorAll(".pricing__seg-btn").forEach(function (btn, idx) {
       btn.addEventListener("click", function () {
         periodSeg.querySelectorAll(".pricing__seg-btn").forEach(function (b) {
@@ -81,9 +168,17 @@
         });
         btn.classList.add("pricing__seg-btn--active");
         btn.setAttribute("aria-pressed", "true");
-        render(order[idx] || "year");
+        moveThumb(periodThumb, btn, true);
+        render(order[idx] || "year", true);
       });
     });
+
+    // Инициализация одометра под активный период (без анимации).
+    var activeIdx = 0;
+    periodSeg.querySelectorAll(".pricing__seg-btn").forEach(function (b, i) {
+      if (b.classList.contains("pricing__seg-btn--active")) activeIdx = i;
+    });
+    render(order[activeIdx] || "year", false);
 
     // На мобиле тарифы — горизонтальная лента: по умолчанию центрируем
     // Optimo+, а «Подобрать тариф» переносим вниз, под карточки.
@@ -122,6 +217,7 @@
 
     // Категория — только переключение активной кнопки
     var catSeg = document.querySelector(".pricing__seg:not(.pricing__seg--period)");
+    var catThumb = catSeg ? setupThumb(catSeg) : null;
     if (catSeg) {
       catSeg.querySelectorAll(".pricing__seg-btn").forEach(function (btn) {
         btn.addEventListener("click", function () {
@@ -131,125 +227,116 @@
           });
           btn.classList.add("pricing__seg-btn--active");
           btn.setAttribute("aria-pressed", "true");
+          moveThumb(catThumb, btn, true);
         });
       });
     }
+
+    // Стартовое позиционирование бегунков (без анимации) + перерасчёт при
+    // изменении ширины/после загрузки шрифтов, когда меняются размеры кнопок.
+    function placeThumbs() {
+      moveThumb(periodThumb, activeBtn(periodSeg), false);
+      if (catSeg) moveThumb(catThumb, activeBtn(catSeg), false);
+    }
+    requestAnimationFrame(placeThumbs);
+    window.addEventListener("load", placeThumbs);
+    window.addEventListener("resize", placeThumbs, { passive: true });
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(placeThumbs);
   })();
 
-  /* ---------- Final CTA: выбор сценария → две рекомендации ---------- */
+  /* ---------- Pricing: тултипы на info-иконках ---------- */
+  (function () {
+    var TIPS = {
+      nvme: "NVMe-накопители: чтение и запись в разы быстрее обычных SSD.",
+      isolation: "Изоляция сайтов — защита от вредоносного ПО и атак.",
+    };
+    var icons = document.querySelectorAll(".pricing__info");
+    icons.forEach(function (icon) {
+      var holder = icon.closest(".pricing__feature-text") || icon.parentNode;
+      var txt = (holder && holder.textContent) || "";
+      var tip = /NVMe/i.test(txt) ? TIPS.nvme : /изоляц/i.test(txt) ? TIPS.isolation : null;
+      if (!tip) return;
+
+      // Иконку нельзя сделать якорем тултипа (её обрезает mask) — оборачиваем.
+      var wrap = document.createElement("span");
+      wrap.className = "tip";
+      wrap.setAttribute("tabindex", "0");
+      wrap.setAttribute("role", "button");
+      wrap.setAttribute("aria-label", tip);
+      icon.parentNode.insertBefore(wrap, icon);
+      wrap.appendChild(icon);
+
+      var bubble = document.createElement("span");
+      bubble.className = "tip__bubble";
+      bubble.setAttribute("role", "tooltip");
+      bubble.textContent = tip;
+      wrap.appendChild(bubble);
+    });
+  })();
+
+  /* ---------- Final CTA: выбор сценария → один рекомендуемый тариф ---------- */
   (function () {
     var PLANS = {
-      "Year+": { name: "Year+", save: 600, price: 164, total: 1968, features: [
-        ["2 сайта", "с изоляцией", true], ["15 ГБ", "на NVMe-дисках", true],
-        ["5", "Баз Данных", false], ["10 Гб", "почтовой квоты", false], ["Стандартный", "CPU и MySQL", false] ] },
-      "Optimo+": { name: "Optimo+", save: 752, price: 248, total: 2976, features: [
-        ["15", "сайтов с изоляцией", true], ["40 ГБ", "на NVMe-дисках", true],
-        ["∞", "Базы Данных", false], ["10 Гб", "почтовой квоты", false], ["+250%", "CPU и MySQL", false] ] },
-      "Century+": { name: "Century+", save: 1772, price: 347, total: 4164, features: [
-        ["35", "сайтов с изоляцией", true], ["50 ГБ", "на NVMe-дисках", true],
-        ["∞", "Базы Данных", false], ["10 Гб", "почтовой квоты", false], ["+350%", "CPU и MySQL", false] ] },
-      "Millenium+": { name: "Millenium+", save: 2400, price: 482, total: 5784, features: [
-        ["60", "сайтов с изоляцией", true], ["60 ГБ", "на NVMe-дисках", true],
-        ["∞", "Базы Данных", false], ["10 Гб", "почтовой квоты", false], ["+550%", "CPU и MySQL", false] ] },
+      "Year+": { name: "Year+", price: 164, total: 1968, features: [
+        ["15 ГБ", "на NVMe-дисках", true], ["2", "сайта с изоляцией", true],
+        ["5", "Базы Данных", false], ["Стандартный", "CPU и MySQL", false] ] },
+      "Optimo+": { name: "Optimo+", price: 248, total: 2976, features: [
+        ["40 ГБ", "на NVMe-дисках", true], ["15", "сайтов с изоляцией", true],
+        ["∞", "Базы Данных", false], ["+250%", "CPU и MySQL", false] ] },
+      "Century+": { name: "Century+", price: 347, total: 4164, features: [
+        ["50 ГБ", "на NVMe-дисках", true], ["35", "сайтов с изоляцией", true],
+        ["∞", "Базы Данных", false], ["+350%", "CPU и MySQL", false] ] },
+      "Millenium+": { name: "Millenium+", price: 482, total: 5784, features: [
+        ["60 ГБ", "на NVMe-дисках", true], ["60", "сайтов с изоляцией", true],
+        ["∞", "Базы Данных", false], ["+550%", "CPU и MySQL", false] ] },
     };
+    // Каждый сценарий → один рекомендуемый тариф и своя 3D-иллюстрация.
     var SCENARIOS = [
-      { label: "Лэндинг", primary: "Year+", secondary: "Optimo+" },
-      { label: "Сайт компании", primary: "Optimo+", secondary: "Year+" },
-      { label: "Интернет-магазин", primary: "Century+", secondary: "Millenium+" },
-      { label: "Я разработчик", primary: "Optimo+", secondary: "Century+" },
-      { label: "Веб-студия", primary: "Century+", secondary: "Millenium+" },
-      { label: "Сложный проект", primary: "Millenium+", secondary: "Century+" },
+      { plan: "Year+",      img: "reco-landing.png" },
+      { plan: "Optimo+",    img: "reco-company.png" },
+      { plan: "Century+",   img: "reco-store.png" },
+      { plan: "Optimo+",    img: "reco-dev.png" },
+      { plan: "Century+",   img: "reco-studio.png" },
+      { plan: "Millenium+", img: "reco-complex.png" },
     ];
     var CHECK = "url(assets/icons/solid/check.svg)";
     var INFO = "url(assets/icons/solid/info.svg)";
-    var cardsWrap = document.querySelector(".reco__cards");
+    var card = document.querySelector(".reco-card");
     var chips = document.querySelectorAll(".reco-scenario");
-    if (!cardsWrap || !chips.length) return;
+    if (!card || !chips.length) return;
 
-    var recoMq = window.matchMedia("(max-width: 768px)");
+    var elName = card.querySelector(".reco-card__name");
+    var elFeatures = card.querySelector(".reco-card__features");
+    var elPrice = card.querySelector(".reco-card__price-value");
+    var elTotal = card.querySelector(".reco-card__total");
+    var elMedia = card.querySelector(".reco-card__media");
 
     function featureHTML(f) {
       var info = f[2] ? '<span class="icon reco-card__info" aria-hidden="true" style="--icon: ' + INFO + '"></span>' : "";
       var rest = f[1] ? " " + f[1] : "";
-      return '<li class="reco-card__feature">' +
+      return '<div class="reco-card__feature">' +
         '<span class="icon reco-card__check" aria-hidden="true" style="--icon: ' + CHECK + '"></span>' +
-        '<span class="reco-card__feature-text"><b class="reco-card__feature-b">' + f[0] + "</b>" + rest + info + "</span></li>";
+        '<span class="reco-card__feature-text"><b class="reco-card__feature-b">' + f[0] + "</b>" + rest + "</span>" + info + "</div>";
     }
-    // Бейдж рендерим всегда — видимость задаёт CSS по классу --primary.
-    function cardHTML(plan, isPrimary) {
-      var variant = isPrimary ? "primary" : "secondary";
-      var cta = isPrimary ? "btn--dark" : "btn--white";
-      return '<article class="reco-card reco-card--' + variant + '">' +
-        '<span class="reco-card__badge">Рекомендуем</span>' +
-        '<div class="reco-card__head">' +
-          '<h3 class="reco-card__name">' + plan.name + "</h3>" +
-          '<span class="reco-card__save">Экономия ' + fmt(plan.save) + " ₽</span>" +
-          '<p class="reco-card__price"><span class="reco-card__price-value">' + fmt(plan.price) + "&nbsp;₽</span>" +
-            '<span class="reco-card__price-suffix">/мес</span></p>' +
-          '<p class="reco-card__total">' + fmt(plan.total) + " ₽ за 12 месяцев</p>" +
-        "</div>" +
-        '<a href="#" class="btn reco-card__cta ' + cta + '">Начать бесплатно</a>' +
-        '<ul class="reco-card__features">' + plan.features.map(featureHTML).join("") + "</ul>" +
-        "</article>";
-    }
-
-    var PLAN_ORDER = ["Year+", "Optimo+", "Century+", "Millenium+"];
-    var current = 1; // дефолт — «Сайт компании»
-    var builtMode = null; // "all" (мобайл, все тарифы) | "pair" (десктоп, 2 карты)
-
-    // Мобайл: показываем все 4 тарифа сразу.
-    function buildAll() {
-      var rec = SCENARIOS[current].primary;
-      cardsWrap.innerHTML = PLAN_ORDER.map(function (name) {
-        return cardHTML(PLANS[name], name === rec);
-      }).join("");
-      builtMode = "all";
-    }
-    // Десктоп: 2 рекомендации (дешевле → дороже).
-    function buildPair() {
-      var s = SCENARIOS[current];
-      var cards = [
-        { plan: PLANS[s.primary], isP: true },
-        { plan: PLANS[s.secondary], isP: false },
-      ].sort(function (a, b) { return a.plan.price - b.plan.price; });
-      cardsWrap.innerHTML = cards.map(function (c) { return cardHTML(c.plan, c.isP); }).join("");
-      builtMode = "pair";
-    }
-    // Без перерисовки переставляем «Рекомендуем» на нужный тариф.
-    function markRecommended(rec) {
-      PLAN_ORDER.forEach(function (name, idx) {
-        var card = cardsWrap.children[idx];
-        if (!card) return;
-        var isP = name === rec;
-        card.classList.toggle("reco-card--primary", isP);
-        card.classList.toggle("reco-card--secondary", !isP);
-        var cta = card.querySelector(".reco-card__cta");
-        if (cta) { cta.classList.toggle("btn--dark", isP); cta.classList.toggle("btn--white", !isP); }
-      });
-    }
-    function scrollToPrimary(smooth) {
-      if (!recoMq.matches) return;
-      var primary = cardsWrap.querySelector(".reco-card--primary");
-      if (!primary) return;
-      var wrapRect = cardsWrap.getBoundingClientRect();
-      var pRect = primary.getBoundingClientRect();
-      // Выравниваем рекомендуемую карточку к левому краю (под внутренний паддинг).
-      var pad = parseFloat(getComputedStyle(cardsWrap).paddingLeft) || 0;
-      var target = cardsWrap.scrollLeft + (pRect.left - wrapRect.left) - pad;
-      cardsWrap.scrollTo({ left: Math.max(0, target), behavior: (smooth && !reduce.matches) ? "smooth" : "auto" });
-    }
-    function build() {
-      if (recoMq.matches) buildAll(); else buildPair();
-      scrollToPrimary(false);
-    }
-    function select(i) {
-      current = i;
-      if (recoMq.matches) {
-        if (builtMode !== "all") buildAll();
-        markRecommended(SCENARIOS[i].primary);
-        scrollToPrimary(true); // плавно проскроллить к рекомендуемому
-      } else {
-        buildPair();
+    function render(i) {
+      var s = SCENARIOS[i];
+      var plan = PLANS[s.plan];
+      elName.textContent = plan.name;
+      // Чипы — ровно по 2 в ряд (строки-обёртки).
+      var rows = "";
+      for (var k = 0; k < plan.features.length; k += 2) {
+        rows += '<div class="reco-card__feature-row">' +
+          plan.features.slice(k, k + 2).map(featureHTML).join("") + "</div>";
+      }
+      elFeatures.innerHTML = rows;
+      elPrice.innerHTML = fmt(plan.price) + "&nbsp;₽";
+      elTotal.textContent = fmt(plan.total) + " ₽ за 12 месяцев";
+      elMedia.setAttribute("src", "assets/illustrations/" + s.img);
+      // Мягкий fade содержимого при смене сценария (перезапуск анимации).
+      if (!reduce.matches) {
+        card.classList.remove("reco-card--swap");
+        void card.offsetWidth;
+        card.classList.add("reco-card--swap");
       }
     }
 
@@ -261,25 +348,10 @@
         });
         chip.classList.add("reco-scenario--active");
         chip.setAttribute("aria-checked", "true");
-        select(i);
+        render(i);
       });
     });
-
-    build();
-    requestAnimationFrame(function () { scrollToPrimary(false); });
-    window.addEventListener("load", function () { scrollToPrimary(false); });
-    recoMq.addEventListener("change", build);
-
-    // Когда лента впервые попадает в зону видимости — гарантированно
-    // ставим её на рекомендуемый тариф (к этому моменту лейаут готов).
-    if ("IntersectionObserver" in window) {
-      var io = new IntersectionObserver(function (entries) {
-        entries.forEach(function (e) {
-          if (e.isIntersecting) { scrollToPrimary(false); io.disconnect(); }
-        });
-      }, { threshold: 0.2 });
-      io.observe(cardsWrap);
-    }
+    // Дефолт — «Сайт компании» (index 1): карточка уже отрендерена в HTML.
   })();
 
   /* ---------- WhyHero: эффект «фонарика» ---------- */
@@ -342,6 +414,64 @@
     window.addEventListener("scroll", reveal, { passive: true });
     window.addEventListener("resize", reveal, { passive: true });
     reveal();
+  })();
+
+  /* ---------- Metrics: цифры «накручиваются» при появлении ----------
+     Каждое значение парсим на ведущее число + суффикс («400к+» → 400 / «к+»),
+     считаем от 0 до цели с easeOut и ступенчатой задержкой по колонкам.
+     reduced-motion / без JS — число сразу финальное. */
+  (function () {
+    if (reduce.matches) return;
+    var values = Array.prototype.slice.call(
+      document.querySelectorAll(".metrics__stat-value")
+    );
+    if (!values.length) return;
+
+    var items = values
+      .map(function (el) {
+        var m = el.textContent.match(/^(\d+)([\s\S]*)$/);
+        if (!m) return null;
+        return { el: el, target: parseInt(m[1], 10), suffix: m[2] };
+      })
+      .filter(Boolean);
+    if (!items.length) return;
+
+    // Стартовое состояние — 0 (секция ниже первого экрана и так скрыта .reveal,
+    // так что мелькания не будет; выше — мелькнёт один кадр).
+    items.forEach(function (it) {
+      it.el.textContent = "0" + it.suffix;
+    });
+
+    function count(it, duration) {
+      var t0 = null;
+      function frame(now) {
+        if (t0 === null) t0 = now;
+        var p = Math.min((now - t0) / duration, 1);
+        var eased = 1 - Math.pow(1 - p, 3);
+        it.el.textContent = fmt(Math.round(eased * it.target)) + it.suffix;
+        if (p < 1) requestAnimationFrame(frame);
+        else it.el.textContent = fmt(it.target) + it.suffix;
+      }
+      requestAnimationFrame(frame);
+    }
+
+    var panel = document.querySelector(".metrics__panel") || items[0].el;
+    var started = false;
+    function start() {
+      if (started) return;
+      if (panel.getBoundingClientRect().top >= window.innerHeight * 0.85) return;
+      started = true;
+      window.removeEventListener("scroll", start);
+      window.removeEventListener("resize", start);
+      items.forEach(function (it, i) {
+        setTimeout(function () {
+          count(it, 1100);
+        }, i * 140);
+      });
+    }
+    window.addEventListener("scroll", start, { passive: true });
+    window.addEventListener("resize", start, { passive: true });
+    start();
   })();
 
   /* ---------- Migration: слово «бесплатно.» проявляется по буквам ---------- */

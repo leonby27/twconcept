@@ -16,7 +16,8 @@
 
 | id / файл | Блок | Тип | Источник | Статус |
 |---|---|---|---|---|
-| `illustrations/benefit-trial.webp`, `benefit-domain.webp`, `benefit-discount.webp` | Бонусы под hero | 3D-иллюстрация (PNG с альфой) | 1.png / 3.png / 2.png | ✅ на месте |
+| `illustrations/perk-trial.png`, `perk-domain.png`, `perk-discount.png` | Плашка metrics под hero (цифры + 3 преимущества) | 3D-иконка 72px (PNG с альфой, 144×144) | папка `3dnew`: image 2509 / -1 / -2 | ✅ на месте |
+| `illustrations/reco-landing.png`, `reco-company.png`, `reco-store.png`, `reco-dev.png`, `reco-studio.png`, `reco-complex.png` | Финальный CTA — карточка тарифа по сценарию (мегафон / здание / корзина / код / мышь / шестерёнка) | 3D-иллюстрация 172px (PNG с альфой, ужата до 344px) | папка `cta-ill`: 3 / 6 / 1 / 4 / 5 / 2 | ✅ на месте |
 | `photos/panel.webp` | Панель управления | скриншот | Filemanager.png | ✅ на месте |
 | `photos/migration.webp` | Переход с другого хостинга | фото | Moveproject.png | ✅ на месте |
 | `photos/why-servers.png` | Карточка «700 000» (Почему) | фон + эффект «фонарика» (маска ::before) | Sites.png | ✅ на месте |
