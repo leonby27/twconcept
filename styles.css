@@ -126,9 +126,10 @@ body {
   overflow-x: clip;
 }
 
-body.menu-open {
-  overflow: hidden;
-}
+/* Скролл НЕ блокируем: overflow:hidden на body делает его scroll-контейнером и
+   ломает sticky у хедера (он улетает к верху документа, а вся вёрстка под ним
+   подскакивает на высоту шапки). Хедер остаётся sticky, меню — fixed под ним;
+   оба держатся на месте, фон при необходимости скроллится. */
 
 a {
   text-decoration: none;
@@ -533,11 +534,14 @@ button {
   transform: translateY(-7px) rotate(-45deg);
 }
 
+/* fixed (а не absolute от sticky-хедера): иначе при скролле меню
+   позиционируется от исходного места хедера в потоке и улетает за экран. */
 .header__menu {
-  position: absolute;
-  top: 100%;
+  position: fixed;
+  top: 72px;
   left: 0;
   right: 0;
+  z-index: 99;
   display: flex;
   flex-direction: column;
   gap: 24px;
@@ -615,6 +619,16 @@ button {
   align-items: center;
 }
 
+/* Десктоп: первый экран занимает высоту окна, ряд цифр metrics прилипает к
+   нижней кромке и двигается вместе с ней при ресайзе. Лента брендов прижата
+   к низу hero (margin-top:auto), свободное место уходит выше неё.
+   258px = шапка (44+72) + отступ metrics (24) + высота ряда цифр (118). */
+@media (min-width: 1025px) {
+  .hero {
+    min-height: calc(100vh - 258px);
+  }
+}
+
 /* Цветные иллюстрации по бокам — слой за центральным контентом.
    Параллакс от курсора задаёт HeroDecor.tsx (transform). Ассеты 2x → ~½. */
 .hero__decor {
@@ -623,6 +637,7 @@ button {
   z-index: 0;
   width: clamp(200px, 28vw, 420px);
   height: auto;
+  aspect-ratio: 840 / 1050;
   pointer-events: none;
   user-select: none;
 }
@@ -742,7 +757,7 @@ button {
   justify-content: center;
   gap: 12px;
   max-width: calc(100% - var(--page-gutter) * 2);
-  margin-top: 126px;
+  margin-top: 100px;
   padding: 8px 12px 8px 8px;
   background: var(--color-surface);
   border-radius: 26px;
@@ -852,7 +867,15 @@ button {
 
 .hero__brands {
   width: min(var(--container-max), 100% - var(--page-gutter) * 2);
-  margin-top: 145px;
+  margin-top: 80px;
+}
+
+/* Десктоп: лента брендов прижата к низу hero, чтобы ряд цифр metrics
+   приклеивался к нижней кромке окна (см. min-height у .hero выше). */
+@media (min-width: 1025px) {
+  .hero__brands {
+    margin-top: auto;
+  }
 }
 
 /* Маска-вьюпорт: обрезает дорожку по ширине контента, края тают в прозрачность. */
@@ -882,11 +905,15 @@ button {
   display: flex;
 }
 
-/* Чуть мельче и приглушённее, чем были в статичном ряду. */
 .hero__brands-row img {
   height: 24px;
   width: auto;
-  opacity: 0.6;
+  opacity: 0.85;
+  transition: opacity 0.2s ease;
+}
+
+.hero__brands-row img:hover {
+  opacity: 1;
 }
 
 @keyframes brands-marquee {
@@ -1050,13 +1077,27 @@ button {
   }
 
   .metrics__card {
-    gap: 16px;
-    padding: 20px;
+    gap: 14px;
+    padding: 16px;
   }
 
   .metrics__card-icon {
-    width: 56px;
-    height: 56px;
+    width: 48px;
+    height: 48px;
+  }
+
+  .metrics__card-body {
+    gap: 4px;
+  }
+
+  .metrics__card-title {
+    font-size: 17px;
+    line-height: 22px;
+  }
+
+  .metrics__card-text {
+    font-size: 14px;
+    line-height: 19px;
   }
 }
 
@@ -1179,6 +1220,167 @@ button {
 
 .products__heading {
   text-align: center;
+}
+
+/* ---------- Поиск домена (над карточками «Всё для вашего сайта») ---------- */
+.domain-search {
+  margin-top: 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.domain-search__bar {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 12px 12px 12px 20px;
+  background: var(--color-white);
+  border: 1px solid var(--color-border-card);
+  border-radius: 20px;
+  box-shadow: var(--shadow-soft);
+  transition: border-color 0.15s ease;
+}
+
+.domain-search__bar:focus-within {
+  border-color: #ded8d4;
+}
+
+.domain-search__input {
+  flex: 1 0 0;
+  min-width: 0;
+  border: 0;
+  background: transparent;
+  font-family: var(--font-heading);
+  font-size: 20px;
+  line-height: 24px;
+  color: var(--color-text-main);
+}
+
+.domain-search__input::placeholder {
+  color: rgba(77, 59, 59, 0.5);
+}
+
+.domain-search__input:focus {
+  outline: none;
+}
+
+.domain-search__submit {
+  flex-shrink: 0;
+  min-width: 180px;
+  padding: 15px 12px;
+  background: var(--color-text-main);
+  border: 0;
+  border-radius: var(--radius-button-l);
+  font-family: var(--font-text);
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 20px;
+  text-align: center;
+  color: var(--color-white);
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.domain-search__submit:hover {
+  opacity: 0.9;
+}
+
+.domain-search__row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.domain-search__tlds {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.domain-search__tld {
+  padding: 4px 12px;
+  background: var(--color-white);
+  border: 1px solid var(--color-border-soft);
+  border-radius: var(--radius-button-s);
+  font-family: var(--font-text);
+  font-weight: 500;
+  font-size: 18px;
+  line-height: 26px;
+  color: var(--color-text-main);
+  cursor: pointer;
+  transition: border-color 0.15s ease, transform 0.15s ease, box-shadow 0.2s ease;
+}
+
+.domain-search__transfer {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+  padding: 7px 12px;
+  background: var(--color-white);
+  border: 1px solid var(--color-border-soft);
+  border-radius: var(--radius-button-s);
+  font-family: var(--font-text);
+  font-weight: 500;
+  font-size: 18px;
+  line-height: 20px;
+  color: var(--color-text-main);
+  white-space: nowrap;
+  transition: border-color 0.15s ease, transform 0.15s ease, box-shadow 0.2s ease;
+}
+
+.domain-search__tld--more {
+  text-decoration: none;
+}
+
+.domain-search__tld:hover,
+.domain-search__transfer:hover {
+  border-color: #c4c4c4;
+}
+
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .domain-search__tld:hover,
+  .domain-search__transfer:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(33, 30, 30, 0.07);
+  }
+}
+
+.domain-search__transfer-icon {
+  width: 20px;
+  height: 20px;
+}
+
+@media (max-width: 768px) {
+  /* Инпут и кнопка — отдельными блоками, без общей обёртки. */
+  .domain-search__bar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+    padding: 0;
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+  }
+  .domain-search__input {
+    padding: 16px 18px;
+    background: var(--color-white);
+    border: 1px solid var(--color-border-card);
+    border-radius: 16px;
+    box-shadow: var(--shadow-soft);
+  }
+  .domain-search__submit {
+    width: 100%;
+    /* По высоте как инпут (24 строка + 16×2 паддинг + 1×2 рамка = 58px,
+       у кнопки рамки нет → паддинг 19px). */
+    padding-block: 19px;
+  }
+  /* Чипы доменных зон и перенос — на мобиле прячем. */
+  .domain-search__row {
+    display: none;
+  }
 }
 
 .products__grid {
@@ -1917,16 +2119,16 @@ button {
 
   /* Мельче шрифт фич — чтобы строка с инфо-иконкой не переносилась. */
   .pricing__feature {
-    gap: 10px;
-    font-size: 14px;
-    line-height: 20px;
+    gap: 12px;
+    font-size: 16px;
+    line-height: 22px;
   }
 
   .pricing__info {
-    width: 15px;
-    height: 15px;
-    margin-left: 3px;
-    vertical-align: -3px;
+    width: 18px;
+    height: 18px;
+    margin-left: 4px;
+    vertical-align: -4px;
   }
 
   /* «Подобрать тариф» переносится под ленту тарифов (см. app.js). */
@@ -2657,6 +2859,38 @@ button {
     margin-top: 28px;
   }
 
+  /* Компактнее: меньше паддинги и кегли в блоках «Почему». */
+  .why__hero {
+    gap: 20px;
+    min-height: 0;
+    padding: 24px;
+  }
+
+  .why__hero-value {
+    font-size: 44px;
+    line-height: 50px;
+  }
+
+  .why__stat {
+    padding: 20px;
+  }
+
+  .why__stat-value {
+    font-size: 24px;
+    line-height: 30px;
+  }
+
+  .why__stat-label {
+    margin-top: 6px;
+    font-size: 15px;
+  }
+
+  .why__stat-text {
+    margin-top: 4px;
+    font-size: 14px;
+    line-height: 19px;
+  }
+
   .cms__title {
     font-size: 32px;
     line-height: 40px;
@@ -2676,10 +2910,6 @@ button {
   .why__hero {
     flex-direction: column;
     align-items: flex-start;
-  }
-
-  .why__stat {
-    padding: 24px;
   }
 
   .cms__title {
@@ -3267,6 +3497,12 @@ button {
     height: auto;
     min-height: 0;
     scroll-snap-align: start;
+    /* На мобиле блюр пропускал яркий фон дата-центра и давал «засвет» —
+       выключаем backdrop-filter и кладём сплошную тёмную плашку. */
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    background: rgba(20, 18, 17, 0.88);
+    border-color: rgba(255, 255, 255, 0.08);
   }
 
   /* компактно: текст сразу под иконкой, без растягивания на всю высоту */
@@ -3348,6 +3584,12 @@ button {
   margin-top: 20px;
 }
 
+/* Платформы умещаем в одну строку — поджимаем отступы и размеры */
+.reviews__platforms {
+  flex-wrap: nowrap;
+  gap: 8px;
+}
+
 .reviews__filters {
   margin-top: 12px;
 }
@@ -3355,16 +3597,23 @@ button {
 .reviews__platform {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 9px 14px;
+  gap: 6px;
+  padding: 8px 12px;
+  white-space: nowrap;
   background: var(--color-white);
   border: 1px solid var(--color-border);
   border-radius: 999px;
   font-weight: 500;
-  font-size: 15px;
+  font-size: 14px;
   line-height: 18px;
   color: var(--color-text-main);
   transition: border-color 0.15s ease;
+}
+
+.reviews__platform .reviews__badge {
+  width: 20px;
+  height: 20px;
+  font-size: 11px;
 }
 
 .reviews__platform--active {
@@ -3924,8 +4173,28 @@ button {
 }
 
 @media (max-width: 768px) {
+  /* Горизонтальный скролл карточек блога — до краёв вьюпорта (отрицательный
+     margin гасит боковые поля .container, padding возвращает их внутрь ленты). */
   .blog__grid {
+    display: flex;
+    grid-template-columns: none;
+    max-width: none;
     margin-top: 28px;
+    margin-inline: calc(-1 * var(--page-gutter));
+    padding-inline: var(--page-gutter);
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: var(--page-gutter);
+    scrollbar-width: none;
+  }
+
+  .blog__grid::-webkit-scrollbar {
+    display: none;
+  }
+
+  .blog__card {
+    flex: 0 0 300px;
+    scroll-snap-align: start;
   }
 }
 
@@ -4472,19 +4741,6 @@ button {
   max-width: 100%;
 }
 
-/* Мягкий fade содержимого при смене сценария */
-@media (prefers-reduced-motion: no-preference) {
-  @keyframes reco-swap {
-    from { opacity: 0; transform: translateY(8px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  .reco__result--swap .reco-card,
-  .reco__result--swap .reco-tariff {
-    animation: reco-swap 0.3s cubic-bezier(0.22, 0.61, 0.36, 1) both;
-  }
-}
-
 @media (hover: hover) and (prefers-reduced-motion: no-preference) {
   .reco-scenario {
     transition: background 0.15s ease, border-color 0.15s ease, box-shadow 0.2s ease, transform 0.15s ease;
@@ -4537,10 +4793,10 @@ button {
 
   .reco-scenario {
     min-height: 0;
-    padding: 12px 16px;
+    padding: 12px 18px;
     justify-content: center;
-    font-size: 16px;
-    line-height: 22px;
+    font-size: 18px;
+    line-height: 24px;
   }
 
   .reco-scenario__mark {
@@ -4550,9 +4806,6 @@ button {
   /* На мобиле прячем кастомную карточку, показываем стандартную. */
   .reco-card {
     display: none;
-  }
-  .reco__desc {
-    display: block;
   }
   .reco-tariff {
     display: flex;
