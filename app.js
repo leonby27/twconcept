@@ -274,69 +274,116 @@
     });
   })();
 
+  /* ---------- Migration illu: рандомная смена иконок на бейджах ----------
+     Пул из 6 иконок (монитор/почта/глобус/бонус/сервер/щит). На каждом витке,
+     пока бейдж скрыт у центра, иконка меняется на случайную (без повтора
+     подряд). reduced-motion — остаются исходные иконки из разметки. */
+  (function () {
+    if (reduce.matches) return;
+    var POOL = ["monitor", "envelope-simple", "globe", "gift", "hard-drives", "shield"]
+      .map(function (n) { return "url(assets/icons/solid/" + n + ".svg)"; });
+    var icons = Array.prototype.slice.call(
+      document.querySelectorAll(".illu__badge .icon")
+    );
+    if (!icons.length) return;
+    icons.forEach(function (ic) {
+      var last = null;
+      function pick() {
+        var u;
+        do { u = POOL[(Math.random() * POOL.length) | 0]; } while (u === last && POOL.length > 1);
+        last = u;
+        return u;
+      }
+      ic.style.setProperty("--icon", pick());
+      var badge = ic.closest(".illu__badge");
+      if (badge) {
+        badge.addEventListener("animationiteration", function () {
+          ic.style.setProperty("--icon", pick());
+        });
+      }
+    });
+  })();
+
   /* ---------- Final CTA: выбор сценария → один рекомендуемый тариф ---------- */
   (function () {
     var PLANS = {
-      "Year+": { name: "Year+", price: 164, total: 1968, features: [
-        ["15 ГБ", "на NVMe-дисках", true], ["2", "сайта с изоляцией", true],
+      "Year+": { name: "Year+", price: 164, total: 1968, save: 840, features: [
+        ["2", "сайта с изоляцией", true], ["15 ГБ", "на NVMe-дисках", true],
         ["5", "Базы Данных", false], ["Стандартный", "CPU и MySQL", false] ] },
-      "Optimo+": { name: "Optimo+", price: 248, total: 2976, features: [
-        ["40 ГБ", "на NVMe-дисках", true], ["15", "сайтов с изоляцией", true],
+      "Optimo+": { name: "Optimo+", price: 248, total: 2976, save: 1272, features: [
+        ["15", "сайтов с изоляцией", true], ["40 ГБ", "на NVMe-дисках", true],
         ["∞", "Базы Данных", false], ["+250%", "CPU и MySQL", false] ] },
-      "Century+": { name: "Century+", price: 347, total: 4164, features: [
-        ["50 ГБ", "на NVMe-дисках", true], ["35", "сайтов с изоляцией", true],
+      "Century+": { name: "Century+", price: 347, total: 4164, save: 1788, features: [
+        ["35", "сайтов с изоляцией", true], ["50 ГБ", "на NVMe-дисках", true],
         ["∞", "Базы Данных", false], ["+350%", "CPU и MySQL", false] ] },
-      "Millenium+": { name: "Millenium+", price: 482, total: 5784, features: [
-        ["60 ГБ", "на NVMe-дисках", true], ["60", "сайтов с изоляцией", true],
+      "Millenium+": { name: "Millenium+", price: 482, total: 5784, save: 2484, features: [
+        ["60", "сайтов с изоляцией", true], ["60 ГБ", "на NVMe-дисках", true],
         ["∞", "Базы Данных", false], ["+550%", "CPU и MySQL", false] ] },
     };
-    // Каждый сценарий → один рекомендуемый тариф и своя 3D-иллюстрация.
+    // Каждый сценарий → рекомендуемый тариф и своё описание.
     var SCENARIOS = [
-      { plan: "Year+",      img: "reco-landing.png" },
-      { plan: "Optimo+",    img: "reco-company.png" },
-      { plan: "Century+",   img: "reco-store.png" },
-      { plan: "Optimo+",    img: "reco-dev.png" },
-      { plan: "Century+",   img: "reco-studio.png" },
-      { plan: "Millenium+", img: "reco-complex.png" },
+      { plan: "Year+",      desc: "Быстрый старт для лендинга или небольшого сайта — всё необходимое уже включено" },
+      { plan: "Optimo+",    desc: "Больше ресурсов для стабильной работы сайта компании, базы данных и сервисов" },
+      { plan: "Century+",   desc: "Запас мощности и места под каталог, корзину и пиковые нагрузки магазина" },
+      { plan: "Optimo+",    desc: "Гибкая среда с изоляцией и базами данных для пет-проектов и клиентских сайтов" },
+      { plan: "Century+",   desc: "Десятки изолированных сайтов на одном аккаунте — удобно вести проекты клиентов" },
+      { plan: "Millenium+", desc: "Максимум дисков, баз данных и CPU для нагруженных highload-проектов" },
     ];
     var CHECK = "url(assets/icons/solid/check.svg)";
     var INFO = "url(assets/icons/solid/info.svg)";
-    var card = document.querySelector(".reco-card");
+    var result = document.querySelector(".reco__result");
+    var custom = document.querySelector(".reco-card");      // десктоп (Figma 2 колонки)
+    var tariff = document.querySelector(".reco-tariff");    // мобайл (стандартная карточка)
     var chips = document.querySelectorAll(".reco-scenario");
-    if (!card || !chips.length) return;
+    if (!result || !chips.length) return;
 
-    var elName = card.querySelector(".reco-card__name");
-    var elFeatures = card.querySelector(".reco-card__features");
-    var elPrice = card.querySelector(".reco-card__price-value");
-    var elTotal = card.querySelector(".reco-card__total");
-    var elMedia = card.querySelector(".reco-card__media");
-
-    function featureHTML(f) {
+    // Десктоп-карточка: чипы-пилюли.
+    function pillHTML(f) {
       var info = f[2] ? '<span class="icon reco-card__info" aria-hidden="true" style="--icon: ' + INFO + '"></span>' : "";
       var rest = f[1] ? " " + f[1] : "";
       return '<div class="reco-card__feature">' +
         '<span class="icon reco-card__check" aria-hidden="true" style="--icon: ' + CHECK + '"></span>' +
-        '<span class="reco-card__feature-text"><b class="reco-card__feature-b">' + f[0] + "</b>" + rest + "</span>" + info + "</div>";
+        '<span class="reco-card__feature-text"><b class="reco-card__feature-b">' + f[0] + "</b>" + rest + info + "</span></div>";
+    }
+    // Мобайл-карточка: чек-лист как в сетке тарифов.
+    function liHTML(f) {
+      var info = f[2] ? '<span class="icon pricing__info" aria-hidden="true" style="--icon: ' + INFO + '"></span>' : "";
+      var rest = f[1] ? " " + f[1] : "";
+      return '<li class="pricing__feature">' +
+        '<span class="icon pricing__check" aria-hidden="true" style="--icon: ' + CHECK + '"></span>' +
+        '<span class="pricing__feature-text"><b class="pricing__feature-b">' + f[0] + "</b>" + rest + info + "</span></li>";
+    }
+    function set(root, sel, val, html) {
+      var el = root && root.querySelector(sel);
+      if (el) { if (html) el.innerHTML = val; else el.textContent = val; }
     }
     function render(i) {
       var s = SCENARIOS[i];
       var plan = PLANS[s.plan];
-      elName.textContent = plan.name;
-      // Чипы — ровно по 2 в ряд (строки-обёртки).
-      var rows = "";
-      for (var k = 0; k < plan.features.length; k += 2) {
-        rows += '<div class="reco-card__feature-row">' +
-          plan.features.slice(k, k + 2).map(featureHTML).join("") + "</div>";
+      var price = fmt(plan.price) + "&nbsp;₽";
+      var total = fmt(plan.total) + " ₽ за 12 месяцев";
+      // Десктоп (кастом)
+      if (custom) {
+        set(custom, ".reco-card__name", plan.name);
+        set(custom, ".reco-card__desc", s.desc);
+        set(custom, ".reco-card__price-value", price, true);
+        set(custom, ".reco-card__total", total);
+        custom.querySelector(".reco-card__features").innerHTML = plan.features.map(pillHTML).join("");
       }
-      elFeatures.innerHTML = rows;
-      elPrice.innerHTML = fmt(plan.price) + "&nbsp;₽";
-      elTotal.textContent = fmt(plan.total) + " ₽ за 12 месяцев";
-      elMedia.setAttribute("src", "assets/illustrations/" + s.img);
-      // Мягкий fade содержимого при смене сценария (перезапуск анимации).
+      // Мобайл (стандартная)
+      if (tariff) {
+        set(document, ".reco__desc", s.desc);
+        set(tariff, ".pricing__name", plan.name);
+        set(tariff, ".pricing__save", "Экономия " + fmt(plan.save) + " ₽");
+        set(tariff, ".pricing__price-value", price, true);
+        set(tariff, ".pricing__total", total);
+        tariff.querySelector(".pricing__features").innerHTML = plan.features.map(liHTML).join("");
+      }
+      // Мягкий fade содержимого при смене сценария.
       if (!reduce.matches) {
-        card.classList.remove("reco-card--swap");
-        void card.offsetWidth;
-        card.classList.add("reco-card--swap");
+        result.classList.remove("reco__result--swap");
+        void result.offsetWidth;
+        result.classList.add("reco__result--swap");
       }
     }
 

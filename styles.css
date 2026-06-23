@@ -1844,15 +1844,25 @@ button {
 }
 
 @media (max-width: 768px) {
+  /* Горизонтальный скролл: карточки в ряд, край-в-край с лёгким «выглядыванием». */
   .pricing__incards {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (max-width: 480px) {
-  .pricing__incards {
-    grid-template-columns: 1fr;
+    display: flex;
+    grid-template-columns: none;
     gap: 12px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    margin-inline: calc(var(--page-gutter) * -1);
+    padding-inline: var(--page-gutter);
+    scrollbar-width: none;
+  }
+
+  .pricing__incards::-webkit-scrollbar {
+    display: none;
+  }
+
+  .incard {
+    flex: 0 0 240px;
+    scroll-snap-align: start;
   }
 }
 
@@ -1887,10 +1897,10 @@ button {
     margin-top: 28px;
     overflow-x: auto;
     scroll-snap-type: x mandatory;
-    scroll-padding-inline: 6px;
+    scroll-padding-inline: var(--page-gutter);
     -webkit-overflow-scrolling: touch;
-    padding: 10px 6px 20px;
-    margin-inline: -6px;
+    padding: 10px var(--page-gutter) 20px;
+    margin-inline: calc(var(--page-gutter) * -1);
     scrollbar-width: none;
   }
 
@@ -1972,11 +1982,12 @@ button {
   margin-top: var(--section-gap);
 }
 
-/* Светлая плашка: слева текст (заголовок+описание сверху, подарок+CTA
-   снизу), справа фото в край карточки (абсолют). */
+/* Светлая плашка: слева текст, справа иллюстрация-«радар» (из Figma). */
 .migration__card {
   position: relative;
-  background: var(--color-card);
+  display: flex;
+  align-items: stretch;
+  background: var(--color-white);
   border: 1px solid var(--color-border-soft);
   border-radius: var(--radius-card);
   box-shadow: var(--shadow-soft);
@@ -1986,10 +1997,269 @@ button {
 .migration__content {
   position: relative;
   z-index: 1;
+  flex: 1 1 auto;
+  max-width: 660px;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   padding: 48px;
+}
+
+/* Правая колонка с иллюстрацией; фрейм 500×376 из Figma центрируется,
+   крупные кольца уходят за край (clip). */
+.migration__illu {
+  position: relative;
+  flex: 1 1 0;
+  min-width: 0;
+  align-self: stretch;
+  overflow: hidden;
+}
+
+.illu {
+  position: absolute;
+  top: 50%;
+  left: 60%;
+  width: 500px;
+  height: 376px;
+  transform: translate(-50%, -50%);
+}
+
+/* Концентрические кольца (Ø100–500, шаг 80), общий центр (250,188). */
+.illu__ring {
+  position: absolute;
+  left: 250px;
+  top: 188px;
+  transform: translate(-50%, -50%);
+  width: var(--d);
+  height: var(--d);
+  border-radius: 50%;
+  border: 1px solid rgba(77, 59, 59, 0.07);
+}
+
+/* Тонкие акцентные «усики»-коннекторы. Статичные позиции (fallback). */
+.illu__line {
+  position: absolute;
+  background: var(--color-accent);
+}
+
+.illu__line--top { left: 250px; top: 62px; width: 1px; height: 24px; }
+.illu__line--right { left: 476px; top: 254px; width: 24px; height: 1px; }
+.illu__line--bottom { left: 250px; top: 413px; width: 1px; height: 24px; }
+.illu__line--left { left: 0; top: 254px; width: 24px; height: 1px; }
+
+/* Левый спок — только на мобиле (в десктоп-макете три направления). */
+.illu__badge--left,
+.illu__line--left { display: none; }
+
+/* Бейдж: белый кружок с акцентной рамкой и акцентным диском внутри.
+   Статичные позиции (fallback для reduced-motion). */
+.illu__badge {
+  position: absolute;
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  background: var(--color-white);
+  border: 1px solid var(--color-accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.illu__badge--top { left: 223px; top: 86px; }
+.illu__badge--right { left: 420px; top: 225px; }
+.illu__badge--bottom { left: 223px; top: 357px; }
+.illu__badge--left { left: 8px; top: 225px; display: none; }
+
+.illu__badge::before {
+  content: "";
+  position: absolute;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: var(--color-accent);
+}
+
+.illu__badge .icon {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  color: var(--color-white);
+}
+
+/* Центральная карточка-консоль 220×140 (SVG из Figma), с обводкой и тенью
+   как у остальных белых плашек. */
+.illu__card {
+  position: absolute;
+  left: 250px;
+  top: 188px;
+  transform: translate(-50%, -50%);
+  display: block;
+  width: 220px;
+  height: 140px;
+  border-radius: 24px;
+  /* Обводка 10px снаружи (F9F5F2) + тонкая тень 1px по внешнему контуру рамки
+     (spread 10px — иначе 1px-тень спряталась бы под обводкой). */
+  box-shadow: 0 0 0 10px var(--color-surface), 0 0 1px 10px #d2c3b7;
+}
+
+/* Анимация: кружок выезжает из-за края (за краем блока) к центру и гаснет
+   за карточкой; линия-хвост (1px) тянется от края вслед за ним и затухает
+   с дальнего (краевого) конца через градиентную маску. Центр = (250,188),
+   старт за краем D = 300px. Кружки идут последовательно друг за другом
+   (цикл 4.5s, движение ~1.2s, пауза до следующего витка).
+   reduced-motion видит статичную раскладку. */
+@media (prefers-reduced-motion: no-preference) {
+  .illu__card {
+    z-index: 2; /* кружки уходят за карточку у центра */
+    /* Период = интервал между прилётами (цикл/3). Пик совпадает с моментом,
+       когда кружок достигает центра → карточка коротко «отзывается». */
+    animation: illu-card-pulse 2.0s ease-in-out infinite;
+  }
+
+  /* Магнитный отклик колец: кружок «пробивает» кольца по пути к центру —
+     каждое слегка расходится к краям в момент пересечения и возвращается.
+     Волна идёт от внешнего кольца (раньше, у края) к внутреннему (у центра,
+     совпадает с прилётом). nth-child(1) — внутреннее Ø100, (6) — внешнее Ø500. */
+  .illu__ring {
+    animation: illu-ring-pulse 2.0s ease-in-out infinite;
+  }
+  .illu__ring:nth-child(1) { animation-delay: -0.05s; }
+  .illu__ring:nth-child(2) { animation-delay: -0.22s; }
+  .illu__ring:nth-child(3) { animation-delay: -0.42s; }
+  .illu__ring:nth-child(4) { animation-delay: -0.66s; }
+  .illu__ring:nth-child(5) { animation-delay: -0.92s; }
+  .illu__ring:nth-child(6) { animation-delay: -1.2s; }
+
+  .illu__badge {
+    z-index: 1;
+    left: 250px;
+    top: 188px;
+    margin-left: -44px;
+    margin-top: -44px;
+  }
+  .illu__badge--top {
+    animation: illu-badge-top 6.0s cubic-bezier(0.3, 0.75, 0.7, 0.25) infinite;
+  }
+  .illu__badge--bottom {
+    animation: illu-badge-bottom 6.0s cubic-bezier(0.3, 0.75, 0.7, 0.25) infinite;
+    animation-delay: -2.0s;
+  }
+  .illu__badge--right {
+    animation: illu-badge-right 6.0s cubic-bezier(0.3, 0.75, 0.7, 0.25) infinite;
+    animation-delay: -4.0s;
+  }
+  .illu__badge--left {
+    animation: illu-badge-left 6.0s cubic-bezier(0.3, 0.75, 0.7, 0.25) infinite;
+    animation-delay: -1.0s;
+  }
+
+  .illu__line {
+    z-index: 1;
+  }
+  /* Маска: прозрачно у края (дальний конец) → плотно к центру (за кружком). */
+  .illu__line--top {
+    left: 250px;
+    top: -112px;
+    width: 1px;
+    height: 300px;
+    transform-origin: 50% 0%;
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 65%);
+    mask-image: linear-gradient(to bottom, transparent 0%, #000 65%);
+    animation: illu-line-v 6.0s cubic-bezier(0.3, 0.75, 0.7, 0.25) infinite;
+  }
+  .illu__line--bottom {
+    left: 250px;
+    top: 188px;
+    width: 1px;
+    height: 300px;
+    transform-origin: 50% 100%;
+    -webkit-mask-image: linear-gradient(to top, transparent 0%, #000 65%);
+    mask-image: linear-gradient(to top, transparent 0%, #000 65%);
+    animation: illu-line-v 6.0s cubic-bezier(0.3, 0.75, 0.7, 0.25) infinite;
+    animation-delay: -2.0s;
+  }
+  .illu__line--right {
+    left: 250px;
+    top: 188px;
+    width: 300px;
+    height: 1px;
+    transform-origin: 100% 50%;
+    -webkit-mask-image: linear-gradient(to left, transparent 0%, #000 65%);
+    mask-image: linear-gradient(to left, transparent 0%, #000 65%);
+    animation: illu-line-h 6.0s cubic-bezier(0.3, 0.75, 0.7, 0.25) infinite;
+    animation-delay: -4.0s;
+  }
+  .illu__line--left {
+    left: -50px;
+    top: 188px;
+    width: 300px;
+    height: 1px;
+    transform-origin: 0% 50%;
+    -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 65%);
+    mask-image: linear-gradient(to right, transparent 0%, #000 65%);
+    animation: illu-line-h 6.0s cubic-bezier(0.3, 0.75, 0.7, 0.25) infinite;
+    animation-delay: -1.0s;
+  }
+}
+
+/* Движение 0→27% (~1.2s), затем кружок держится скрытым до конца витка. */
+@keyframes illu-badge-top {
+  0% { transform: translateY(-300px) scale(0.85); opacity: 0; }
+  3% { opacity: 1; }
+  17% { opacity: 1; }
+  21% { transform: translateY(0) scale(0.55); opacity: 0; }
+  100% { transform: translateY(0) scale(0.55); opacity: 0; }
+}
+@keyframes illu-badge-bottom {
+  0% { transform: translateY(300px) scale(0.85); opacity: 0; }
+  3% { opacity: 1; }
+  17% { opacity: 1; }
+  21% { transform: translateY(0) scale(0.55); opacity: 0; }
+  100% { transform: translateY(0) scale(0.55); opacity: 0; }
+}
+@keyframes illu-badge-right {
+  0% { transform: translateX(300px) scale(0.85); opacity: 0; }
+  3% { opacity: 1; }
+  17% { opacity: 1; }
+  21% { transform: translateX(0) scale(0.55); opacity: 0; }
+  100% { transform: translateX(0) scale(0.55); opacity: 0; }
+}
+@keyframes illu-badge-left {
+  0% { transform: translateX(-300px) scale(0.85); opacity: 0; }
+  3% { opacity: 1; }
+  17% { opacity: 1; }
+  21% { transform: translateX(0) scale(0.55); opacity: 0; }
+  100% { transform: translateX(0) scale(0.55); opacity: 0; }
+}
+@keyframes illu-line-v {
+  0% { transform: scaleY(0); opacity: 0; }
+  3% { opacity: 1; }
+  17% { opacity: 1; }
+  21% { transform: scaleY(1); opacity: 0; }
+  100% { transform: scaleY(1); opacity: 0; }
+}
+@keyframes illu-line-h {
+  0% { transform: scaleX(0); opacity: 0; }
+  3% { opacity: 1; }
+  17% { opacity: 1; }
+  21% { transform: scaleX(1); opacity: 0; }
+  100% { transform: scaleX(1); opacity: 0; }
+}
+
+/* «Отклик» карточки: пик масштаба на момент прилёта кружка (≈63% периода),
+   затем плавный возврат. translate сохраняем — иначе собьётся центрирование. */
+@keyframes illu-card-pulse {
+  0%, 54% { transform: translate(-50%, -50%) scale(1); }
+  63% { transform: translate(-50%, -50%) scale(1.06); }
+  78% { transform: translate(-50%, -50%) scale(1); }
+  100% { transform: translate(-50%, -50%) scale(1); }
+}
+
+@keyframes illu-ring-pulse {
+  0%, 52% { transform: translate(-50%, -50%) scale(1); }
+  63% { transform: translate(-50%, -50%) scale(1.022); }
+  94% { transform: translate(-50%, -50%) scale(1); }
+  100% { transform: translate(-50%, -50%) scale(1); }
 }
 
 .migration__heading {
@@ -2005,6 +2275,7 @@ button {
 /* «Бесплатно.» проявляется по буквам при скролле, затем — мягкий блик */
 .migration__type {
   white-space: nowrap;
+  color: var(--color-accent);
 }
 
 .migration__type-text {
@@ -2038,6 +2309,7 @@ button {
   font-size: 20px;
   line-height: 28px;
   color: var(--color-text-main-80);
+  white-space: nowrap;
 }
 
 .migration__note-icon {
@@ -2061,45 +2333,62 @@ button {
   line-height: 22px;
   color: var(--color-text-main-80);
   opacity: 0.7;
-}
-
-.migration__media {
-  position: absolute;
-  inset: 0 0 0 auto;
-  z-index: 0;
-  width: 62%;
-  overflow: hidden;
-}
-
-.migration__media img {
-  width: 100%;
-  height: 100%;
-  /* Масштаб по высоте: фигура целиком, без обрезки и без выхода за края */
-  object-fit: contain;
-  object-position: right bottom;
+  white-space: nowrap;
 }
 
 @media (max-width: 768px) {
+  /* Одна колонка: радар-полоса сверху, контент снизу. */
   .migration__card {
-    display: flex;
     flex-direction: column;
-    min-height: 0;
   }
 
+  /* Полоса повыше, чтобы влёты сверху/снизу не зарезались. */
+  .migration__illu {
+    display: block;
+    order: -1;
+    flex: none;
+    width: 100%;
+    height: 340px;
+  }
+
+  /* Центрируем радар в полосе. */
+  .illu {
+    left: 50%;
+  }
+
+  /* На мобиле добавляем влёт слева (в десктоп-макете его нет). */
+  .illu__badge--left {
+    display: flex;
+  }
+  .illu__line--left {
+    display: block;
+  }
+
+  /* Ровный интервал для 4 направлений (цикл 6s → шаг 1.5s). */
+  .illu__badge--top,
+  .illu__line--top { animation-delay: 0s; }
+  .illu__badge--right,
+  .illu__line--right { animation-delay: -1.5s; }
+  .illu__badge--bottom,
+  .illu__line--bottom { animation-delay: -3s; }
+  .illu__badge--left,
+  .illu__line--left { animation-delay: -4.5s; }
+
   .migration__content {
-    min-height: 0;
-    /* Верхний отступ = боковому, чтобы зазор от картинки до заголовка
-       совпадал с боковыми полями. */
     padding: 28px;
-    order: 2;
-    /* Разделитель прямо под картинкой, во всю ширину (как рамка карточки). */
-    border-top: 1px solid var(--color-border-soft);
+    max-width: none;
   }
 
   .migration__heading {
     max-width: none;
     font-size: 32px;
     line-height: 40px;
+  }
+
+  /* На мобиле текст переносим (на десктопе он в одну строку). */
+  .migration__note,
+  .migration__desc {
+    white-space: normal;
   }
 
   .migration__note {
@@ -2113,20 +2402,6 @@ button {
     flex-direction: column;
     align-items: flex-start;
     gap: 12px;
-  }
-
-  .migration__media {
-    position: static;
-    width: auto;
-    /* min-height убираем: контейнер = высоте фото, чтобы линия примыкала
-       к картинке без зазора (фон карточки больше не выглядывает снизу). */
-    min-height: 0;
-    order: 1;
-  }
-
-  .migration__media img {
-    display: block;
-    object-position: center;
   }
 }
 
@@ -2527,6 +2802,13 @@ button {
   margin-top: 32px;
 }
 
+/* Перенести в Timeweb + Попробовать бесплатно — выше и со скруглением 16px. */
+.migration__cta,
+.panel__cta {
+  height: 56px;
+  border-radius: 16px;
+}
+
 /* Скриншот — целиком, прижат к правому-нижнему углу карточки.
    Исходник 2x (1100×980) → показываем в 50% (550×490). */
 .panel__media {
@@ -2923,8 +3205,10 @@ button {
   border: 1px solid rgba(255, 255, 255, 0.05);
   border-radius: 24px;
   box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
-  -webkit-backdrop-filter: blur(15px);
-  backdrop-filter: blur(15px);
+  /* brightness гасит «засвет» от яркого фона дата-центра, просвечивающего
+     сквозь блюр (цвет самой плашки не меняем). */
+  -webkit-backdrop-filter: blur(15px) brightness(0.55);
+  backdrop-filter: blur(15px) brightness(0.55);
 }
 
 .infra__cell-icon {
@@ -2960,14 +3244,29 @@ button {
     line-height: 28px;
   }
 
+  /* Горизонтальный скролл карточек инфраструктуры — до краёв тёмной плашки
+     (отрицательный margin гасит её боковой паддинг 28px). */
   .infra__grid {
-    grid-template-columns: 1fr 1fr;
+    display: flex;
+    grid-template-columns: none;
     margin-top: 48px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: 28px;
+    margin-inline: -28px;
+    padding-inline: 28px;
+    scrollbar-width: none;
+  }
+
+  .infra__grid::-webkit-scrollbar {
+    display: none;
   }
 
   .infra__cell {
+    flex: 0 0 220px;
     height: auto;
     min-height: 0;
+    scroll-snap-align: start;
   }
 
   /* компактно: текст сразу под иконкой, без растягивания на всю высоту */
@@ -2986,12 +3285,6 @@ button {
   .infra__desc {
     font-size: 16px;
     line-height: 22px;
-  }
-}
-
-@media (max-width: 480px) {
-  .infra__grid {
-    grid-template-columns: 1fr;
   }
 }
 
@@ -3646,15 +3939,44 @@ button {
   margin-top: var(--section-gap);
 }
 
-.support__inner {
+/* Белая карточка: слева сверху текст, слева снизу чипы, справа — форма
+   во всю высоту (Figma). */
+.support__card {
   display: grid;
-  grid-template-columns: 1fr 1.1fr;
-  align-items: center;
-  gap: 72px;
+  grid-template-columns: 1fr 480px;
+  grid-template-rows: auto 1fr;
+  align-items: start;
+  column-gap: 64px;
+  row-gap: 24px;
+  padding: 40px;
+  background: var(--color-white);
+  border: 1px solid rgba(77, 59, 59, 0.1);
+  border-radius: 32px;
+  box-shadow: 0 24px 29px rgba(0, 0, 0, 0.04), 0 3px 3.6px rgba(0, 0, 0, 0.02);
+}
+
+.support__content {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.support__form {
+  grid-column: 2;
+  grid-row: 1 / 3;
+}
+
+.support__chips {
+  grid-column: 1;
+  grid-row: 2;
+  align-self: end;
 }
 
 .support__title {
   text-align: left;
+}
+
+.support__accent {
+  color: var(--color-accent);
 }
 
 .support__sub {
@@ -3709,96 +4031,159 @@ button {
   }
 }
 
-/* Фото в мягкой розовой рамке-плашке */
-.support__media-frame {
-  padding: 20px;
-  background: var(--color-accent-tint);
-  border-radius: var(--radius-card);
+/* Форма обратной связи */
+.support__form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 
-.support__media {
-  aspect-ratio: 7 / 5;
-  width: 100%;
-  overflow: hidden;
-  border-radius: var(--radius-card-s);
+.support__group {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
-.support__media img {
+.support__fields {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.support__row {
+  display: flex;
+  gap: 8px;
+}
+
+.support__input {
   width: 100%;
-  height: 100%;
-  object-fit: cover;
+  padding: 18px 16px;
+  border: 0;
+  border-radius: 16px;
+  background: var(--color-surface);
+  font-family: var(--font-text);
+  font-size: 16px;
+  line-height: 20px;
+  color: var(--color-text-main);
+}
+
+.support__input::placeholder {
+  color: var(--color-black-100);
+  opacity: 0.5;
+}
+
+.support__input:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 1px;
+}
+
+.support__row .support__input {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.support__checks {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.support__check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-text);
+  font-size: 14px;
+  line-height: 20px;
+  letter-spacing: -0.2px;
+  color: var(--color-black-100);
+  cursor: pointer;
+}
+
+.support__check a {
+  color: inherit;
+  text-decoration: underline;
+}
+
+.support__check-input {
+  appearance: none;
+  -webkit-appearance: none;
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  border: 1.5px solid rgba(77, 59, 59, 0.2);
+  border-radius: 8px;
+  background: var(--color-white);
+  cursor: pointer;
+}
+
+.support__check-input:checked {
+  border-color: transparent;
+  background: var(--color-accent-tint)
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 14' fill='none'%3E%3Cpath d='M3 7.3 5.6 10 11 4' stroke='%23DC6655' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")
+    center / 12px 12px no-repeat;
+}
+
+.support__submit {
+  width: 100%;
+  height: 56px;
+  border-radius: 16px;
+  font-size: 16px;
+  font-weight: 500;
 }
 
 @media (max-width: 1024px) {
-  .support__inner {
+  /* В одну колонку: текст → форма → чипы (под кнопкой «Отправить»). */
+  .support__card {
     grid-template-columns: 1fr;
-    gap: 36px;
+    grid-template-rows: none;
+    gap: 28px;
+    padding: 32px;
+  }
+
+  .support__content,
+  .support__form,
+  .support__chips {
+    grid-column: auto;
+    grid-row: auto;
+  }
+
+  /* Чипы — полноширинные кнопки под формой, размером как «Отправить»,
+     стиль outline. */
+  .support__chips {
+    flex-direction: column;
+    flex-wrap: nowrap;
+    gap: 8px;
+    margin-top: 0;
+  }
+
+  .support__chip {
+    width: 100%;
+    height: 48px;
+    justify-content: center;
+    border-radius: 16px;
   }
 }
 
 @media (max-width: 768px) {
-  /* Картинка над заголовком; тексты и кнопки по центру. */
-  .support__media-frame {
-    order: -1;
-  }
-
-  .support__content {
-    text-align: center;
-  }
-
-  .support__title {
-    text-align: center;
-  }
-
   .support__sub {
-    margin-inline: auto;
     font-size: 18px;
     line-height: 28px;
-  }
-
-  /* Обе кнопки в одну строку по центру — уменьшаем. */
-  .support__chips {
-    flex-wrap: nowrap;
-    justify-content: center;
-    gap: 8px;
-  }
-
-  .support__chip {
-    height: 44px;
-    padding: 0 14px;
-    font-size: 15px;
-    gap: 6px;
-  }
-
-  .support__chip-icon {
-    width: 20px;
-    height: 20px;
   }
 }
 
 @media (max-width: 480px) {
-  .support__media-frame {
-    padding: 10px;
+  .support__card {
+    padding: 24px;
+  }
+
+  .support__row {
+    flex-direction: column;
   }
 
   .support__sub {
     font-size: 16px;
     line-height: 22px;
-  }
-
-  .support__chips {
-    gap: 6px;
-  }
-
-  .support__chip {
-    height: 40px;
-    padding: 0 12px;
-    font-size: 14px;
-  }
-
-  .support__chip-icon {
-    width: 18px;
-    height: 18px;
   }
 }
 
@@ -3945,17 +4330,24 @@ button {
   color: var(--color-accent);
 }
 
+/* Карточка: слева — название, описание, CTA+цена; справа — чипы-фичи. */
+/* ── Десктоп: кастомная карточка из Figma (2 колонки) ── */
 .reco-card {
-  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 280px;
+  gap: 40px;
+  align-items: stretch;
+  padding: 24px;
+  background: var(--color-white);
+  border: 1px solid rgba(77, 59, 59, 0.1);
+  border-radius: 24px;
+  box-shadow: 0 24px 29px rgba(0, 0, 0, 0.04), 0 3px 3.6px rgba(0, 0, 0, 0.02);
+}
+
+.reco-card__main {
   display: flex;
   flex-direction: column;
-  min-height: 257px;
-  padding: 23px;
-  overflow: hidden;
-  background: var(--color-white);
-  border: 1px solid var(--color-border-soft);
-  border-radius: var(--radius-card-s);
-  box-shadow: var(--shadow-card);
+  align-items: flex-start;
 }
 
 .reco-card__name {
@@ -3966,67 +4358,29 @@ button {
   color: var(--color-text-main);
 }
 
-/* Фичи — чипы на кремовом, ровно 2 ряда; в каждом ряду чипы идут
-   вплотную друг за другом. Не залезают под картинку (ограничены по ширине) */
-.reco-card__features {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  margin-top: 24px;
-}
-
-/* Ряд = 2 чипа на одной строке, без переноса (на узких экранах перенос
-   разрешаем — см. медиазапрос) */
-.reco-card__feature-row {
-  display: flex;
-  flex-wrap: nowrap;
-  gap: 8px;
-}
-
-.reco-card__feature {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 4px 12px;
-  background: var(--color-surface);
-  border-radius: 12px;
+.reco-card__desc {
+  margin-top: 8px;
+  max-width: 420px;
+  font-family: var(--font-text);
   font-size: 16px;
   line-height: 24px;
   color: var(--color-black-100);
 }
 
-.reco-card__check {
-  flex-shrink: 0;
-  width: 14px;
-  height: 16px;
-  color: var(--color-accent);
-}
-
-.reco-card__feature-b {
-  font-weight: 700;
-}
-
-.reco-card__info {
-  flex-shrink: 0;
-  width: 18px;
-  height: 18px;
-  color: var(--color-black-100);
-  opacity: 0.5;
-}
-
-/* Низ карточки: CTA + цена слева, прижато к низу */
 .reco-card__buy {
   display: flex;
-  align-items: center;
-  gap: 16px;
+  align-items: flex-end;
+  gap: 24px;
   margin-top: auto;
-  padding-top: 24px;
+  padding-top: 32px;
 }
 
 .reco-card__cta {
   flex-shrink: 0;
-  padding: 18px 28px;
-  border-radius: var(--radius-button-l);
+  width: 190px;
+  height: 56px;
+  padding: 0;
+  border-radius: 16px;
   font-size: 16px;
   line-height: 20px;
 }
@@ -4063,15 +4417,59 @@ button {
   color: rgba(77, 59, 59, 0.6);
 }
 
-/* 3D-иллюстрация тарифа — всегда в правом нижнем углу, отступ 24px */
-.reco-card__media {
-  position: absolute;
-  right: 24px;
-  bottom: 24px;
-  width: 172px;
-  height: 172px;
-  object-fit: contain;
-  pointer-events: none;
+.reco-card__features {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.reco-card__feature {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 18px;
+  background: var(--color-surface);
+  border-radius: 16px;
+  font-size: 16px;
+  line-height: 24px;
+  color: var(--color-black-100);
+}
+
+.reco-card__check {
+  flex-shrink: 0;
+  width: 14px;
+  height: 16px;
+  color: var(--color-accent);
+}
+
+.reco-card__feature-b {
+  font-weight: 700;
+}
+
+.reco-card__info {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  margin-left: 4px;
+  vertical-align: -5px;
+  color: var(--color-icon);
+  opacity: 0.5;
+}
+
+/* ── Мобайл: стандартная карточка тарифа (.pricing__card) + описание ── */
+.reco__desc {
+  display: none;
+  max-width: 520px;
+  margin-bottom: 16px;
+  font-size: 16px;
+  line-height: 24px;
+  color: var(--color-black-100);
+}
+
+.reco-tariff {
+  display: none;
+  width: 320px;
+  max-width: 100%;
 }
 
 /* Мягкий fade содержимого при смене сценария */
@@ -4081,10 +4479,8 @@ button {
     to { opacity: 1; transform: translateY(0); }
   }
 
-  .reco-card--swap .reco-card__name,
-  .reco-card--swap .reco-card__features,
-  .reco-card--swap .reco-card__pricing,
-  .reco-card--swap .reco-card__media {
+  .reco__result--swap .reco-card,
+  .reco__result--swap .reco-tariff {
     animation: reco-swap 0.3s cubic-bezier(0.22, 0.61, 0.36, 1) both;
   }
 }
@@ -4131,25 +4527,36 @@ button {
     font-size: 18px;
   }
 
+  /* Сценарии-чипы по контенту, несколько в ряд; галочку убираем. */
   .reco__scenarios {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    display: flex;
+    flex-wrap: wrap;
+    grid-template-columns: none;
     gap: 8px;
   }
 
   .reco-scenario {
-    min-height: 52px;
+    min-height: 0;
+    padding: 12px 16px;
+    justify-content: center;
     font-size: 16px;
     line-height: 22px;
   }
 
-  /* На узких экранах чипы могут не помещаться парой — разрешаем перенос */
-  .reco-card__feature-row {
-    flex-wrap: wrap;
+  .reco-scenario__mark {
+    display: none;
   }
 
-  .reco-card__media {
-    width: 120px;
-    height: 120px;
+  /* На мобиле прячем кастомную карточку, показываем стандартную. */
+  .reco-card {
+    display: none;
+  }
+  .reco__desc {
+    display: block;
+  }
+  .reco-tariff {
+    display: flex;
+    width: 100%;
   }
 }
 
@@ -4162,29 +4569,6 @@ button {
   .reco__text {
     font-size: 16px;
     line-height: 22px;
-  }
-
-  .reco__scenarios {
-    grid-template-columns: 1fr;
-  }
-
-  .reco-card {
-    min-height: 0;
-    padding: 20px;
-  }
-
-  /* На узких экранах картинка мешает чипам — прячем */
-  .reco-card__media {
-    display: none;
-  }
-
-  .reco-card__buy {
-    flex-wrap: wrap;
-    gap: 12px;
-  }
-
-  .reco-card__cta {
-    width: 100%;
   }
 }
 
