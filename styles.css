@@ -1,0 +1,4890 @@
+/* ============================================
+   Timeweb concept — design tokens from Figma
+   ============================================
+
+   Responsive system (desktop-first, макет 1432px):
+   ┌────────────┬──────────────────────────────────────────┐
+   │ ≤ 1280px   │ lg — компактный десктоп: меньше гаттеры  │
+   │ ≤ 1024px   │ md — планшет: бургер-меню вместо навигации│
+   │ ≤ 768px    │ sm — крупный мобильный: стек, сетки 2×2  │
+   │ ≤ 480px    │ xs — мобильный: колонки, full-width CTA  │
+   └────────────┴──────────────────────────────────────────┘
+   Медиазапросы держим в конце блока каждой секции.
+   Новые секции строим на .container и токенах из :root. */
+
+:root {
+  --font-inter: "Inter";
+  --font-roboto: "Roboto";
+  /* Colors */
+  --color-black-100: #4d3b3b;            /* Black/100% */
+  --color-white: #ffffff;                /* White/100% */
+  --color-text-main: #211e1e;
+  --color-text-main-80: rgba(33, 30, 30, 0.8);
+  --color-text-main-60: rgba(33, 30, 30, 0.6);
+  --color-text-main-50: rgba(33, 30, 30, 0.5);
+  --color-accent: #dc6655;
+  --color-accent-hover: #c95a4a;
+  --color-border: #dbdbdb;
+  --color-surface: #f9f5f2;
+  --color-surface-2: #f2edea;            /* утопленный тон на кремовом (FAQ) */
+
+  /* Fonts: --font-roboto и --font-inter задаются next/font в layout.tsx.
+     Заголовки — загруженный Inter (нейтральный гротеск), системный
+     Helvetica-стек оставлен как fallback на время загрузки. */
+  --font-heading: var(--font-inter), "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --font-text: var(--font-roboto), "Roboto", Arial, sans-serif;
+
+  /* Layout */
+  --container-max: 1214px;   /* контентная ширина макета (1432 − 2×109) */
+  --page-gutter: 24px;       /* боковые поля контента на узких экранах */
+  --header-gutter: 36px;     /* боковые поля хедера из макета */
+
+  /* Вертикальный ритм между секциями.
+     Стандартный зазор — всегда --section-gap. Исключение «связанная
+     полоса» (16–24px) — только если полоса контрастна обоим соседям
+     (как тёмный Cloud). Тонких щелей между зонами одного цвета не
+     оставляем: либо слитно, либо полный --section-gap. */
+  --section-gap: 100px;
+
+  /* Radii */
+  --radius-button-s: 12px;
+  --radius-button-l: 16px;
+  --radius-card: 32px;      /* крупные плашки во всю ширину */
+  --radius-card-s: 24px;    /* карточки в сетках */
+
+  /* Поверхности под акцентные иконки */
+  --color-accent-tint: rgba(220, 102, 85, 0.1);
+  --color-accent-soft: rgba(220, 102, 85, 0.07);    /* плоский кружок под иконкой */
+  --color-accent-surface: rgba(220, 102, 85, 0.06); /* фон выделенной карточки */
+  --color-accent-border: rgba(220, 102, 85, 0.35);  /* рамка выделенной карточки */
+  --color-success: #2e9e60;                          /* только деньги/подарки/успех */
+
+  /* Цвет функциональных инлайн-иконок: тёплый ink, НЕ акцент.
+     Акцент (#DC6655) бережём за CTA, popular-сигнал и текст-ссылки. */
+  --color-icon: var(--color-black-100);
+
+  /* Resting-тень карточек: мягкая глубина, чтобы белые карточки
+     на белом фоне не сливались. Hover-тень даёт .hover-lift. */
+  --shadow-card: 0 1px 2px rgba(33, 30, 30, 0.04), 0 8px 24px rgba(33, 30, 30, 0.05);
+
+  /* Единый стиль карточек/плашек: белый фон, мягкая тень, тонкая
+     тёплая обводка (black-10). Заменяет серые surface-карточки. */
+  --color-border-soft: rgba(77, 59, 59, 0.1);
+  --color-border-card: #efeae7; /* тёплая светлая обводка плашек на кремовом */
+  --shadow-soft: 0 24px 29px 0 rgba(0, 0, 0, 0.04), 0 3px 3.6px 0 rgba(0, 0, 0, 0.02);
+  --color-card: #fbfbfc; /* фон карточек/плашек нового стиля */
+
+  /* Единый сигнал «рекомендуем» (Products featured, Pricing popular,
+     Audience rec): акцентная рамка + эта мягкая акцентная тень. */
+  --shadow-accent: 0 8px 24px rgba(220, 102, 85, 0.12);
+}
+
+@media (max-width: 1280px) {
+  :root {
+    --header-gutter: 24px;
+  }
+}
+
+@media (max-width: 1024px) {
+  :root {
+    --section-gap: 90px;
+  }
+}
+
+@media (max-width: 480px) {
+  :root {
+    --page-gutter: 16px;
+    --header-gutter: 16px;
+    --section-gap: 68px;
+  }
+}
+
+/* ---- Reset ---- */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* Декор hero + параллакс выходят за край вьюпорта — гасим горизонтальный
+   скролл на обоих корневых элементах. clip не создаёт scroll-контейнер,
+   поэтому sticky-хедер продолжает работать (hidden — фолбэк). */
+html {
+  overflow-x: hidden;
+  overflow-x: clip;
+}
+
+body {
+  background: var(--color-white);
+  font-family: var(--font-text);
+  color: var(--color-text-main);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+  overflow-x: clip;
+}
+
+body.menu-open {
+  overflow: hidden;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+img {
+  display: block;
+}
+
+button {
+  font: inherit;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+/* ---- Container: единая контентная сетка для всех секций ---- */
+
+.container {
+  width: min(var(--container-max), 100% - var(--page-gutter) * 2);
+  margin-inline: auto;
+}
+
+/* Кремовый инсет-блок: объединяет несколько секций в одну скруглённую
+   плашку с отступом 16px от краёв (Pricing+Why, FinalCta+FAQ+Footer). */
+.band {
+  margin: var(--section-gap) 16px 0;
+  background: var(--color-surface);
+  border-radius: 32px;
+  overflow: hidden;
+}
+
+.band--footer {
+  margin-bottom: 16px;
+}
+
+@media (max-width: 480px) {
+  .band {
+    margin-left: 8px;
+    margin-right: 8px;
+    border-radius: 24px;
+  }
+}
+
+/* ---- Иконки (Phosphor): SVG как маска, цвет — через color ----
+   <span class="icon" style="--icon: url(assets/icons/duotone/gift.svg)" />
+   Слои duotone (opacity 0.2) сохраняются в одном оттенке. */
+
+.icon {
+  display: inline-block;
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  background-color: currentColor;
+  -webkit-mask: var(--icon) no-repeat center / contain;
+  mask: var(--icon) no-repeat center / contain;
+}
+
+/* Иконка на тонированной плашке. Размер — width/height на элементе,
+   внутренний отступ — --tile-pad (по умолчанию 12px) */
+.icon-tile {
+  position: relative;
+  display: inline-block;
+  flex-shrink: 0;
+  background: var(--color-accent-tint);
+  border-radius: 14px;
+}
+
+.icon-tile::after {
+  content: "";
+  position: absolute;
+  inset: var(--tile-pad, 12px);
+  background-color: var(--color-accent);
+  -webkit-mask: var(--icon) no-repeat center / contain;
+  mask: var(--icon) no-repeat center / contain;
+}
+
+/* ============================================
+   Buttons
+   ============================================ */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-text);
+  font-weight: 500;
+  text-align: center;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.btn:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+/* Small (header): 15px/18, padding 9x16, radius 12 */
+.btn--s {
+  padding: 9px 16px;
+  border-radius: var(--radius-button-s);
+  font-size: 15px;
+  line-height: 18px;
+}
+
+/* Medium (карточки, баннеры): 16px/20, высота 44, radius 12 */
+.btn--m {
+  padding: 12px 20px;
+  border-radius: var(--radius-button-s);
+  font-size: 16px;
+  line-height: 20px;
+}
+
+/* Large (hero CTA): 18px/26, 200x56, radius 16 */
+.btn--l {
+  width: 200px;
+  height: 56px;
+  padding: 14px 24px;
+  border-radius: var(--radius-button-l);
+  font-size: 18px;
+  line-height: 26px;
+}
+
+.btn--primary {
+  background: var(--color-accent);
+  color: var(--color-white);
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.1));
+}
+
+.btn--primary:hover {
+  background: var(--color-accent-hover);
+}
+
+.btn--white {
+  background: var(--color-white);
+  border: 1px solid var(--color-border);
+  color: var(--color-black-100);
+}
+
+.btn--white:hover {
+  border-color: #c4c4c4;
+}
+
+.btn--outline {
+  border: 1px solid var(--color-border);
+  color: var(--color-text-main);
+}
+
+.btn--outline:hover {
+  border-color: #c4c4c4;
+}
+
+/* Белая кнопка на цветном фоне (баннеры) */
+.btn--inverse {
+  background: var(--color-white);
+  color: var(--color-accent);
+}
+
+/* Тёмная кнопка (вторичный CTA: миграция, «оставить отзыв») */
+.btn--dark {
+  background: var(--color-text-main);
+  color: var(--color-white);
+}
+
+.btn--dark:hover {
+  background: #000;
+}
+
+/* ---- Премиум-слой: только устройства с курсором и без reduced motion.
+   Принцип: микро-сдвиги и мягкие тени, ничего кричащего. ---- */
+
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .btn {
+    transition:
+      background-color 0.15s ease,
+      border-color 0.15s ease,
+      transform 0.15s ease,
+      box-shadow 0.2s ease;
+  }
+
+  .btn:hover {
+    transform: translateY(-1px);
+  }
+
+  .btn:active {
+    transform: translateY(0) scale(0.98);
+    transition-duration: 0.06s;
+  }
+
+  .btn--primary:hover {
+    box-shadow: 0 6px 16px rgba(220, 102, 85, 0.35);
+  }
+
+  .btn--white:hover,
+  .btn--outline:hover {
+    box-shadow: 0 4px 12px rgba(33, 30, 30, 0.07);
+  }
+
+  /* Утилита для будущих карточек: подъём + мягкая тень */
+  .hover-lift {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .hover-lift:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 32px rgba(33, 30, 30, 0.08);
+  }
+}
+
+/* ============================================
+   Появление блоков при скролле (RevealOnScroll.tsx).
+   Класс .reveal ставит JS только блокам ниже первого экрана,
+   поэтому без мигания. Без JS / при reduced-motion — контент
+   сразу виден (класс не добавляется).
+   ============================================ */
+@media (prefers-reduced-motion: no-preference) {
+  .reveal {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+
+  .reveal.is-revealed {
+    opacity: 1;
+    transform: none;
+    transition: opacity 0.3s ease-out, transform 0.3s ease-out;
+  }
+}
+
+/* ============================================
+   Header — 72px, white
+   ============================================ */
+
+/* ---- Topbar: утилитарная полоса над хедером (Figma node 24078:25646) ---- */
+.topbar {
+  background: var(--color-surface);
+}
+
+.topbar__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  width: min(var(--container-max), 100% - var(--page-gutter) * 2);
+  margin-inline: auto;
+  padding-block: 8px;
+}
+
+.topbar__group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.topbar__chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  background: var(--color-white);
+  border-radius: 8px;
+  font-family: var(--font-text);
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 16px;
+  white-space: nowrap;
+  color: var(--color-icon);
+  transition: color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.topbar__chip-icon {
+  width: 20px;
+  height: 20px;
+}
+
+@media (hover: hover) {
+  .topbar__chip:hover {
+    color: var(--color-accent);
+    box-shadow: var(--shadow-card);
+  }
+}
+
+/* Узкие экраны: полоса не помещается — прячем вместе с переходом на бургер */
+@media (max-width: 1024px) {
+  .topbar {
+    display: none;
+  }
+}
+
+.header {
+  position: sticky;
+  top: 0;
+  background: rgba(255, 255, 255, 0.9);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  z-index: 100;
+}
+
+.header__inner {
+  display: flex;
+  align-items: center;
+  height: 72px;
+  width: min(var(--container-max), 100% - var(--page-gutter) * 2);
+  margin-inline: auto;
+}
+
+.header__logo {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  flex-shrink: 0;
+}
+
+.header__logo img {
+  width: 138px;
+  height: auto;
+}
+
+.header__nav {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  white-space: nowrap;
+}
+
+.header__nav-link {
+  position: relative;
+  font-size: 16px;
+  line-height: 20px;
+  font-weight: 500;
+  color: var(--color-black-100);
+  transition: color 0.15s ease;
+}
+
+.header__nav-link:hover {
+  color: var(--color-accent);
+}
+
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .header__nav-link::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -6px;
+    height: 2px;
+    border-radius: 1px;
+    background: var(--color-accent);
+    transform: scaleX(0);
+    transform-origin: left center;
+    transition: transform 0.25s ease;
+  }
+
+  .header__nav-link:hover::after {
+    transform: scaleX(1);
+  }
+}
+
+.header__actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+}
+
+/* ---- Бургер и мобильное меню (скрыты на десктопе) ---- */
+
+.header__burger {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  width: 44px;
+  height: 44px;
+  padding: 10px;
+  margin-left: 8px;
+  border-radius: var(--radius-button-s);
+}
+
+.header__burger-line {
+  display: block;
+  width: 100%;
+  height: 2px;
+  border-radius: 1px;
+  background: var(--color-black-100);
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.header__burger[aria-expanded="true"] .header__burger-line:nth-child(1) {
+  transform: translateY(7px) rotate(45deg);
+}
+
+.header__burger[aria-expanded="true"] .header__burger-line:nth-child(2) {
+  opacity: 0;
+}
+
+.header__burger[aria-expanded="true"] .header__burger-line:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg);
+}
+
+.header__menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 16px var(--header-gutter) 24px;
+  background: var(--color-white);
+  border-bottom: 1px solid var(--color-border);
+  box-shadow: 0 16px 32px rgba(33, 30, 30, 0.08);
+}
+
+.header__menu[hidden] {
+  display: none;
+}
+
+.header__menu-nav {
+  display: flex;
+  flex-direction: column;
+}
+
+.header__menu-link {
+  padding: 12px 0;
+  font-size: 16px;
+  line-height: 20px;
+  font-weight: 500;
+  color: var(--color-black-100);
+}
+
+.header__menu-actions {
+  display: none;
+  gap: 8px;
+}
+
+.header__menu-actions .btn {
+  flex: 1;
+}
+
+@media (max-width: 1280px) {
+  .header__nav {
+    gap: 20px;
+  }
+}
+
+@media (max-width: 1024px) {
+  .header__nav {
+    display: none;
+  }
+
+  .header__burger {
+    display: flex;
+  }
+}
+
+@media (max-width: 480px) {
+  .header__actions {
+    display: none;
+  }
+
+  /* Кнопки скрыты — прижимаем бургер к правому краю. */
+  .header__burger {
+    margin-left: auto;
+  }
+
+  .header__menu-actions {
+    display: flex;
+  }
+}
+
+/* ============================================
+   Hero
+   ============================================ */
+
+.hero {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Цветные иллюстрации по бокам — слой за центральным контентом.
+   Параллакс от курсора задаёт HeroDecor.tsx (transform). Ассеты 2x → ~½. */
+.hero__decor {
+  position: absolute;
+  top: -20px;
+  z-index: 0;
+  width: clamp(200px, 28vw, 420px);
+  height: auto;
+  pointer-events: none;
+  user-select: none;
+}
+
+.hero__decor--left {
+  left: clamp(-190px, -12vw, -80px);
+}
+
+.hero__decor--right {
+  right: clamp(-190px, -12vw, -80px);
+}
+
+@media (max-width: 1024px) {
+  .hero__decor {
+    display: none;
+  }
+}
+
+/* Тех-паттерн на фоне — слой за центральным контентом.
+   Ассет 2x (heropat), контент по краям и чистый центр под текст. */
+.hero__pattern {
+  position: absolute;
+  top: -40px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 0;
+  width: min(1432px, 118%);
+  height: auto;
+  opacity: 0.5;
+  pointer-events: none;
+  user-select: none;
+}
+
+.hero__rating,
+.hero__heading,
+.hero__cta,
+.hero__brands {
+  position: relative;
+  z-index: 1;
+}
+
+@media (max-width: 768px) {
+  .hero__pattern {
+    opacity: 0.32;
+  }
+}
+
+/* Появление контента при загрузке: мягкий fade-up со ступенчатой
+   задержкой по блокам. Только transform/opacity, один раз, и лишь
+   при разрешённой анимации (reduced-motion видит контент сразу). */
+@media (prefers-reduced-motion: no-preference) {
+  @keyframes hero-rise {
+    from {
+      opacity: 0;
+      transform: translateY(16px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .hero__rating,
+  .hero__heading,
+  .hero__cta,
+  .hero__brands {
+    animation: hero-rise 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  /* Плавный параллакс иллюстраций за курсором (transform из HeroDecor.tsx) */
+  .hero__decor {
+    transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .hero__rating {
+    animation-delay: 0.05s;
+  }
+  .hero__heading {
+    animation-delay: 0.15s;
+  }
+  .hero__cta {
+    animation-delay: 0.25s;
+  }
+  .hero__brands {
+    animation-delay: 0.4s;
+  }
+
+  @keyframes hero-fade {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes hero-pattern-fade {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 0.5;
+    }
+  }
+
+  .hero__pattern {
+    animation: hero-pattern-fade 1.2s ease 0.1s both;
+  }
+}
+
+/* ---- Rating badge: top 198 (126 below header) ---- */
+
+.hero__rating {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  max-width: calc(100% - var(--page-gutter) * 2);
+  margin-top: 126px;
+  padding: 8px 12px 8px 8px;
+  background: var(--color-surface);
+  border-radius: 26px;
+}
+
+.hero__rating-soc {
+  display: block;
+  flex-shrink: 0;
+  width: 68px;
+  height: 20px;
+}
+
+.hero__rating-info {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.hero__rating-text {
+  white-space: nowrap;
+  color: var(--color-black-100);
+  font-size: 15px;
+  line-height: 18px;
+}
+
+.hero__rating-score {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 20px;
+  line-height: 24px;
+}
+
+.hero__rating-reviews {
+  text-decoration: underline;
+  text-decoration-color: rgba(77, 59, 59, 0.15);
+  text-decoration-thickness: 1.5px;
+  text-decoration-skip-ink: none;
+}
+
+.hero__rating-stars {
+  display: flex;
+  align-items: center;
+}
+
+.hero__rating-stars img {
+  width: 20px;
+  height: 20px;
+}
+
+/* ---- Heading: top 262 (24 below rating), width 822 ---- */
+
+.hero__heading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 21px;
+  width: 1040px;
+  max-width: calc(100% - var(--page-gutter) * 2);
+  margin-top: 24px;
+  text-align: center;
+}
+
+.hero__title {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 54px;
+  line-height: 62px;
+  color: var(--color-text-main);
+}
+
+.hero__subtitle {
+  font-family: var(--font-heading);
+  font-weight: 400;
+  font-size: 20px;
+  line-height: 24px;
+  color: var(--color-text-main-80);
+}
+
+/* ---- CTA: top 474 (39 below heading block) ---- */
+
+.hero__cta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  margin-top: 39px;
+}
+
+.hero__cta-buttons {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.hero__cta-note {
+  font-size: 16px;
+  line-height: 20px;
+  color: var(--color-text-main);
+  opacity: 0.6;
+  white-space: nowrap;
+}
+
+/* ---- Brands strip: бегущая дорожка логотипов (145 below CTA block) ---- */
+
+.hero__brands {
+  width: min(var(--container-max), 100% - var(--page-gutter) * 2);
+  margin-top: 145px;
+}
+
+/* Маска-вьюпорт: обрезает дорожку по ширине контента, края тают в прозрачность. */
+.hero__brands-row {
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 10%, #000 90%, transparent 100%);
+  mask-image: linear-gradient(90deg, transparent 0, #000 10%, #000 90%, transparent 100%);
+}
+
+/* Дорожка из двух одинаковых наборов: едет влево на -50% (= ширина одного
+   набора) → бесшовный цикл. */
+.hero__brands-track {
+  display: flex;
+  width: max-content;
+  align-items: center;
+}
+
+.hero__brands-set {
+  display: flex;
+  align-items: center;
+  gap: 56px;
+  padding: 0 28px;       /* половина gap с каждой стороны → ровный шов на стыке */
+  flex-shrink: 0;
+}
+
+.hero__brands-set--clone {
+  display: flex;
+}
+
+/* Чуть мельче и приглушённее, чем были в статичном ряду. */
+.hero__brands-row img {
+  height: 24px;
+  width: auto;
+  opacity: 0.6;
+}
+
+@keyframes brands-marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+/* Анимация только при разрешённой анимации; иначе дорожка статична. */
+@media (prefers-reduced-motion: no-preference) {
+  .hero__brands-track {
+    animation: brands-marquee 36s linear infinite;
+  }
+}
+
+/* ============================================
+   Metrics — единая плашка под hero: ряд цифр
+   (кремовый верх) + три преимущества (белый низ)
+   в одной рамке со скруглением. Макет Figma 24082:28502.
+   ============================================ */
+
+.metrics {
+  margin-top: 24px;
+}
+
+.metrics__panel {
+  overflow: hidden;
+  border: 1px solid var(--color-border-card);
+  border-radius: var(--radius-card);
+}
+
+/* Верхний ряд — цифры на кремовом, с нижней разделительной линией */
+.metrics__stats {
+  display: flex;
+  align-items: center;
+  padding: 24px 0;
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border-card);
+}
+
+.metrics__stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1 0 0;
+  min-width: 1px;
+}
+
+.metrics__stat-value {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 40px;
+  line-height: 48px;
+  color: var(--color-text-main);
+  white-space: nowrap;
+}
+
+.metrics__stat-label {
+  font-size: 16px;
+  line-height: 20px;
+  color: var(--color-text-main-80);
+  text-align: center;
+}
+
+/* Нижний ряд — три карточки-преимущества на белом, разделены линиями */
+.metrics__cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  background: var(--color-white);
+}
+
+.metrics__card {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 24px;
+}
+
+.metrics__card + .metrics__card {
+  border-left: 1px solid var(--color-border-card);
+}
+
+.metrics__card-icon {
+  flex: 0 0 auto;
+  width: 72px;
+  height: 72px;
+  object-fit: contain;
+  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Ховер: иллюстрация плавно подрастает и держится, а по снятию курсора
+   так же плавно уменьшается обратно. */
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .metrics__card:hover .metrics__card-icon {
+    transform: scale(1.14);
+  }
+}
+
+.metrics__card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.metrics__card-title {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 20px;
+  line-height: 24px;
+  color: var(--color-text-main);
+}
+
+.metrics__card-text {
+  font-size: 16px;
+  line-height: 20px;
+  color: var(--color-text-main-80);
+}
+
+/* sm: цифры 2×2, карточки в вертикальную колонку с разделителями */
+@media (max-width: 768px) {
+  .metrics__stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: start;
+    gap: 24px 0;
+    padding: 24px 16px;
+  }
+
+  .metrics__stat-value {
+    font-size: 32px;
+    line-height: 40px;
+  }
+
+  .metrics__cards {
+    grid-template-columns: 1fr;
+  }
+
+  .metrics__card + .metrics__card {
+    border-left: 0;
+    border-top: 1px solid var(--color-border-card);
+  }
+}
+
+@media (max-width: 480px) {
+  .metrics {
+    margin-top: 16px;
+  }
+
+  .metrics__stat-value {
+    font-size: 28px;
+    line-height: 34px;
+  }
+
+  .metrics__stat-label {
+    font-size: 12px;
+    line-height: 15px;
+    padding: 0 2px;
+  }
+
+  .metrics__card {
+    gap: 16px;
+    padding: 20px;
+  }
+
+  .metrics__card-icon {
+    width: 56px;
+    height: 56px;
+  }
+}
+
+/* ---- Заглушка медиа-слота (см. docs/MEDIA.md) ----
+   <div class="media-placeholder" data-media="<id>"> */
+
+.media-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: var(--color-surface);
+  border: 1.5px dashed var(--color-border);
+  border-radius: var(--radius-card-s);
+  color: var(--color-text-main-50);
+}
+
+/* Иконка изображения — слот читается как «здесь будет картинка»,
+   а не как пустая дыра в макете. */
+.media-placeholder::before {
+  content: "";
+  width: 36px;
+  height: 36px;
+  background-color: currentColor;
+  opacity: 0.65;
+  -webkit-mask: url(assets/icons/duotone/image.svg) no-repeat center / contain;
+  mask: url(assets/icons/duotone/image.svg) no-repeat center / contain;
+}
+
+.media-placeholder__label {
+  font-size: 12px;
+  line-height: 16px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-text-main-50);
+}
+
+/* ============================================
+   Шапка секции (переиспользуемая)
+   ============================================ */
+
+.section-head {
+  max-width: 822px;
+}
+
+.section-head__title {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 36px;
+  line-height: 1.1;
+  letter-spacing: -1px;
+  color: var(--color-text-main);
+}
+
+.section-head__sub {
+  margin-top: 12px;
+  font-size: 18px;
+  line-height: 26px;
+  color: var(--color-text-main-60);
+}
+
+@media (max-width: 768px) {
+  .section-head__title {
+    font-size: 32px;
+    line-height: 40px;
+  }
+
+  .section-head__sub {
+    font-size: 16px;
+    line-height: 22px;
+  }
+}
+
+@media (max-width: 480px) {
+  .section-head__title {
+    font-size: 24px;
+    line-height: 30px;
+  }
+}
+
+/* Шапка секции со ссылкой справа */
+.section-head-row {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.section-link {
+  flex-shrink: 0;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 20px;
+  color: var(--color-accent);
+  white-space: nowrap;
+}
+
+.section-link:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+@media (max-width: 768px) {
+  .section-head-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+}
+
+/* ============================================
+   Products — «всё в одном аккаунте»: 3-кол.
+   сетка, хостинг широкий, VDS/VPS — тёмная
+   ============================================ */
+
+.products {
+  margin-top: var(--section-gap);
+}
+
+.products__heading {
+  text-align: center;
+}
+
+.products__grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  margin-top: 48px;
+}
+
+.products__card {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  padding: 32px;
+  background: var(--color-white);
+  border: 1px solid var(--color-border-soft);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-soft);
+  color: var(--color-text-main);
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.products__card--wide {
+  grid-column: span 2;
+}
+
+/* Десктоп: первый ряд 50/50 (хостинг + домены), второй ряд — трети.
+   Сетка из 6 колонок: половина = span 3, треть = span 2. */
+@media (min-width: 1025px) {
+  .products__grid {
+    grid-template-columns: repeat(6, 1fr);
+  }
+  .products__card {
+    grid-column: span 2;
+  }
+  .products__card--wide,
+  .products__card:nth-child(2) {
+    grid-column: span 3;
+  }
+}
+
+.products__card--dark {
+  background: #161414 url(assets/photos/vds.png) right center / cover no-repeat;
+  border-color: rgba(255, 255, 255, 0.08);
+  color: var(--color-white);
+}
+
+.products__top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.products__icon {
+  width: 48px;
+  height: 48px;
+  color: var(--color-accent);
+}
+
+.products__arrow {
+  width: 24px;
+  height: 24px;
+  color: var(--color-text-main-50);
+  transition: transform 0.15s ease, color 0.15s ease;
+}
+
+.products__card--dark .products__arrow {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.products__price {
+  margin-top: 28px;
+  font-family: var(--font-heading);
+  font-weight: 400;
+  font-size: 20px;
+  line-height: 24px;
+  color: var(--color-text-main);
+}
+
+.products__card--dark .products__price {
+  color: var(--color-white);
+}
+
+.products__name {
+  margin-top: 6px;
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 24px;
+  line-height: 30px;
+}
+
+.products__text {
+  margin-top: 16px;
+  max-width: 340px;
+  font-size: 16px;
+  line-height: 22px;
+  color: var(--color-text-main-80);
+}
+
+/* Широкая карточка хостинга — описание в две строки */
+.products__card--wide .products__text {
+  max-width: 460px;
+}
+
+.products__card--dark .products__text {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .products__card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 28px 40px rgba(0, 0, 0, 0.07), 0 3px 4px rgba(0, 0, 0, 0.03);
+  }
+
+  .products__card:hover .products__arrow {
+    transform: translate(2px, -2px);
+    color: var(--color-accent);
+  }
+
+  .products__card--dark:hover .products__arrow {
+    color: var(--color-white);
+  }
+}
+
+@media (max-width: 1024px) {
+  .products {
+    margin-top: var(--section-gap);
+  }
+
+  .products__grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .products__card--wide {
+    grid-column: span 2;
+  }
+}
+
+@media (max-width: 768px) {
+  .products__grid {
+    margin-top: 32px;
+  }
+}
+
+@media (max-width: 480px) {
+  .products__grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .products__card--wide {
+    grid-column: auto;
+  }
+
+  /* Компактные карточки: меньше иконка, шрифты и отступы. */
+  .products__card {
+    min-height: 0;
+    padding: 20px;
+  }
+
+  .products__icon {
+    width: 36px;
+    height: 36px;
+  }
+
+  .products__arrow {
+    width: 20px;
+    height: 20px;
+  }
+
+  .products__price {
+    margin-top: 16px;
+    font-size: 16px;
+    line-height: 20px;
+  }
+
+  .products__name {
+    font-size: 22px;
+    line-height: 28px;
+  }
+
+  .products__text {
+    margin-top: 10px;
+    font-size: 14px;
+    line-height: 20px;
+  }
+}
+
+/* ============================================
+   Pricing — тарифы хостинга (лента на surface)
+   ============================================ */
+
+/* Pricing + Why живут в кремовом .band; фон/радиус даёт обёртка. */
+.pricing {
+  padding: 80px 0;
+}
+
+.pricing__heading {
+  text-align: center;
+}
+
+/* Панель управления тарифами: слева сегмент категории, по центру
+   период оплаты, справа — подбор тарифа. */
+.pricing__controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 48px;
+}
+
+/* Сегмент-контролы: светло-серая подложка, активная вкладка — белая */
+.pricing__seg {
+  position: relative;
+  display: inline-flex;
+  gap: 4px;
+  padding: 4px;
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 16px;
+}
+
+/* Белый «бегунок» под активной вкладкой — переезжает к выбранной кнопке. */
+.pricing__seg-thumb {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 0;
+  border-radius: 12px;
+  background: var(--color-white);
+  box-shadow: var(--shadow-card);
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .pricing__seg-thumb {
+    transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+      width 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+}
+
+.pricing__seg--period {
+  flex: 1 1 456px;
+  max-width: 480px;
+}
+
+.pricing__seg--period .pricing__seg-btn {
+  flex: 1 0 0;
+}
+
+.pricing__seg-btn {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 40px;
+  padding: 0 16px;
+  border-radius: 12px;
+  font-family: var(--font-text);
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 20px;
+  color: var(--color-black-100);
+  white-space: nowrap;
+  transition: background-color 0.15s ease;
+}
+
+/* Без JS активная вкладка остаётся белой; когда добавлен бегунок —
+   фон отдаём ему, чтобы не было двойной заливки во время переезда. */
+.pricing__seg-btn--active {
+  background: var(--color-white);
+}
+
+.pricing__seg--thumbed .pricing__seg-btn--active {
+  background: transparent;
+}
+
+.pricing__seg-icon {
+  width: 20px;
+  height: 20px;
+  color: var(--color-icon);
+}
+
+/* Скидочная плашка — акцентная, не зелёная */
+.pricing__seg-off {
+  padding: 2px 5px;
+  background: var(--color-accent-tint);
+  border-radius: 4px;
+  font-size: 14px;
+  line-height: 16px;
+  font-weight: 500;
+  color: var(--color-accent);
+}
+
+.pricing__pick {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 48px;
+  padding: 0 20px 0 18px;
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 16px;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 20px;
+  color: var(--color-black-100);
+  transition: background-color 0.15s ease;
+}
+
+.pricing__pick:hover {
+  background: rgba(0, 0, 0, 0.08);
+}
+
+.pricing__pick-icon {
+  width: 20px;
+  height: 20px;
+  color: var(--color-icon);
+}
+
+.pricing__grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  margin-top: 40px;
+}
+
+.pricing__card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 24px;
+  background: var(--color-white);
+  border: 1px solid var(--color-border-soft);
+  border-radius: 24px;
+  box-shadow: var(--shadow-soft);
+}
+
+/* Featured — акцентная рамка 2px, без тени */
+.pricing__card--popular {
+  border: 2px solid var(--color-accent);
+  box-shadow: none;
+}
+
+/* Бейдж-«язычок» в правом верхнем углу popular-карточки */
+.pricing__badge {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  display: inline-flex;
+  align-items: center;
+  height: 28px;
+  padding: 0 16px;
+  background: var(--color-accent);
+  border-radius: 0 24px 0 16px;
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-white);
+  white-space: nowrap;
+}
+
+.pricing__name {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 20px;
+  line-height: 24px;
+  color: var(--color-black-100);
+}
+
+/* «Экономия N ₽» — плашка под названием, тёплая акцентная заливка */
+.pricing__save {
+  align-self: flex-start;
+  margin-top: 24px;
+  padding: 2px 6px;
+  background: rgba(220, 102, 85, 0.12);
+  border-radius: 4px;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 16px;
+  color: var(--color-black-100);
+}
+
+.pricing__save--empty {
+  background: none;
+  min-height: 20px;
+}
+
+.pricing__price {
+  display: flex;
+  align-items: flex-end;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+.pricing__price-value {
+  font-family: var(--font-heading);
+  font-weight: 500;
+  font-size: 36px;
+  line-height: 44px;
+  color: var(--color-black-100);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Одометр цены: при смене периода каждая цифра «прокручивается» вертикально
+   к новому значению (по мотивам firecrawl.dev/pricing). Высота ячейки = line-height
+   значения (44px) задаётся из JS. Разметку строит app.js. */
+.price-odo {
+  display: inline-flex;
+  vertical-align: bottom;
+  /* Верх и низ катушки (зона обрезки цифр) тают в прозрачность. */
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 20%, #000 80%, transparent 100%);
+  mask-image: linear-gradient(to bottom, transparent 0, #000 20%, #000 80%, transparent 100%);
+}
+
+.price-odo__digit {
+  display: inline-block;
+  overflow: hidden;
+}
+
+.price-odo__track {
+  display: flex;
+  flex-direction: column;
+}
+
+.price-odo__track > span {
+  display: block;
+  text-align: center;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .price-odo__track {
+    /* Резкий старт и длинный замедляющийся «хвост» — цифры будто
+       докручиваются и плавно останавливаются (как на референсе). */
+    transition: transform 0.85s cubic-bezier(0.12, 0.8, 0.2, 1);
+  }
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  border: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.pricing__price-suffix {
+  margin-bottom: 4px;
+  font-size: 16px;
+  line-height: 20px;
+  color: rgba(77, 59, 59, 0.6);
+}
+
+.pricing__total {
+  margin-top: 4px;
+  font-size: 14px;
+  line-height: 16px;
+  color: rgba(77, 59, 59, 0.6);
+}
+
+.pricing__cta {
+  width: 100%;
+  margin-top: 24px;
+  padding: 14px 28px;
+  border-radius: 16px;
+  font-size: 16px;
+  line-height: 20px;
+}
+
+.pricing__features {
+  display: grid;
+  gap: 12px;
+  width: 100%;
+  margin-top: 29px;
+  list-style: none;
+}
+
+.pricing__feature {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  font-family: var(--font-text);
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 24px;
+  color: var(--color-black-100);
+}
+
+.pricing__feature-text {
+  flex: 1;
+}
+
+.pricing__feature-b {
+  font-weight: 500;
+  color: var(--color-text-main);
+}
+
+/* Инфо-подсказка после первых фич — приглушённая, не акцентная */
+.pricing__info {
+  width: 18px;
+  height: 18px;
+  margin-left: 4px;
+  vertical-align: -4px;
+  color: rgba(77, 59, 59, 0.3);
+}
+
+/* Тултип на info-иконке. Обёртку с :hover ставит app.js (саму иконку нельзя —
+   она обрезается mask'ом). Тёмная пилюля над иконкой, всплывает с лёгким
+   подъёмом и масштабом — по мотивам firecrawl.dev. */
+.tip {
+  position: relative;
+  display: inline-block;
+  margin-left: 4px;
+  vertical-align: -4px;
+}
+
+.tip .pricing__info {
+  margin-left: 0;
+  vertical-align: top;
+}
+
+@media (hover: hover) {
+  .tip:hover .pricing__info {
+    color: var(--color-accent);
+  }
+}
+
+.tip__bubble {
+  position: absolute;
+  bottom: calc(100% + 10px);
+  left: 50%;
+  z-index: 50;
+  width: max-content;
+  max-width: 240px;
+  padding: 8px 12px;
+  /* Матовое стекло: тёмный фон 80% + блюр подложки. */
+  background: rgba(33, 30, 30, 0.8);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+  color: var(--color-white);
+  border-radius: 12px;
+  font-family: var(--font-text);
+  font-weight: 400;
+  font-size: 13px;
+  line-height: 18px;
+  text-align: left;
+  box-shadow: 0 12px 28px rgba(33, 30, 30, 0.22);
+  opacity: 0;
+  transform: translateX(-50%) translateY(8px) scale(0.9);
+  transform-origin: bottom center;
+  filter: blur(4px);
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* Блюр-ин + пружинистый «bounce» (overshoot через easeOutBack), как в
+     референсе. Transition обратим — на уводе курсора плавно сворачивается. */
+  .tip__bubble {
+    transition: opacity 0.25s ease,
+      filter 0.25s ease,
+      transform 0.45s cubic-bezier(0.34, 1.45, 0.64, 1);
+  }
+}
+
+@media (hover: hover) {
+  .tip:hover .tip__bubble,
+  .tip:focus-within .tip__bubble {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0) scale(1);
+    filter: blur(0);
+  }
+}
+
+.pricing__check {
+  width: 16px;
+  height: 16px;
+  margin-top: 4px;
+  color: var(--color-accent);
+}
+
+/* «А также в каждом тарифе» — лейбл по центру, ниже ряд белых пилюль */
+.pricing__included {
+  margin-top: 40px;
+}
+
+.pricing__included-label {
+  display: block;
+  text-align: center;
+  font-size: 16px;
+  line-height: 20px;
+  color: var(--color-text-main-80);
+}
+
+/* Карточки «в каждом тарифе» (Figma node 24078:25794) */
+.pricing__incards {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 20px;
+  margin-top: 24px;
+}
+
+.incard {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 24px;
+  background: var(--color-surface-2);
+  border-radius: var(--radius-card);
+}
+
+.incard__tile {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--color-white);
+  border: 1px solid var(--color-border-soft);
+}
+
+/* Иконка — duotone (две градации тёмного), рендерим как <img> */
+.incard__glyph {
+  display: block;
+  width: 22px;
+  height: 22px;
+  color: var(--color-text-main);
+}
+
+.incard__body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.incard__title {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 20px;
+  line-height: 24px;
+  color: var(--color-text-main);
+}
+
+.incard__text {
+  font-size: 16px;
+  line-height: 20px;
+  color: var(--color-text-main-80);
+}
+
+@media (max-width: 1024px) {
+  .pricing__incards {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  /* Горизонтальный скролл: карточки в ряд, край-в-край с лёгким «выглядыванием». */
+  .pricing__incards {
+    display: flex;
+    grid-template-columns: none;
+    gap: 12px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    margin-inline: calc(var(--page-gutter) * -1);
+    padding-inline: var(--page-gutter);
+    scrollbar-width: none;
+  }
+
+  .pricing__incards::-webkit-scrollbar {
+    display: none;
+  }
+
+  .incard {
+    flex: 0 0 240px;
+    scroll-snap-align: start;
+  }
+}
+
+@media (max-width: 1024px) {
+  .pricing {
+    padding-top: 56px;
+  }
+
+  .why__band {
+    padding: 64px 0 56px;
+  }
+
+  .pricing__grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  /* Скидочные плашки в переключателе периода на мобиле убираем. */
+  .pricing__seg-off {
+    display: none;
+  }
+
+  /* Тарифы — горизонтальная лента со скроллом и снапом по центру.
+     Боковой паддинг + отрицательный margin дают место акцентной рамке
+     и тени карточек, чтобы скролл-контейнер их не срезал. По умолчанию
+     лента проскроллена к Optimo+ (см. app.js). */
+  .pricing__grid {
+    display: flex;
+    grid-template-columns: none;
+    gap: 16px;
+    margin-top: 28px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: var(--page-gutter);
+    -webkit-overflow-scrolling: touch;
+    padding: 10px var(--page-gutter) 20px;
+    margin-inline: calc(var(--page-gutter) * -1);
+    scrollbar-width: none;
+  }
+
+  .pricing__grid::-webkit-scrollbar {
+    display: none;
+  }
+
+  .pricing__card {
+    flex: 0 0 80%;
+    max-width: 320px;
+    padding: 20px;
+    scroll-snap-align: center;
+  }
+
+  /* Мельче шрифт фич — чтобы строка с инфо-иконкой не переносилась. */
+  .pricing__feature {
+    gap: 10px;
+    font-size: 14px;
+    line-height: 20px;
+  }
+
+  .pricing__info {
+    width: 15px;
+    height: 15px;
+    margin-left: 3px;
+    vertical-align: -3px;
+  }
+
+  /* «Подобрать тариф» переносится под ленту тарифов (см. app.js). */
+  .pricing__pick--below {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    margin-top: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .pricing {
+    padding-top: 40px;
+  }
+
+  .why__band {
+    padding: 48px 0 40px;
+  }
+
+  .pricing__controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .pricing__seg {
+    width: 100%;
+  }
+
+  /* В колонке flex-basis 456px читался бы как высота — сбрасываем */
+  .pricing__seg--period {
+    flex: 0 0 auto;
+    max-width: none;
+  }
+
+  .pricing__seg-btn {
+    flex: 1;
+    justify-content: center;
+    height: 44px;
+    padding: 10px 8px;
+  }
+
+  .pricing__pick {
+    justify-content: center;
+  }
+}
+
+/* ============================================
+   Migration — баннер «переходите с другого хостинга»
+   ============================================ */
+
+.migration {
+  margin-top: var(--section-gap);
+}
+
+/* Светлая плашка: слева текст, справа иллюстрация-«радар» (из Figma). */
+.migration__card {
+  position: relative;
+  display: flex;
+  align-items: stretch;
+  background: var(--color-white);
+  border: 1px solid var(--color-border-soft);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-soft);
+  overflow: hidden;
+}
+
+.migration__content {
+  position: relative;
+  z-index: 1;
+  flex: 1 1 auto;
+  max-width: 660px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 48px;
+}
+
+/* Правая колонка с иллюстрацией; фрейм 500×376 из Figma центрируется,
+   крупные кольца уходят за край (clip). */
+.migration__illu {
+  position: relative;
+  flex: 1 1 0;
+  min-width: 0;
+  align-self: stretch;
+  overflow: hidden;
+}
+
+.illu {
+  position: absolute;
+  top: 50%;
+  left: 60%;
+  width: 500px;
+  height: 376px;
+  transform: translate(-50%, -50%);
+}
+
+/* Концентрические кольца (Ø100–500, шаг 80), общий центр (250,188). */
+.illu__ring {
+  position: absolute;
+  left: 250px;
+  top: 188px;
+  transform: translate(-50%, -50%);
+  width: var(--d);
+  height: var(--d);
+  border-radius: 50%;
+  border: 1px solid rgba(77, 59, 59, 0.07);
+}
+
+/* Тонкие акцентные «усики»-коннекторы. Статичные позиции (fallback). */
+.illu__line {
+  position: absolute;
+  background: var(--color-accent);
+}
+
+.illu__line--top { left: 250px; top: 62px; width: 1px; height: 24px; }
+.illu__line--right { left: 476px; top: 254px; width: 24px; height: 1px; }
+.illu__line--bottom { left: 250px; top: 413px; width: 1px; height: 24px; }
+.illu__line--left { left: 0; top: 254px; width: 24px; height: 1px; }
+
+/* Левый спок — только на мобиле (в десктоп-макете три направления). */
+.illu__badge--left,
+.illu__line--left { display: none; }
+
+/* Бейдж: белый кружок с акцентной рамкой и акцентным диском внутри.
+   Статичные позиции (fallback для reduced-motion). */
+.illu__badge {
+  position: absolute;
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  background: var(--color-white);
+  border: 1px solid var(--color-accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.illu__badge--top { left: 223px; top: 86px; }
+.illu__badge--right { left: 420px; top: 225px; }
+.illu__badge--bottom { left: 223px; top: 357px; }
+.illu__badge--left { left: 8px; top: 225px; display: none; }
+
+.illu__badge::before {
+  content: "";
+  position: absolute;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: var(--color-accent);
+}
+
+.illu__badge .icon {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  color: var(--color-white);
+}
+
+/* Центральная карточка-консоль 220×140 (SVG из Figma), с обводкой и тенью
+   как у остальных белых плашек. */
+.illu__card {
+  position: absolute;
+  left: 250px;
+  top: 188px;
+  transform: translate(-50%, -50%);
+  display: block;
+  width: 220px;
+  height: 140px;
+  border-radius: 24px;
+  /* Обводка 10px снаружи (F9F5F2) + тонкая тень 1px по внешнему контуру рамки
+     (spread 10px — иначе 1px-тень спряталась бы под обводкой). */
+  box-shadow: 0 0 0 10px var(--color-surface), 0 0 1px 10px #d2c3b7;
+}
+
+/* Анимация: кружок выезжает из-за края (за краем блока) к центру и гаснет
+   за карточкой; линия-хвост (1px) тянется от края вслед за ним и затухает
+   с дальнего (краевого) конца через градиентную маску. Центр = (250,188),
+   старт за краем D = 300px. Кружки идут последовательно друг за другом
+   (цикл 4.5s, движение ~1.2s, пауза до следующего витка).
+   reduced-motion видит статичную раскладку. */
+@media (prefers-reduced-motion: no-preference) {
+  .illu__card {
+    z-index: 2; /* кружки уходят за карточку у центра */
+    /* Период = интервал между прилётами (цикл/3). Пик совпадает с моментом,
+       когда кружок достигает центра → карточка коротко «отзывается». */
+    animation: illu-card-pulse 2.0s ease-in-out infinite;
+  }
+
+  /* Магнитный отклик колец: кружок «пробивает» кольца по пути к центру —
+     каждое слегка расходится к краям в момент пересечения и возвращается.
+     Волна идёт от внешнего кольца (раньше, у края) к внутреннему (у центра,
+     совпадает с прилётом). nth-child(1) — внутреннее Ø100, (6) — внешнее Ø500. */
+  .illu__ring {
+    animation: illu-ring-pulse 2.0s ease-in-out infinite;
+  }
+  .illu__ring:nth-child(1) { animation-delay: -0.05s; }
+  .illu__ring:nth-child(2) { animation-delay: -0.22s; }
+  .illu__ring:nth-child(3) { animation-delay: -0.42s; }
+  .illu__ring:nth-child(4) { animation-delay: -0.66s; }
+  .illu__ring:nth-child(5) { animation-delay: -0.92s; }
+  .illu__ring:nth-child(6) { animation-delay: -1.2s; }
+
+  .illu__badge {
+    z-index: 1;
+    left: 250px;
+    top: 188px;
+    margin-left: -44px;
+    margin-top: -44px;
+  }
+  .illu__badge--top {
+    animation: illu-badge-top 6.0s cubic-bezier(0.3, 0.75, 0.7, 0.25) infinite;
+  }
+  .illu__badge--bottom {
+    animation: illu-badge-bottom 6.0s cubic-bezier(0.3, 0.75, 0.7, 0.25) infinite;
+    animation-delay: -2.0s;
+  }
+  .illu__badge--right {
+    animation: illu-badge-right 6.0s cubic-bezier(0.3, 0.75, 0.7, 0.25) infinite;
+    animation-delay: -4.0s;
+  }
+  .illu__badge--left {
+    animation: illu-badge-left 6.0s cubic-bezier(0.3, 0.75, 0.7, 0.25) infinite;
+    animation-delay: -1.0s;
+  }
+
+  .illu__line {
+    z-index: 1;
+  }
+  /* Маска: прозрачно у края (дальний конец) → плотно к центру (за кружком). */
+  .illu__line--top {
+    left: 250px;
+    top: -112px;
+    width: 1px;
+    height: 300px;
+    transform-origin: 50% 0%;
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 65%);
+    mask-image: linear-gradient(to bottom, transparent 0%, #000 65%);
+    animation: illu-line-v 6.0s cubic-bezier(0.3, 0.75, 0.7, 0.25) infinite;
+  }
+  .illu__line--bottom {
+    left: 250px;
+    top: 188px;
+    width: 1px;
+    height: 300px;
+    transform-origin: 50% 100%;
+    -webkit-mask-image: linear-gradient(to top, transparent 0%, #000 65%);
+    mask-image: linear-gradient(to top, transparent 0%, #000 65%);
+    animation: illu-line-v 6.0s cubic-bezier(0.3, 0.75, 0.7, 0.25) infinite;
+    animation-delay: -2.0s;
+  }
+  .illu__line--right {
+    left: 250px;
+    top: 188px;
+    width: 300px;
+    height: 1px;
+    transform-origin: 100% 50%;
+    -webkit-mask-image: linear-gradient(to left, transparent 0%, #000 65%);
+    mask-image: linear-gradient(to left, transparent 0%, #000 65%);
+    animation: illu-line-h 6.0s cubic-bezier(0.3, 0.75, 0.7, 0.25) infinite;
+    animation-delay: -4.0s;
+  }
+  .illu__line--left {
+    left: -50px;
+    top: 188px;
+    width: 300px;
+    height: 1px;
+    transform-origin: 0% 50%;
+    -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 65%);
+    mask-image: linear-gradient(to right, transparent 0%, #000 65%);
+    animation: illu-line-h 6.0s cubic-bezier(0.3, 0.75, 0.7, 0.25) infinite;
+    animation-delay: -1.0s;
+  }
+}
+
+/* Движение 0→27% (~1.2s), затем кружок держится скрытым до конца витка. */
+@keyframes illu-badge-top {
+  0% { transform: translateY(-300px) scale(0.85); opacity: 0; }
+  3% { opacity: 1; }
+  17% { opacity: 1; }
+  21% { transform: translateY(0) scale(0.55); opacity: 0; }
+  100% { transform: translateY(0) scale(0.55); opacity: 0; }
+}
+@keyframes illu-badge-bottom {
+  0% { transform: translateY(300px) scale(0.85); opacity: 0; }
+  3% { opacity: 1; }
+  17% { opacity: 1; }
+  21% { transform: translateY(0) scale(0.55); opacity: 0; }
+  100% { transform: translateY(0) scale(0.55); opacity: 0; }
+}
+@keyframes illu-badge-right {
+  0% { transform: translateX(300px) scale(0.85); opacity: 0; }
+  3% { opacity: 1; }
+  17% { opacity: 1; }
+  21% { transform: translateX(0) scale(0.55); opacity: 0; }
+  100% { transform: translateX(0) scale(0.55); opacity: 0; }
+}
+@keyframes illu-badge-left {
+  0% { transform: translateX(-300px) scale(0.85); opacity: 0; }
+  3% { opacity: 1; }
+  17% { opacity: 1; }
+  21% { transform: translateX(0) scale(0.55); opacity: 0; }
+  100% { transform: translateX(0) scale(0.55); opacity: 0; }
+}
+@keyframes illu-line-v {
+  0% { transform: scaleY(0); opacity: 0; }
+  3% { opacity: 1; }
+  17% { opacity: 1; }
+  21% { transform: scaleY(1); opacity: 0; }
+  100% { transform: scaleY(1); opacity: 0; }
+}
+@keyframes illu-line-h {
+  0% { transform: scaleX(0); opacity: 0; }
+  3% { opacity: 1; }
+  17% { opacity: 1; }
+  21% { transform: scaleX(1); opacity: 0; }
+  100% { transform: scaleX(1); opacity: 0; }
+}
+
+/* «Отклик» карточки: пик масштаба на момент прилёта кружка (≈63% периода),
+   затем плавный возврат. translate сохраняем — иначе собьётся центрирование. */
+@keyframes illu-card-pulse {
+  0%, 54% { transform: translate(-50%, -50%) scale(1); }
+  63% { transform: translate(-50%, -50%) scale(1.06); }
+  78% { transform: translate(-50%, -50%) scale(1); }
+  100% { transform: translate(-50%, -50%) scale(1); }
+}
+
+@keyframes illu-ring-pulse {
+  0%, 52% { transform: translate(-50%, -50%) scale(1); }
+  63% { transform: translate(-50%, -50%) scale(1.022); }
+  94% { transform: translate(-50%, -50%) scale(1); }
+  100% { transform: translate(-50%, -50%) scale(1); }
+}
+
+.migration__heading {
+  max-width: 600px;
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 36px;
+  line-height: 1.1;
+  letter-spacing: -1px;
+  color: var(--color-text-main);
+}
+
+/* «Бесплатно.» проявляется по буквам при скролле, затем — мягкий блик */
+.migration__type {
+  white-space: nowrap;
+  color: var(--color-accent);
+}
+
+.migration__type-text {
+  display: inline-block;
+}
+
+/* Каждая буква — отдельный спан со своей задержкой появления */
+.migration__char {
+  display: inline-block;
+  white-space: pre;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .migration__type.is-revealing .migration__char {
+    opacity: 0;
+    animation: migration-char-in 0.55s cubic-bezier(0.2, 0.7, 0.3, 1) both;
+  }
+}
+
+@keyframes migration-char-in {
+  from { opacity: 0; transform: translateY(0.32em); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* Подзаголовок: подарок-заметка с иконкой (стиль крупного подзаголовка) */
+.migration__note {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 20px;
+  font-size: 20px;
+  line-height: 28px;
+  color: var(--color-text-main-80);
+  white-space: nowrap;
+}
+
+.migration__note-icon {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  color: var(--color-accent);
+}
+
+/* Нижняя группа: кнопка + короткий слоган справа (24px).
+   100px вертикального отступа от подзаголовка — задаёт высоту карточки. */
+.migration__actions {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  margin-top: 100px;
+}
+
+.migration__desc {
+  font-size: 16px;
+  line-height: 22px;
+  color: var(--color-text-main-80);
+  opacity: 0.7;
+  white-space: nowrap;
+}
+
+@media (max-width: 768px) {
+  /* Одна колонка: радар-полоса сверху, контент снизу. */
+  .migration__card {
+    flex-direction: column;
+  }
+
+  /* Полоса повыше, чтобы влёты сверху/снизу не зарезались. */
+  .migration__illu {
+    display: block;
+    order: -1;
+    flex: none;
+    width: 100%;
+    height: 340px;
+  }
+
+  /* Центрируем радар в полосе. */
+  .illu {
+    left: 50%;
+  }
+
+  /* На мобиле добавляем влёт слева (в десктоп-макете его нет). */
+  .illu__badge--left {
+    display: flex;
+  }
+  .illu__line--left {
+    display: block;
+  }
+
+  /* Ровный интервал для 4 направлений (цикл 6s → шаг 1.5s). */
+  .illu__badge--top,
+  .illu__line--top { animation-delay: 0s; }
+  .illu__badge--right,
+  .illu__line--right { animation-delay: -1.5s; }
+  .illu__badge--bottom,
+  .illu__line--bottom { animation-delay: -3s; }
+  .illu__badge--left,
+  .illu__line--left { animation-delay: -4.5s; }
+
+  .migration__content {
+    padding: 28px;
+    max-width: none;
+  }
+
+  .migration__heading {
+    max-width: none;
+    font-size: 32px;
+    line-height: 40px;
+  }
+
+  /* На мобиле текст переносим (на десктопе он в одну строку). */
+  .migration__note,
+  .migration__desc {
+    white-space: normal;
+  }
+
+  .migration__note {
+    margin-top: 16px;
+    font-size: 16px;
+    line-height: 22px;
+  }
+
+  .migration__actions {
+    margin-top: 32px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .migration__content {
+    padding: 20px;
+  }
+
+  .migration__heading {
+    font-size: 24px;
+    line-height: 30px;
+  }
+
+  .migration__note {
+    margin-top: 8px;
+  }
+
+  .migration__cta {
+    width: 100%;
+  }
+}
+
+/* ============================================
+   Why — «Почему выбирают Timeweb»: тёмный якорь
+   с цифрой 700 000 + 2×2 факта, ниже отзыв
+   ============================================ */
+
+/* Заголовок + бенто. Стоит отдельной секцией на белом, под кремовым .band. */
+.why {
+  margin-top: var(--section-gap);
+}
+
+.why__heading {
+  text-align: center;
+}
+
+.why__bento {
+  display: grid;
+  grid-template-columns: 1.25fr 2fr;
+  gap: 16px;
+  margin-top: 48px;
+}
+
+/* Тёмная карточка-якорь с фото серверов + эффект «фонарика». */
+.why__hero {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 32px;
+  min-height: 368px;
+  padding: 32px;
+  border-radius: 32px;
+  overflow: hidden;
+  background: #1c1a1a url(assets/photos/why-servers.png) center / cover no-repeat;
+  color: var(--color-white);
+}
+
+/* Фонарик: фон приглушён тёмным слоем, по ховеру в нём «прорезается»
+   мягкое радиальное пятно у курсора (--mx/--my из WhyHero.tsx). */
+@property --spot {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
+.why__hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: #000;
+  opacity: 0.55;
+  pointer-events: none;
+  -webkit-mask: radial-gradient(
+    circle var(--spot, 0px) at var(--mx, 50%) var(--my, 50%),
+    transparent 0,
+    transparent 45%,
+    #000 100%
+  );
+  mask: radial-gradient(
+    circle var(--spot, 0px) at var(--mx, 50%) var(--my, 50%),
+    transparent 0,
+    transparent 45%,
+    #000 100%
+  );
+}
+
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .why__hero::before {
+    transition: --spot 0.35s ease, opacity 0.35s ease;
+  }
+
+  .why__hero:hover::before {
+    --spot: 280px;
+  }
+}
+
+.why__hero > * {
+  position: relative;
+  z-index: 1;
+}
+
+.why__hero-value {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 56px;
+  line-height: 64px;
+}
+
+.why__hero-label {
+  margin-top: 4px;
+  font-weight: 500;
+  font-size: 18px;
+  line-height: 24px;
+  color: var(--color-white);
+}
+
+.why__hero-note {
+  max-width: 321px;
+  font-size: 15px;
+  line-height: 21px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.why__stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 16px;
+}
+
+.why__stat {
+  display: flex;
+  flex-direction: column;
+  padding: 28px;
+  background: var(--color-white);
+  border: 1px solid var(--color-border-soft);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-soft);
+}
+
+.why__stat-value {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 28px;
+  line-height: 34px;
+  color: var(--color-text-main);
+}
+
+.why__stat-label {
+  margin-top: 8px;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 20px;
+  color: var(--color-text-main);
+}
+
+.why__stat-text {
+  margin-top: 6px;
+  font-size: 15px;
+  line-height: 20px;
+  color: var(--color-text-main-60);
+}
+
+/* ============================================
+   CMS — «Установка любой CMS в 2 клика»
+   ряд логотипов + заголовок + описание + CTA, по центру
+   ============================================ */
+.cms {
+  margin-top: var(--section-gap);
+}
+
+.cms__inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.cms__logos {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 15px;
+}
+
+.cms__logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 76px;
+  height: 76px;
+  padding: 8px;
+  background: var(--color-white);
+  border: 1px solid rgba(77, 59, 59, 0.15);
+  border-radius: 50%;
+}
+
+.cms__logo img {
+  width: 60px;
+  height: 60px;
+}
+
+.cms__title {
+  margin-top: 40px;
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 36px;
+  line-height: 44px;
+  color: var(--color-text-main);
+}
+
+.cms__text {
+  margin-top: 20px;
+  max-width: 668px;
+  font-family: var(--font-heading);
+  font-weight: 400;
+  font-size: 20px;
+  line-height: 32px;
+  color: var(--color-text-main);
+}
+
+.cms__link {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.cms__cta {
+  margin-top: 32px;
+  padding: 14px 28px;
+  border-radius: 16px;
+  font-size: 16px;
+  line-height: 20px;
+}
+
+@media (max-width: 1024px) {
+  .why__bento {
+    grid-template-columns: 1fr;
+    grid-auto-rows: auto;
+  }
+
+  .why__hero {
+    min-height: 0;
+    flex-direction: row;
+    align-items: flex-end;
+  }
+}
+
+@media (max-width: 768px) {
+  .why__bento {
+    margin-top: 28px;
+  }
+
+  .cms__title {
+    font-size: 32px;
+    line-height: 40px;
+  }
+
+  .cms__text {
+    font-size: 18px;
+    line-height: 28px;
+  }
+}
+
+@media (max-width: 480px) {
+  .why__stats {
+    grid-template-columns: 1fr;
+  }
+
+  .why__hero {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .why__stat {
+    padding: 24px;
+  }
+
+  .cms__title {
+    margin-top: 20px;
+    font-size: 24px;
+    line-height: 30px;
+  }
+
+  .cms__text {
+    font-size: 16px;
+    line-height: 22px;
+  }
+
+  .cms__cta {
+    margin-top: 20px;
+  }
+
+  /* Все 6 логотипов в одну строку — уменьшаем и сжимаем отступ. */
+  .cms__logos {
+    flex-wrap: nowrap;
+    gap: 8px;
+  }
+
+  .cms__logo {
+    width: 48px;
+    height: 48px;
+    padding: 6px;
+  }
+
+  .cms__logo img {
+    width: 34px;
+    height: 34px;
+  }
+
+  .cms__cta {
+    width: 100%;
+  }
+}
+
+/* ============================================
+   Panel — панель управления: светлая плашка,
+   возможности слева + скриншот справа
+   ============================================ */
+
+.panel {
+  margin-top: var(--section-gap);
+}
+
+.panel__card {
+  display: grid;
+  grid-template-columns: 52% 48%;
+  align-items: stretch;
+  background: var(--color-white);
+  border: 1px solid var(--color-border-soft);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-soft);
+  overflow: hidden;
+}
+
+.panel__content {
+  display: flex;
+  flex-direction: column;
+  padding: 48px;
+}
+
+.panel__heading {
+  max-width: 400px;
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 36px;
+  line-height: 1.1;
+  letter-spacing: -1px;
+  color: var(--color-text-main);
+}
+
+.panel__desc {
+  max-width: 440px;
+  margin-top: 24px;
+  font-size: 20px;
+  line-height: 28px;
+  color: var(--color-text-main-80);
+}
+
+/* Возможности — через 80px после описания */
+.panel__features {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px 20px;
+  margin-top: 80px;
+  list-style: none;
+}
+
+.panel__feature {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.panel__feature-icon {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--color-surface);
+  background-image: var(--icon);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 22px 22px;
+}
+
+.panel__feature-text {
+  font-size: 15px;
+  line-height: 20px;
+  color: var(--color-text-main-80);
+  white-space: pre-line; /* перенос по \n в тексте фичи */
+}
+
+.panel__cta {
+  align-self: flex-start;
+  margin-top: 32px;
+}
+
+/* Перенести в Timeweb + Попробовать бесплатно — выше и со скруглением 16px. */
+.migration__cta,
+.panel__cta {
+  height: 56px;
+  border-radius: 16px;
+}
+
+/* Скриншот — целиком, прижат к правому-нижнему углу карточки.
+   Исходник 2x (1100×980) → показываем в 50% (550×490). */
+.panel__media {
+  position: relative;
+  align-self: stretch;
+  min-height: 420px;
+  overflow: hidden;
+}
+
+.panel__media img {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 550px;
+  max-width: none;
+  height: auto;
+}
+
+@media (max-width: 768px) {
+  .panel__card {
+    grid-template-columns: 1fr;
+  }
+
+  .panel__heading {
+    max-width: none;
+    font-size: 32px;
+    line-height: 40px;
+  }
+
+  .panel__desc {
+    max-width: none;
+  }
+
+  .panel__features {
+    margin-top: 48px;
+  }
+
+  /* По образцу «Перенесём в Timeweb»: картинка сверху, под ней
+     разделитель во всю ширину, верхний отступ = боковому. */
+  .panel__content {
+    padding: 28px;
+    border-top: 1px solid var(--color-border-soft);
+  }
+
+  .panel__media {
+    position: static;
+    min-height: 0;
+    /* Картинка чуть меньше: верхний и боковой отступ = паддингу контента,
+       снизу примыкает к разделителю. */
+    padding: 28px 28px 0;
+    order: -1;
+  }
+
+  .panel__media img {
+    position: static;
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .panel__heading {
+    font-size: 24px;
+    line-height: 30px;
+  }
+
+  .panel__desc {
+    margin-top: 8px;
+    font-size: 16px;
+    line-height: 22px;
+  }
+
+  .panel__content {
+    padding: 20px;
+  }
+
+  .panel__media {
+    padding: 20px 20px 0;
+  }
+
+  .panel__features {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+
+  .panel__cta {
+    width: 100%;
+  }
+}
+
+/* ============================================
+   Audience — «Для кого Timeweb?», сценарии-табы
+   ============================================ */
+
+.audience {
+  margin-top: var(--section-gap);
+  padding: 80px 0;
+  background: var(--color-surface);
+}
+
+.audience__tabs {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 28px;
+  padding: 4px;
+  background: var(--color-white);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-button-s);
+}
+
+.audience__tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-radius: 9px;
+  font-family: var(--font-text);
+  font-weight: 500;
+  font-size: 15px;
+  line-height: 18px;
+  color: var(--color-black-100);
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.audience__tab-icon {
+  width: 18px;
+  height: 18px;
+  color: var(--color-text-main-50);
+  transition: background-color 0.15s ease;
+}
+
+.audience__tab--active {
+  background: var(--color-text-main);
+  color: var(--color-white);
+}
+
+.audience__tab--active .audience__tab-icon {
+  color: var(--color-white);
+}
+
+.audience__panel {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 64px;
+  align-items: start;
+  margin-top: 36px;
+}
+
+/* Смена таба: лёгкое проявление (узел пересоздаётся через key) */
+@media (prefers-reduced-motion: no-preference) {
+  .audience__panel {
+    animation: audience-tab-in 0.25s ease both;
+  }
+}
+
+@keyframes audience-tab-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.audience__title {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 26px;
+  line-height: 32px;
+  color: var(--color-text-main);
+}
+
+.audience__text {
+  margin-top: 12px;
+  max-width: 560px;
+  font-size: 16px;
+  line-height: 24px;
+  color: var(--color-text-main-80);
+}
+
+.audience__points {
+  display: grid;
+  gap: 12px;
+  margin-top: 24px;
+  list-style: none;
+}
+
+.audience__point {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 16px;
+  line-height: 22px;
+  color: var(--color-text-main);
+}
+
+.audience__check {
+  width: 16px;
+  height: 16px;
+  margin-top: 3px;
+  color: var(--color-text-main);
+}
+
+.audience__cta {
+  margin-top: 28px;
+  background: var(--color-white);
+}
+
+/* ---- Карточка рекомендованного тарифа ---- */
+
+.audience__rec {
+  padding: 28px;
+  background: var(--color-white);
+  border: 1px solid var(--color-accent);
+  border-radius: var(--radius-card-s);
+  box-shadow: var(--shadow-accent);
+}
+
+.audience__rec-label {
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-text-main-50);
+}
+
+.audience__rec-name {
+  margin-top: 10px;
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 22px;
+  line-height: 28px;
+  color: var(--color-text-main);
+}
+
+.audience__rec-price {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  margin-top: 12px;
+}
+
+.audience__rec-value {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 36px;
+  line-height: 42px;
+  color: var(--color-text-main);
+}
+
+.audience__rec-suffix {
+  font-size: 16px;
+  line-height: 20px;
+  color: var(--color-text-main-60);
+}
+
+.audience__rec-note {
+  margin-top: 4px;
+  font-size: 14px;
+  line-height: 18px;
+  color: var(--color-text-main-60);
+}
+
+.audience__rec-gift {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  font-size: 14px;
+  line-height: 18px;
+  color: var(--color-success);
+}
+
+.audience__rec-gift-icon {
+  width: 18px;
+  height: 18px;
+}
+
+.audience__rec-cta {
+  width: 100%;
+  margin-top: 20px;
+}
+
+@media (max-width: 1024px) {
+  .audience {
+    padding: 56px 0;
+  }
+
+  .audience__panel {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+
+  .audience__rec {
+    max-width: 480px;
+  }
+}
+
+@media (max-width: 480px) {
+  .audience {
+    padding: 40px 0;
+  }
+
+  .audience__tabs {
+    display: flex;
+  }
+
+  .audience__tab {
+    flex: 1;
+    justify-content: center;
+    padding: 10px 8px;
+  }
+
+  .audience__rec {
+    max-width: none;
+  }
+}
+
+/* ============================================
+   Infrastructure — надёжность ЦОД: фото + факты
+   Фото слева, факты справа — зеркально к «Панели управления»
+   (там медиа справа), чтобы два сплит-блока не выглядели одинаково.
+   ============================================ */
+
+.infra {
+  margin-top: var(--section-gap);
+}
+
+/* Тёмная «серверная»: градиент + фото ЦОД (50%), факты — карточки с blur.
+   Сверху заголовок + описание, факты — ниже (по Figma). */
+.infra__card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  margin-top: 48px;
+  padding: 40px;
+  border-radius: var(--radius-card);
+  overflow: hidden;
+  background: linear-gradient(154deg, #252120 8%, #000 92%);
+  color: var(--color-white);
+}
+
+.infra__card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: url(assets/photos/infra.webp) center / cover no-repeat;
+  opacity: 0.5;
+}
+
+.infra__heading {
+  position: relative;
+  z-index: 1;
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 36px;
+  line-height: 44px;
+  letter-spacing: -1px;
+  color: var(--color-white);
+}
+
+.infra__desc {
+  position: relative;
+  z-index: 1;
+  max-width: 440px;
+  margin-top: 16px;
+  font-size: 20px;
+  line-height: 24px;
+  color: var(--color-white);
+}
+
+.infra__grid {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-top: 80px;
+  list-style: none;
+}
+
+.infra__cell {
+  display: flex;
+  flex-direction: column;
+  height: 160px;
+  padding: 23px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 24px;
+  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+  /* brightness гасит «засвет» от яркого фона дата-центра, просвечивающего
+     сквозь блюр (цвет самой плашки не меняем). */
+  -webkit-backdrop-filter: blur(15px) brightness(0.55);
+  backdrop-filter: blur(15px) brightness(0.55);
+}
+
+.infra__cell-icon {
+  width: 32px;
+  height: 32px;
+  color: var(--color-accent);
+}
+
+.infra__cell-text {
+  margin-top: auto;
+  max-width: 224px;
+  font-weight: 500;
+  font-size: 18px;
+  line-height: 24px;
+  color: var(--color-white);
+}
+
+@media (max-width: 768px) {
+  .infra__card {
+    min-height: 0;
+    padding: 32px 28px;
+  }
+
+  .infra__heading {
+    max-width: none;
+    font-size: 32px;
+    line-height: 40px;
+  }
+
+  .infra__desc {
+    max-width: none;
+    font-size: 18px;
+    line-height: 28px;
+  }
+
+  /* Горизонтальный скролл карточек инфраструктуры — до краёв тёмной плашки
+     (отрицательный margin гасит её боковой паддинг 28px). */
+  .infra__grid {
+    display: flex;
+    grid-template-columns: none;
+    margin-top: 48px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: 28px;
+    margin-inline: -28px;
+    padding-inline: 28px;
+    scrollbar-width: none;
+  }
+
+  .infra__grid::-webkit-scrollbar {
+    display: none;
+  }
+
+  .infra__cell {
+    flex: 0 0 220px;
+    height: auto;
+    min-height: 0;
+    scroll-snap-align: start;
+  }
+
+  /* компактно: текст сразу под иконкой, без растягивания на всю высоту */
+  .infra__cell-text {
+    margin-top: 14px;
+    font-size: 18px;
+  }
+}
+
+@media (max-width: 480px) {
+  .infra__heading {
+    font-size: 24px;
+    line-height: 30px;
+  }
+
+  .infra__desc {
+    font-size: 16px;
+    line-height: 22px;
+  }
+}
+
+/* ============================================
+   Reviews — отзывы клиентов
+   ============================================ */
+
+.reviews {
+  margin-top: var(--section-gap);
+}
+
+.reviews__heading {
+  text-align: center;
+}
+
+/* Белая плашка-агрегатор с заголовком, площадками и каруселью */
+.reviews__panel {
+  margin-top: 40px;
+  padding: 48px;
+  background: var(--color-white);
+  border: 1px solid var(--color-border-soft);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-soft);
+}
+
+.reviews__lead {
+  max-width: 560px;
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 32px;
+  line-height: 40px;
+  color: var(--color-text-main);
+}
+
+.reviews__lead-accent {
+  color: var(--color-accent);
+}
+
+.reviews__rating {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 20px;
+  font-size: 16px;
+  color: var(--color-text-main);
+}
+
+.reviews__rating strong {
+  font-weight: 700;
+}
+
+.reviews__rating-note {
+  color: var(--color-text-main-60);
+}
+
+.reviews__platforms,
+.reviews__filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.reviews__filters {
+  margin-top: 12px;
+}
+
+.reviews__platform {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 14px;
+  background: var(--color-white);
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  font-weight: 500;
+  font-size: 15px;
+  line-height: 18px;
+  color: var(--color-text-main);
+  transition: border-color 0.15s ease;
+}
+
+.reviews__platform--active {
+  border-color: var(--color-accent);
+}
+
+.reviews__platform-rating {
+  font-weight: 700;
+}
+
+.reviews__badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 13px;
+  color: var(--color-white);
+}
+
+.reviews__badge--dark {
+  color: var(--color-text-main);
+}
+
+.reviews__chip {
+  padding: 9px 16px;
+  background: var(--color-white);
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  font-size: 15px;
+  line-height: 18px;
+  color: var(--color-text-main-80);
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+
+.reviews__chip--active {
+  border-color: var(--color-text-main);
+  color: var(--color-text-main);
+}
+
+/* ---- Карусель ---- */
+.reviews__carousel {
+  position: relative;
+  margin-top: 28px;
+}
+
+.reviews__track {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(280px, 1fr);
+  gap: 16px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  padding-bottom: 4px;
+  scrollbar-width: none;
+}
+
+.reviews__track::-webkit-scrollbar {
+  display: none;
+}
+
+.reviews__card {
+  display: flex;
+  flex-direction: column;
+  padding: 24px;
+  background: var(--color-surface);
+  border-radius: var(--radius-card-s);
+  scroll-snap-align: start;
+}
+
+.reviews__person {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.reviews__person .reviews__badge {
+  width: 40px;
+  height: 40px;
+  font-size: 18px;
+}
+
+.reviews__name {
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 20px;
+  color: var(--color-text-main);
+}
+
+.reviews__date {
+  margin-top: 2px;
+  font-size: 14px;
+  line-height: 18px;
+  color: var(--color-text-main-50);
+}
+
+.reviews__stars {
+  display: flex;
+  gap: 2px;
+  margin-top: 16px;
+}
+
+.reviews__text {
+  margin-top: 12px;
+  font-size: 15px;
+  line-height: 22px;
+  color: var(--color-text-main-80);
+}
+
+.reviews__more {
+  display: inline-flex;
+  margin-top: 16px;
+  font-weight: 500;
+  font-size: 15px;
+  color: var(--color-accent);
+}
+
+.reviews__more:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.reviews__arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  background: var(--color-white);
+  border: 1px solid var(--color-border);
+  border-radius: 50%;
+  font-size: 22px;
+  line-height: 1;
+  color: var(--color-text-main);
+  box-shadow: var(--shadow-card);
+  transition: border-color 0.15s ease;
+}
+
+.reviews__arrow:hover {
+  border-color: #c4c4c4;
+}
+
+.reviews__arrow--prev {
+  left: -16px;
+}
+
+.reviews__arrow--next {
+  right: -16px;
+}
+
+.reviews__foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 28px;
+}
+
+.reviews__credit {
+  font-size: 13px;
+  color: var(--color-text-main-50);
+}
+
+.reviews__dots {
+  display: flex;
+  gap: 8px;
+}
+
+.reviews__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-border);
+}
+
+.reviews__dot--active {
+  background: var(--color-text-main);
+}
+
+@media (max-width: 768px) {
+  .reviews__panel {
+    padding: 28px 20px;
+  }
+
+  .reviews__lead {
+    font-size: 24px;
+    line-height: 30px;
+  }
+
+  /* Площадки и фильтры — две отдельные горизонтальные ленты со скроллом.
+     Отрицательные поля + паддинг = бликид к краям панели. */
+  .reviews__platforms,
+  .reviews__filters {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    margin-left: -20px;
+    margin-right: -20px;
+    padding-left: 20px;
+    padding-right: 20px;
+    scrollbar-width: none;
+  }
+
+  .reviews__platforms::-webkit-scrollbar,
+  .reviews__filters::-webkit-scrollbar {
+    display: none;
+  }
+
+  .reviews__platform,
+  .reviews__chip {
+    flex-shrink: 0;
+  }
+
+  /* удобный тап-таргет на тач-устройствах (≈44px) */
+  .reviews__chip {
+    padding: 12px 16px;
+  }
+
+  .reviews__arrow {
+    display: none;
+  }
+
+  .reviews__credit {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .reviews__lead {
+    font-size: 22px;
+    line-height: 28px;
+  }
+
+  .reviews__foot {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .reviews__cta {
+    width: 100%;
+    order: -1;
+  }
+}
+
+/* ============================================
+   Ecosystem — «Все продукты Timeweb», табы услуг
+   ============================================ */
+
+/* Белый фон: чередование с surface-лентами Reviews (выше) и Support (ниже). */
+.eco {
+  margin-top: var(--section-gap);
+}
+
+.eco__tabs {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 28px;
+  padding: 4px;
+  background: var(--color-white);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-button-s);
+}
+
+.eco__tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-radius: 9px;
+  font-family: var(--font-text);
+  font-weight: 500;
+  font-size: 15px;
+  line-height: 18px;
+  color: var(--color-black-100);
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.eco__tab-icon {
+  width: 18px;
+  height: 18px;
+  color: var(--color-text-main-50);
+}
+
+.eco__tab--active {
+  background: var(--color-text-main);
+  color: var(--color-white);
+}
+
+.eco__tab--active .eco__tab-icon {
+  color: var(--color-white);
+}
+
+.eco__panel {
+  display: grid;
+  grid-template-columns: 1fr 1.1fr;
+  gap: 64px;
+  align-items: center;
+  margin-top: 36px;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .eco__panel {
+    animation: audience-tab-in 0.25s ease both;
+  }
+}
+
+.eco__title {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 26px;
+  line-height: 32px;
+  color: var(--color-text-main);
+}
+
+.eco__text {
+  margin-top: 12px;
+  font-size: 16px;
+  line-height: 24px;
+  color: var(--color-text-main-80);
+}
+
+.eco__rows {
+  margin-top: 20px;
+  list-style: none;
+}
+
+.eco__row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 0;
+  border-top: 1px solid var(--color-border);
+}
+
+.eco__row:last-child {
+  border-bottom: 1px solid var(--color-border);
+}
+
+.eco__row-label {
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 20px;
+  color: var(--color-text-main);
+}
+
+.eco__row-price {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 17px;
+  line-height: 22px;
+  color: var(--color-text-main);
+}
+
+.eco__points {
+  display: grid;
+  gap: 12px;
+  margin-top: 20px;
+  list-style: none;
+}
+
+.eco__point {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 16px;
+  line-height: 22px;
+  color: var(--color-text-main);
+}
+
+.eco__check {
+  width: 16px;
+  height: 16px;
+  margin-top: 3px;
+  color: var(--color-text-main);
+}
+
+.eco__cta {
+  margin-top: 28px;
+}
+
+/* Мок поля поиска домена (декоративный) */
+.eco__search-field {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 10px 10px 10px 20px;
+  background: var(--color-white);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-button-l);
+}
+
+.eco__search-placeholder {
+  font-size: 16px;
+  color: var(--color-text-main-50);
+}
+
+.eco__search-placeholder b {
+  color: var(--color-text-main);
+}
+
+.eco__search-btn {
+  pointer-events: none;
+}
+
+.eco__search-zones {
+  margin-top: 12px;
+  text-align: center;
+  font-size: 14px;
+  color: var(--color-text-main-50);
+}
+
+.eco__media {
+  aspect-ratio: 4 / 3;
+  max-height: 320px;
+  width: 100%;
+}
+
+@media (max-width: 1024px) {
+  .eco__panel {
+    grid-template-columns: 1fr;
+    gap: 36px;
+  }
+}
+
+@media (max-width: 480px) {
+  .eco__tabs {
+    display: flex;
+  }
+
+  .eco__tab {
+    flex: 1 1 auto;
+    justify-content: center;
+  }
+}
+
+/* ============================================
+   Blog — полезные материалы
+   ============================================ */
+
+.blog {
+  margin-top: var(--section-gap);
+}
+
+.blog__heading {
+  text-align: center;
+}
+
+.blog__grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-top: 40px;
+}
+
+.blog__card {
+  display: flex;
+  flex-direction: column;
+  padding: 24px;
+  background: var(--color-white);
+  border: 1px solid var(--color-border-soft);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-soft);
+}
+
+.blog__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.blog__category {
+  padding: 5px 12px;
+  background: rgba(220, 102, 85, 0.08);
+  border-radius: 999px;
+  font-size: 13px;
+  line-height: 16px;
+  font-weight: 500;
+  color: var(--color-accent);
+}
+
+.blog__stars {
+  display: inline-flex;
+  gap: 2px;
+}
+
+.blog__title {
+  margin-top: 18px;
+  margin-bottom: 12px;
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 18px;
+  line-height: 24px;
+  color: var(--color-text-main);
+}
+
+/* Подзаголовок-анонс: ровно 2 строки, остальное — троеточие */
+.blog__excerpt {
+  margin-bottom: 28px;
+  font-size: 15px;
+  line-height: 22px;
+  color: var(--color-text-main-80);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.blog__meta {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: auto;
+  font-size: 14px;
+  line-height: 18px;
+  color: var(--color-text-main-50);
+}
+
+.blog__meta-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.blog__meta-date {
+  margin-left: auto;
+}
+
+.blog__meta-icon {
+  width: 16px;
+  height: 16px;
+  color: var(--color-text-main-50);
+}
+
+.blog__foot {
+  display: flex;
+  justify-content: center;
+  margin-top: 32px;
+}
+
+@media (max-width: 1024px) {
+  .blog__grid {
+    grid-template-columns: 1fr;
+    max-width: 640px;
+    margin-inline: auto;
+  }
+}
+
+@media (max-width: 768px) {
+  .blog__grid {
+    margin-top: 28px;
+  }
+}
+
+/* ============================================
+   Support — поддержка 24/7: каналы связи + фото команды
+   Surface-лента: ритм между белым Partners и белым Final CTA.
+   Контент слева, фото справа.
+   ============================================ */
+
+.support {
+  margin-top: var(--section-gap);
+}
+
+/* Белая карточка: слева сверху текст, слева снизу чипы, справа — форма
+   во всю высоту (Figma). */
+.support__card {
+  display: grid;
+  grid-template-columns: 1fr 480px;
+  grid-template-rows: auto 1fr;
+  align-items: start;
+  column-gap: 64px;
+  row-gap: 24px;
+  padding: 40px;
+  background: var(--color-white);
+  border: 1px solid rgba(77, 59, 59, 0.1);
+  border-radius: 32px;
+  box-shadow: 0 24px 29px rgba(0, 0, 0, 0.04), 0 3px 3.6px rgba(0, 0, 0, 0.02);
+}
+
+.support__content {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.support__form {
+  grid-column: 2;
+  grid-row: 1 / 3;
+}
+
+.support__chips {
+  grid-column: 1;
+  grid-row: 2;
+  align-self: end;
+}
+
+.support__title {
+  text-align: left;
+}
+
+.support__accent {
+  color: var(--color-accent);
+}
+
+.support__sub {
+  margin-top: 20px;
+  max-width: 514px;
+  font-family: var(--font-heading);
+  font-weight: 400;
+  font-size: 20px;
+  line-height: 24px;
+  color: var(--color-text-main);
+}
+
+.support__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 24px;
+  list-style: none;
+}
+
+.support__chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 48px;
+  padding: 0 16px;
+  border: 1px solid var(--color-border-soft);
+  border-radius: 16px;
+  font-family: var(--font-text);
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 20px;
+  color: var(--color-text-main);
+  text-decoration: none;
+  transition: border-color 0.15s ease, transform 0.15s ease, box-shadow 0.2s ease;
+}
+
+.support__chip:hover {
+  border-color: #c4c4c4;
+}
+
+.support__chip-icon {
+  width: 24px;
+  height: 24px;
+  color: currentColor;
+}
+
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .support__chip:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(33, 30, 30, 0.07);
+  }
+}
+
+/* Форма обратной связи */
+.support__form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.support__group {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.support__fields {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.support__row {
+  display: flex;
+  gap: 8px;
+}
+
+.support__input {
+  width: 100%;
+  padding: 18px 16px;
+  border: 0;
+  border-radius: 16px;
+  background: var(--color-surface);
+  font-family: var(--font-text);
+  font-size: 16px;
+  line-height: 20px;
+  color: var(--color-text-main);
+}
+
+.support__input::placeholder {
+  color: var(--color-black-100);
+  opacity: 0.5;
+}
+
+.support__input:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 1px;
+}
+
+.support__row .support__input {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.support__checks {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.support__check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-text);
+  font-size: 14px;
+  line-height: 20px;
+  letter-spacing: -0.2px;
+  color: var(--color-black-100);
+  cursor: pointer;
+}
+
+.support__check a {
+  color: inherit;
+  text-decoration: underline;
+}
+
+.support__check-input {
+  appearance: none;
+  -webkit-appearance: none;
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  border: 1.5px solid rgba(77, 59, 59, 0.2);
+  border-radius: 8px;
+  background: var(--color-white);
+  cursor: pointer;
+}
+
+.support__check-input:checked {
+  border-color: transparent;
+  background: var(--color-accent-tint)
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 14' fill='none'%3E%3Cpath d='M3 7.3 5.6 10 11 4' stroke='%23DC6655' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")
+    center / 12px 12px no-repeat;
+}
+
+.support__submit {
+  width: 100%;
+  height: 56px;
+  border-radius: 16px;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+@media (max-width: 1024px) {
+  /* В одну колонку: текст → форма → чипы (под кнопкой «Отправить»). */
+  .support__card {
+    grid-template-columns: 1fr;
+    grid-template-rows: none;
+    gap: 28px;
+    padding: 32px;
+  }
+
+  .support__content,
+  .support__form,
+  .support__chips {
+    grid-column: auto;
+    grid-row: auto;
+  }
+
+  /* Чипы — полноширинные кнопки под формой, размером как «Отправить»,
+     стиль outline. */
+  .support__chips {
+    flex-direction: column;
+    flex-wrap: nowrap;
+    gap: 8px;
+    margin-top: 0;
+  }
+
+  .support__chip {
+    width: 100%;
+    height: 48px;
+    justify-content: center;
+    border-radius: 16px;
+  }
+}
+
+@media (max-width: 768px) {
+  .support__sub {
+    font-size: 18px;
+    line-height: 28px;
+  }
+}
+
+@media (max-width: 480px) {
+  .support__card {
+    padding: 24px;
+  }
+
+  .support__row {
+    flex-direction: column;
+  }
+
+  .support__sub {
+    font-size: 16px;
+    line-height: 22px;
+  }
+}
+
+/* ============================================
+   Final CTA — «Начните бесплатный период»:
+   выбор сценария → две рекомендации (primary + secondary)
+   ============================================ */
+
+/* Финальный CTA + FAQ + Footer живут в кремовом .band--footer. */
+/* ============================================
+   Final CTA (reco) — выбор сценария → один тариф.
+   Центрированная колонка: питч → сетка сценариев 3×2
+   → один рекомендуемый тариф с 3D-иллюстрацией.
+   Макет Figma 24087:29083.
+   ============================================ */
+
+.reco {
+  padding-top: 100px;
+}
+
+.reco__inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 40px;
+}
+
+/* --- Питч (центр) --- */
+.reco__pitch {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  text-align: center;
+}
+
+.reco__title {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 36px;
+  line-height: 44px;
+  letter-spacing: -1px;
+  color: var(--color-text-main);
+  white-space: nowrap;
+}
+
+.reco__title-accent {
+  color: var(--color-accent);
+}
+
+.reco__text {
+  max-width: 600px;
+  font-size: 20px;
+  line-height: 24px;
+  color: var(--color-text-main);
+}
+
+/* --- Сценарии: сетка 3×2 чипов-радио, ширина под карточку --- */
+.reco__scenarios {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  width: 100%;
+  max-width: var(--reco-width, 820px);
+}
+
+.reco-scenario {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 60px;
+  padding: 14px 14px 14px 18px;
+  background: var(--color-surface-2);
+  border: 1px solid transparent;
+  border-radius: 20px;
+  font-family: var(--font-text);
+  font-weight: 500;
+  font-size: 18px;
+  line-height: 26px;
+  color: var(--color-black-100);
+  text-align: left;
+  cursor: pointer;
+}
+
+.reco-scenario__mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--color-white);
+  box-shadow: inset 0 0 0 1px var(--color-border-soft);
+}
+
+.reco-scenario__check {
+  width: 16px;
+  height: 16px;
+  color: var(--color-white);
+  opacity: 0;
+}
+
+.reco-scenario--active {
+  background: var(--color-white);
+  border-color: var(--color-accent-border);
+  box-shadow: var(--shadow-accent);
+}
+
+.reco-scenario--active .reco-scenario__mark {
+  background: var(--color-accent);
+  box-shadow: none;
+}
+
+.reco-scenario--active .reco-scenario__check {
+  opacity: 1;
+}
+
+/* --- Результат: подпись + ссылка, затем одна карточка тарифа --- */
+.reco__result {
+  width: 100%;
+  max-width: var(--reco-width, 820px);
+}
+
+.reco__result-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.reco__result-label {
+  font-size: 16px;
+  line-height: 24px;
+  color: var(--color-black-100);
+}
+
+.reco__all {
+  font-size: 16px;
+  line-height: 24px;
+  color: var(--color-accent);
+}
+
+/* Карточка: слева — название, описание, CTA+цена; справа — чипы-фичи. */
+/* ── Десктоп: кастомная карточка из Figma (2 колонки) ── */
+.reco-card {
+  display: grid;
+  grid-template-columns: 1fr 280px;
+  gap: 40px;
+  align-items: stretch;
+  padding: 24px;
+  background: var(--color-white);
+  border: 1px solid rgba(77, 59, 59, 0.1);
+  border-radius: 24px;
+  box-shadow: 0 24px 29px rgba(0, 0, 0, 0.04), 0 3px 3.6px rgba(0, 0, 0, 0.02);
+}
+
+.reco-card__main {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.reco-card__name {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 24px;
+  line-height: 28px;
+  color: var(--color-text-main);
+}
+
+.reco-card__desc {
+  margin-top: 8px;
+  max-width: 420px;
+  font-family: var(--font-text);
+  font-size: 16px;
+  line-height: 24px;
+  color: var(--color-black-100);
+}
+
+.reco-card__buy {
+  display: flex;
+  align-items: flex-end;
+  gap: 24px;
+  margin-top: auto;
+  padding-top: 32px;
+}
+
+.reco-card__cta {
+  flex-shrink: 0;
+  width: 190px;
+  height: 56px;
+  padding: 0;
+  border-radius: 16px;
+  font-size: 16px;
+  line-height: 20px;
+}
+
+.reco-card__pricing {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.reco-card__price {
+  display: flex;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.reco-card__price-value {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 28px;
+  line-height: 32px;
+  color: var(--color-text-main);
+}
+
+.reco-card__price-suffix {
+  font-size: 16px;
+  line-height: 20px;
+  color: rgba(77, 59, 59, 0.6);
+}
+
+.reco-card__total {
+  font-size: 14px;
+  line-height: 16px;
+  color: rgba(77, 59, 59, 0.6);
+}
+
+.reco-card__features {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.reco-card__feature {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 18px;
+  background: var(--color-surface);
+  border-radius: 16px;
+  font-size: 16px;
+  line-height: 24px;
+  color: var(--color-black-100);
+}
+
+.reco-card__check {
+  flex-shrink: 0;
+  width: 14px;
+  height: 16px;
+  color: var(--color-accent);
+}
+
+.reco-card__feature-b {
+  font-weight: 700;
+}
+
+.reco-card__info {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  margin-left: 4px;
+  vertical-align: -5px;
+  color: var(--color-icon);
+  opacity: 0.5;
+}
+
+/* ── Мобайл: стандартная карточка тарифа (.pricing__card) + описание ── */
+.reco__desc {
+  display: none;
+  max-width: 520px;
+  margin-bottom: 16px;
+  font-size: 16px;
+  line-height: 24px;
+  color: var(--color-black-100);
+}
+
+.reco-tariff {
+  display: none;
+  width: 320px;
+  max-width: 100%;
+}
+
+/* Мягкий fade содержимого при смене сценария */
+@media (prefers-reduced-motion: no-preference) {
+  @keyframes reco-swap {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .reco__result--swap .reco-card,
+  .reco__result--swap .reco-tariff {
+    animation: reco-swap 0.3s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+  }
+}
+
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .reco-scenario {
+    transition: background 0.15s ease, border-color 0.15s ease, box-shadow 0.2s ease, transform 0.15s ease;
+  }
+
+  .reco-scenario:not(.reco-scenario--active):hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(33, 30, 30, 0.07);
+  }
+
+  .reco-scenario__check {
+    transition: opacity 0.15s ease;
+  }
+}
+
+/* Заголовок держим в одну строку только пока он помещается (≈815px при 40px).
+   Ниже — возвращаем перенос, иначе он вылезет за края. */
+@media (max-width: 960px) {
+  .reco__title {
+    white-space: normal;
+  }
+}
+
+/* sm: цифры/чипы переносятся; иллюстрация уезжает вниз карточки */
+@media (max-width: 768px) {
+  .reco {
+    padding-top: 56px;
+  }
+
+  .reco__inner {
+    gap: 28px;
+  }
+
+  .reco__title {
+    font-size: 32px;
+    line-height: 40px;
+  }
+
+  .reco__text {
+    font-size: 18px;
+  }
+
+  /* Сценарии-чипы по контенту, несколько в ряд; галочку убираем. */
+  .reco__scenarios {
+    display: flex;
+    flex-wrap: wrap;
+    grid-template-columns: none;
+    gap: 8px;
+  }
+
+  .reco-scenario {
+    min-height: 0;
+    padding: 12px 16px;
+    justify-content: center;
+    font-size: 16px;
+    line-height: 22px;
+  }
+
+  .reco-scenario__mark {
+    display: none;
+  }
+
+  /* На мобиле прячем кастомную карточку, показываем стандартную. */
+  .reco-card {
+    display: none;
+  }
+  .reco__desc {
+    display: block;
+  }
+  .reco-tariff {
+    display: flex;
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .reco__title {
+    font-size: 24px;
+    line-height: 30px;
+  }
+
+  .reco__text {
+    font-size: 16px;
+    line-height: 22px;
+  }
+}
+
+/* ============================================
+   FAQ — «Отвечаем на вопросы»: surface-полоса,
+   центрированный заголовок, белые карточки-вопросы
+   ============================================ */
+
+.faq {
+  padding: 80px 0 72px;
+}
+
+.faq__inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.faq__heading {
+  text-align: center;
+}
+
+.faq__list {
+  display: grid;
+  gap: 4px;
+  width: 100%;
+  max-width: 880px;
+  margin-top: 48px;
+}
+
+.faq__item {
+  padding: 0 16px;
+  background: var(--color-surface-2);
+  border-radius: var(--radius-button-l);
+}
+
+.faq__question {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  width: 100%;
+  padding: 14px 0;
+  text-align: left;
+  font-family: var(--font-text);
+  font-weight: 500;
+  font-size: 18px;
+  line-height: 26px;
+  color: var(--color-text-main);
+  transition: color 0.15s ease;
+}
+
+.faq__question:hover {
+  color: var(--color-accent);
+}
+
+/* Шеврон вниз, разворачивается на 180° при раскрытии */
+.faq__caret {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  color: var(--color-text-main-50);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .faq__caret {
+    transition: transform 0.25s ease;
+  }
+}
+
+.faq__item--open .faq__caret {
+  transform: rotate(180deg);
+  color: var(--color-text-main);
+}
+
+/* Раскрытие через grid-rows — плавная высота без JS-измерений */
+.faq__answer {
+  display: grid;
+  grid-template-rows: 0fr;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .faq__answer {
+    transition: grid-template-rows 0.3s ease;
+  }
+}
+
+.faq__item--open .faq__answer {
+  grid-template-rows: 1fr;
+}
+
+.faq__answer-inner {
+  overflow: hidden;
+}
+
+.faq__answer-text {
+  padding-bottom: 16px;
+  max-width: 640px;
+  font-size: 15px;
+  line-height: 23px;
+  color: var(--color-text-main-80);
+}
+
+@media (max-width: 480px) {
+  .faq {
+    padding: 48px 0;
+  }
+}
+
+/* ============================================
+   Footer — светлый подвал: крошки, контакты, колонки
+   ============================================ */
+
+.footer {
+  padding: 48px 0 56px;
+  border-top: 1px solid var(--color-border);
+}
+
+.footer__main {
+  display: grid;
+  grid-template-columns: 1.1fr 2.4fr;
+  gap: 64px;
+}
+
+.footer__logo {
+  width: 150px;
+  height: 25px;
+  color: var(--color-text-main);
+}
+
+.footer__phone-label {
+  margin-top: 24px;
+  font-size: 15px;
+  line-height: 20px;
+  color: var(--color-text-main-60);
+}
+
+.footer__phone {
+  display: inline-block;
+  margin-top: 4px;
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 24px;
+  line-height: 30px;
+  color: var(--color-accent);
+}
+
+.footer__tg {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  margin-top: 20px;
+  border-radius: 14px;
+  background: var(--color-text-main);
+  transition: background-color 0.15s ease;
+}
+
+.footer__tg:hover {
+  background: #000;
+}
+
+.footer__tg-icon {
+  width: 22px;
+  height: 22px;
+  color: var(--color-white);
+}
+
+.footer__legal {
+  margin-top: 24px;
+  max-width: 360px;
+  font-size: 13px;
+  line-height: 18px;
+  color: var(--color-text-main-50);
+}
+
+.footer__columns {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 32px;
+}
+
+.footer__column-title {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 20px;
+  color: var(--color-text-main);
+}
+
+.footer__links {
+  margin-top: 18px;
+  list-style: none;
+  display: grid;
+  gap: 12px;
+}
+
+.footer__link {
+  font-size: 15px;
+  line-height: 20px;
+  color: var(--color-text-main-60);
+  transition: color 0.15s ease;
+}
+
+.footer__link:hover {
+  color: var(--color-accent);
+}
+
+@media (max-width: 1024px) {
+  .footer__main {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+
+  .footer__columns {
+    grid-template-columns: repeat(2, 1fr);
+    row-gap: 36px;
+  }
+}
+
+@media (max-width: 480px) {
+  .footer__columns {
+    grid-template-columns: 1fr;
+    row-gap: 28px;
+  }
+}
+
+/* ---- Hero: адаптив ---- */
+
+@media (max-width: 1024px) {
+  .hero__rating {
+    margin-top: 80px;
+  }
+
+  .hero__brands {
+    margin-top: 96px;
+  }
+}
+
+@media (max-width: 768px) {
+  .hero__rating {
+    margin-top: 56px;
+  }
+
+  /* Логотипы площадок-отзовиков убираем на мобиле — оставляем оценку. */
+  .hero__rating-soc {
+    display: none;
+  }
+
+  .hero__title {
+    font-size: 40px;
+    line-height: 48px;
+  }
+
+  .hero__subtitle {
+    font-size: 18px;
+    line-height: 24px;
+  }
+
+  .hero__heading {
+    gap: 16px;
+  }
+
+  .hero__cta {
+    margin-top: 32px;
+  }
+
+  .hero__brands {
+    margin-top: 64px;
+  }
+
+  /* На мобиле логотипы чуть мельче и плотнее. */
+  .hero__brands-set {
+    gap: 40px;
+    padding: 0 20px;
+  }
+
+  .hero__brands-row img {
+    height: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero__rating {
+    margin-top: 40px;
+  }
+
+  .hero__title {
+    font-size: 28px;
+    line-height: 34px;
+  }
+
+  .hero__subtitle {
+    font-size: 16px;
+    line-height: 22px;
+  }
+
+  .hero__cta-buttons {
+    flex-direction: column;
+    width: 100%;
+    padding: 0 var(--page-gutter);
+  }
+
+  .hero__cta-buttons .btn--l {
+    width: 100%;
+    max-width: 400px;
+  }
+
+  .hero__cta-note {
+    white-space: normal;
+    text-align: center;
+    padding: 0 var(--page-gutter);
+  }
+
+  .hero__brands {
+    margin-top: 48px;
+  }
+}
