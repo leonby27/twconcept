@@ -6,6 +6,63 @@
   var fmt = function (n) { return n.toLocaleString("ru-RU"); };
   var reduce = window.matchMedia("(prefers-reduced-motion: reduce)");
 
+  /* Одометр цены (общий для тарифов и рекомендаций): строим колонки 0–9 для
+     каждой цифры и катаем их к нужной цифре через translateY. Высоту ячейки
+     берём из line-height значения. */
+  function buildOdo(valueEl) {
+    var cell = parseFloat(getComputedStyle(valueEl).lineHeight) || 44;
+    valueEl.textContent = "";
+    var odo = document.createElement("span");
+    odo.className = "price-odo";
+    odo.setAttribute("aria-hidden", "true");
+    var sr = document.createElement("span");
+    sr.className = "visually-hidden";
+    valueEl.appendChild(odo);
+    valueEl.appendChild(sr);
+    valueEl.appendChild(document.createTextNode(" ₽"));
+    return { odo: odo, sr: sr, cols: [], cell: cell };
+  }
+
+  function setOdo(state, num, animate) {
+    var str = String(num);
+    state.sr.textContent = str + " ₽";
+    if (state.cols.length !== str.length) {
+      state.odo.textContent = "";
+      state.cols = [];
+      for (var i = 0; i < str.length; i++) {
+        var digit = document.createElement("span");
+        digit.className = "price-odo__digit";
+        digit.style.height = state.cell + "px";
+        var track = document.createElement("span");
+        track.className = "price-odo__track";
+        for (var d = 0; d <= 9; d++) {
+          var s = document.createElement("span");
+          s.style.height = state.cell + "px";
+          s.style.lineHeight = state.cell + "px";
+          s.textContent = String(d);
+          track.appendChild(s);
+        }
+        digit.appendChild(track);
+        state.odo.appendChild(digit);
+        state.cols.push(track);
+      }
+    }
+    for (var j = 0; j < str.length; j++) {
+      var dv = parseInt(str.charAt(j), 10);
+      var trk = state.cols[j];
+      var y = "translateY(" + (-dv * state.cell) + "px)";
+      if (animate) {
+        trk.style.transform = y;
+      } else {
+        var keep = trk.style.transition;
+        trk.style.transition = "none";
+        trk.style.transform = y;
+        void trk.offsetHeight; // зафиксировать без анимации
+        trk.style.transition = keep;
+      }
+    }
+  }
+
   /* ---------- Header: бургер-меню ---------- */
   (function () {
     var burger = document.querySelector(".header__burger");
@@ -75,62 +132,6 @@
     function activeBtn(seg) {
       return seg.querySelector(".pricing__seg-btn--active") ||
         seg.querySelector(".pricing__seg-btn");
-    }
-
-    /* Одометр цены: строим колонки 0–9 для каждой цифры и катаем их к нужной
-       цифре через translateY. Высоту ячейки берём из line-height значения. */
-    function buildOdo(valueEl) {
-      var cell = parseFloat(getComputedStyle(valueEl).lineHeight) || 44;
-      valueEl.textContent = "";
-      var odo = document.createElement("span");
-      odo.className = "price-odo";
-      odo.setAttribute("aria-hidden", "true");
-      var sr = document.createElement("span");
-      sr.className = "visually-hidden";
-      valueEl.appendChild(odo);
-      valueEl.appendChild(sr);
-      valueEl.appendChild(document.createTextNode(" ₽"));
-      return { odo: odo, sr: sr, cols: [], cell: cell };
-    }
-
-    function setOdo(state, num, animate) {
-      var str = String(num);
-      state.sr.textContent = str + " ₽";
-      if (state.cols.length !== str.length) {
-        state.odo.textContent = "";
-        state.cols = [];
-        for (var i = 0; i < str.length; i++) {
-          var digit = document.createElement("span");
-          digit.className = "price-odo__digit";
-          digit.style.height = state.cell + "px";
-          var track = document.createElement("span");
-          track.className = "price-odo__track";
-          for (var d = 0; d <= 9; d++) {
-            var s = document.createElement("span");
-            s.style.height = state.cell + "px";
-            s.style.lineHeight = state.cell + "px";
-            s.textContent = String(d);
-            track.appendChild(s);
-          }
-          digit.appendChild(track);
-          state.odo.appendChild(digit);
-          state.cols.push(track);
-        }
-      }
-      for (var j = 0; j < str.length; j++) {
-        var dv = parseInt(str.charAt(j), 10);
-        var trk = state.cols[j];
-        var y = "translateY(" + (-dv * state.cell) + "px)";
-        if (animate) {
-          trk.style.transform = y;
-        } else {
-          var keep = trk.style.transition;
-          trk.style.transition = "none";
-          trk.style.transform = y;
-          void trk.offsetHeight; // зафиксировать без анимации
-          trk.style.transition = keep;
-        }
-      }
     }
 
     var odos = [];
@@ -337,6 +338,12 @@
     var chips = document.querySelectorAll(".reco-scenario");
     if (!result || !chips.length) return;
 
+    // Цена — одометр как в тарифах (катится при смене сценария, без fade).
+    var customPv = custom && custom.querySelector(".reco-card__price-value");
+    var tariffPv = tariff && tariff.querySelector(".pricing__price-value");
+    var customOdo = customPv ? buildOdo(customPv) : null;
+    var tariffOdo = tariffPv ? buildOdo(tariffPv) : null;
+
     // Десктоп-карточка: чипы-пилюли.
     function pillHTML(f) {
       var info = f[2] ? '<span class="icon reco-card__info" aria-hidden="true" style="--icon: ' + INFO + '"></span>' : "";
@@ -357,16 +364,14 @@
       var el = root && root.querySelector(sel);
       if (el) { if (html) el.innerHTML = val; else el.textContent = val; }
     }
-    function render(i) {
+    function render(i, animate) {
       var s = SCENARIOS[i];
       var plan = PLANS[s.plan];
-      var price = fmt(plan.price) + "&nbsp;₽";
       var total = fmt(plan.total) + " ₽ за 12 месяцев";
       // Десктоп (кастом)
       if (custom) {
         set(custom, ".reco-card__name", plan.name);
         set(custom, ".reco-card__desc", s.desc);
-        set(custom, ".reco-card__price-value", price, true);
         set(custom, ".reco-card__total", total);
         custom.querySelector(".reco-card__features").innerHTML = plan.features.map(pillHTML).join("");
       }
@@ -375,16 +380,14 @@
         set(document, ".reco__desc", s.desc);
         set(tariff, ".pricing__name", plan.name);
         set(tariff, ".pricing__save", "Экономия " + fmt(plan.save) + " ₽");
-        set(tariff, ".pricing__price-value", price, true);
         set(tariff, ".pricing__total", total);
         tariff.querySelector(".pricing__features").innerHTML = plan.features.map(liHTML).join("");
       }
-      // Мягкий fade содержимого при смене сценария.
-      if (!reduce.matches) {
-        result.classList.remove("reco__result--swap");
-        void result.offsetWidth;
-        result.classList.add("reco__result--swap");
-      }
+      // Контент меняем мгновенно, без fade — анимируется только стоимость,
+      // которая катится одометром, как в тарифах.
+      var doAnim = animate && !reduce.matches;
+      if (customOdo) setOdo(customOdo, plan.price, doAnim);
+      if (tariffOdo) setOdo(tariffOdo, plan.price, doAnim);
     }
 
     chips.forEach(function (chip, i) {
@@ -395,10 +398,18 @@
         });
         chip.classList.add("reco-scenario--active");
         chip.setAttribute("aria-checked", "true");
-        render(i);
+        render(i, true);
       });
     });
-    // Дефолт — «Сайт компании» (index 1): карточка уже отрендерена в HTML.
+    // Дефолт — «Сайт компании» (index 1): карточка уже отрендерена в HTML,
+    // одометр цены позиционируем под активный сценарий без анимации.
+    var activeIdx = 0;
+    chips.forEach(function (c, i) {
+      if (c.classList.contains("reco-scenario--active")) activeIdx = i;
+    });
+    var startPrice = PLANS[SCENARIOS[activeIdx].plan].price;
+    if (customOdo) setOdo(customOdo, startPrice, false);
+    if (tariffOdo) setOdo(tariffOdo, startPrice, false);
   })();
 
   /* ---------- WhyHero: эффект «фонарика» ---------- */
@@ -409,6 +420,20 @@
       var r = hero.getBoundingClientRect();
       hero.style.setProperty("--mx", e.clientX - r.left + "px");
       hero.style.setProperty("--my", e.clientY - r.top + "px");
+    });
+  })();
+
+  /* ---------- Поиск домена: фокус по клику на всю плашку ---------- */
+  (function () {
+    var bar = document.querySelector(".domain-search__bar");
+    if (!bar) return;
+    var input = bar.querySelector(".domain-search__input");
+    if (!input) return;
+    bar.addEventListener("mousedown", function (e) {
+      // Клик по кнопке/самому инпуту обрабатываем штатно.
+      if (e.target === input || e.target.closest(".domain-search__submit")) return;
+      e.preventDefault(); // не теряем фокус на пустой области плашки
+      input.focus();
     });
   })();
 
@@ -506,7 +531,8 @@
     var started = false;
     function start() {
       if (started) return;
-      if (panel.getBoundingClientRect().top >= window.innerHeight * 0.85) return;
+      var r = panel.getBoundingClientRect();
+      if (r.top >= window.innerHeight || r.bottom <= 0) return;
       started = true;
       window.removeEventListener("scroll", start);
       window.removeEventListener("resize", start);
