@@ -256,12 +256,13 @@
     var TIPS = {
       nvme: "NVMe-накопители: чтение и запись в разы быстрее обычных SSD.",
       isolation: "Изоляция сайтов — защита от вредоносного ПО и атак.",
+      cpu: "CP — условные единицы процессорной мощности тарифа. Чем больше CP, тем выше вычислительная нагрузка, которую выдержит ваш сайт на пике.",
     };
     var icons = document.querySelectorAll(".pricing__info");
     icons.forEach(function (icon) {
       var holder = icon.closest(".pricing__feature-text") || icon.parentNode;
       var txt = (holder && holder.textContent) || "";
-      var tip = /NVMe/i.test(txt) ? TIPS.nvme : /изоляц/i.test(txt) ? TIPS.isolation : null;
+      var tip = /NVMe/i.test(txt) ? TIPS.nvme : /изоляц/i.test(txt) ? TIPS.isolation : /нагрузк/i.test(txt) ? TIPS.cpu : null;
       if (!tip) return;
 
       // Иконку нельзя сделать якорем тултипа (её обрезает mask) — оборачиваем.

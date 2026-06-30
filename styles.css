@@ -370,7 +370,7 @@ button {
 .header {
   position: relative;
   z-index: 100;
-  padding-bottom: 16px;
+  padding-bottom: 12px;
   background: var(--color-white);
 }
 
@@ -379,8 +379,8 @@ button {
   display: flex;
   align-items: center;
   gap: 24px;
-  height: 88px;
-  width: min(var(--header-max), 100% - var(--header-gutter) * 2);
+  height: 72px;
+  width: min(var(--container-max), 100% - var(--page-gutter) * 2);
   margin-inline: auto;
 }
 
@@ -390,9 +390,29 @@ button {
   flex-shrink: 0;
 }
 
-.header__logo img {
-  width: 172px;
+.header__logo img,
+.header__logo-svg {
+  width: 150px;
   height: auto;
+}
+
+.header__logo-svg {
+  overflow: visible; /* чтобы стрелка не обрезалась при сдвиге по ховеру */
+}
+
+.header__logo-arrow {
+  transition: transform 0.25s ease;
+}
+
+.header__logo:hover .header__logo-arrow,
+.header__logo:focus-visible .header__logo-arrow {
+  transform: translateX(4px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .header__logo-arrow {
+    transition: none;
+  }
 }
 
 .header__util {
@@ -445,8 +465,8 @@ button {
 .header__bar {
   display: flex;
   align-items: stretch;
-  height: 64px;
-  width: min(var(--header-max), 100% - var(--header-gutter) * 2);
+  height: 58px;
+  width: min(var(--container-max), 100% - var(--page-gutter) * 2);
   margin-inline: auto;
   overflow: hidden;
   background: var(--color-dark);
@@ -501,7 +521,7 @@ button {
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  width: 64px;
+  width: 58px;
   border-left: 1px solid rgba(255, 255, 255, 0.08);
   background: rgba(255, 255, 255, 0.05);
   color: var(--color-white);
@@ -674,16 +694,17 @@ button {
 /* Десктоп: первый экран занимает высоту окна, ряд цифр metrics прилипает к
    нижней кромке и двигается вместе с ней при ресайзе. Лента брендов прижата
    к низу hero (margin-top:auto), свободное место уходит выше неё.
-   310px = шапка (88 + 64 + 16) + отступ metrics (24) + высота ряда цифр (118). */
+   284px = шапка (72 + 58 + 12) + отступ metrics (24) + высота ряда цифр (118). */
 @media (min-width: 1025px) {
   .hero {
-    min-height: calc(100vh - 310px);
+    min-height: calc(100vh - 284px);
   }
 }
 
 /* Цветные иллюстрации по бокам — слой за центральным контентом.
    Параллакс от курсора задаёт HeroDecor.tsx (transform). Ассеты 2x → ~½. */
 .hero__decor {
+  display: none; /* временно скрыты боковые иллюстрации hero */
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
@@ -4465,6 +4486,22 @@ button {
   display: block;
   width: 150px;
   height: auto;
+  overflow: visible; /* чтобы стрелка не обрезалась при сдвиге по ховеру */
+}
+
+.footer__logo-arrow {
+  transition: transform 0.25s ease;
+}
+
+.footer__logo:hover .footer__logo-arrow,
+.footer__logo:focus-visible .footer__logo-arrow {
+  transform: translateX(4px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .footer__logo-arrow {
+    transition: none;
+  }
 }
 
 .footer__phone-label {
