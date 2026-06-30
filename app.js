@@ -99,11 +99,17 @@
   /* ---------- Pricing: период (категория — косметика) ---------- */
   (function () {
     var PERIODS = {
-      month: { months: 1, off: 0 },
-      year: { months: 12, off: 0.3 },
-      three: { months: 36, off: 0.5 },
+      month: { months: 1 },
+      year: { months: 12 },
+      three: { months: 36 },
     };
-    var bases = [234, 354, 496, 689]; // Year+ / Optimo+ / Century+ / Millenium+
+    // Цена ₽/мес по тарифам (Year / Optimo / Century / Millenium) и периодам — как на timeweb.
+    // Зачёркнутая «старая» цена и экономия считаются относительно помесячной.
+    var PRICES = {
+      month: [393, 634, 887, 1285],
+      year:  [244, 392, 553, 806],
+      three: [180, 272, 381, 554],
+    };
     var cards = document.querySelectorAll(".pricing__grid .pricing__card");
     var periodSeg = document.querySelector(".pricing__seg--period");
     if (!cards.length || !periodSeg) return;
@@ -144,11 +150,11 @@
       var p = PERIODS[periodId];
       var word = p.months === 1 ? "месяц" : "месяцев";
       cards.forEach(function (card, i) {
-        var base = bases[i];
-        if (base == null) return;
-        var price = Math.round(base * (1 - p.off));
+        var price = PRICES[periodId][i];
+        if (price == null) return;
+        var month = PRICES.month[i];
         var total = price * p.months;
-        var save = (base - price) * p.months;
+        var save = (month - price) * p.months;
         var tt = card.querySelector(".pricing__total");
         var sv = card.querySelector(".pricing__save");
         if (odos[i]) setOdo(odos[i], price, animate);
@@ -250,12 +256,13 @@
     var TIPS = {
       nvme: "NVMe-накопители: чтение и запись в разы быстрее обычных SSD.",
       isolation: "Изоляция сайтов — защита от вредоносного ПО и атак.",
+      cpu: "CP — условные единицы процессорной мощности тарифа. Чем больше CP, тем выше вычислительная нагрузка, которую выдержит ваш сайт на пике.",
     };
     var icons = document.querySelectorAll(".pricing__info");
     icons.forEach(function (icon) {
       var holder = icon.closest(".pricing__feature-text") || icon.parentNode;
       var txt = (holder && holder.textContent) || "";
-      var tip = /NVMe/i.test(txt) ? TIPS.nvme : /изоляц/i.test(txt) ? TIPS.isolation : null;
+      var tip = /NVMe/i.test(txt) ? TIPS.nvme : /изоляц/i.test(txt) ? TIPS.isolation : /нагрузк/i.test(txt) ? TIPS.cpu : null;
       if (!tip) return;
 
       // Иконку нельзя сделать якорем тултипа (её обрезает mask) — оборачиваем.
@@ -275,142 +282,7 @@
     });
   })();
 
-  /* ---------- Migration illu: рандомная смена иконок на бейджах ----------
-     Пул из 6 иконок (монитор/почта/глобус/бонус/сервер/щит). На каждом витке,
-     пока бейдж скрыт у центра, иконка меняется на случайную (без повтора
-     подряд). reduced-motion — остаются исходные иконки из разметки. */
-  (function () {
-    if (reduce.matches) return;
-    var POOL = ["monitor", "envelope-simple", "globe", "gift", "hard-drives", "shield"]
-      .map(function (n) { return "url(assets/icons/solid/" + n + ".svg)"; });
-    var icons = Array.prototype.slice.call(
-      document.querySelectorAll(".illu__badge .icon")
-    );
-    if (!icons.length) return;
-    icons.forEach(function (ic) {
-      var last = null;
-      function pick() {
-        var u;
-        do { u = POOL[(Math.random() * POOL.length) | 0]; } while (u === last && POOL.length > 1);
-        last = u;
-        return u;
-      }
-      ic.style.setProperty("--icon", pick());
-      var badge = ic.closest(".illu__badge");
-      if (badge) {
-        badge.addEventListener("animationiteration", function () {
-          ic.style.setProperty("--icon", pick());
-        });
-      }
-    });
-  })();
 
-  /* ---------- Final CTA: выбор сценария → один рекомендуемый тариф ---------- */
-  (function () {
-    var PLANS = {
-      "Year+": { name: "Year+", price: 164, total: 1968, save: 840, features: [
-        ["2", "сайта с изоляцией", true], ["15 ГБ", "на NVMe-дисках", true],
-        ["5", "Базы Данных", false], ["Стандартный", "CPU и MySQL", false] ] },
-      "Optimo+": { name: "Optimo+", price: 248, total: 2976, save: 1272, features: [
-        ["15", "сайтов с изоляцией", true], ["40 ГБ", "на NVMe-дисках", true],
-        ["∞", "Базы Данных", false], ["+250%", "CPU и MySQL", false] ] },
-      "Century+": { name: "Century+", price: 347, total: 4164, save: 1788, features: [
-        ["35", "сайтов с изоляцией", true], ["50 ГБ", "на NVMe-дисках", true],
-        ["∞", "Базы Данных", false], ["+350%", "CPU и MySQL", false] ] },
-      "Millenium+": { name: "Millenium+", price: 482, total: 5784, save: 2484, features: [
-        ["60", "сайтов с изоляцией", true], ["60 ГБ", "на NVMe-дисках", true],
-        ["∞", "Базы Данных", false], ["+550%", "CPU и MySQL", false] ] },
-    };
-    // Каждый сценарий → рекомендуемый тариф и своё описание.
-    var SCENARIOS = [
-      { plan: "Year+",      desc: "Быстрый старт для лендинга или небольшого сайта — всё необходимое уже включено" },
-      { plan: "Optimo+",    desc: "Больше ресурсов для стабильной работы сайта компании, базы данных и сервисов" },
-      { plan: "Century+",   desc: "Запас мощности и места под каталог, корзину и пиковые нагрузки магазина" },
-      { plan: "Optimo+",    desc: "Гибкая среда с изоляцией и базами данных для пет-проектов и клиентских сайтов" },
-      { plan: "Century+",   desc: "Десятки изолированных сайтов на одном аккаунте — удобно вести проекты клиентов" },
-      { plan: "Millenium+", desc: "Максимум дисков, баз данных и CPU для нагруженных highload-проектов" },
-    ];
-    var CHECK = "url(assets/icons/solid/check.svg)";
-    var INFO = "url(assets/icons/solid/info.svg)";
-    var result = document.querySelector(".reco__result");
-    var custom = document.querySelector(".reco-card");      // десктоп (Figma 2 колонки)
-    var tariff = document.querySelector(".reco-tariff");    // мобайл (стандартная карточка)
-    var chips = document.querySelectorAll(".reco-scenario");
-    if (!result || !chips.length) return;
-
-    // Цена — одометр как в тарифах (катится при смене сценария, без fade).
-    var customPv = custom && custom.querySelector(".reco-card__price-value");
-    var tariffPv = tariff && tariff.querySelector(".pricing__price-value");
-    var customOdo = customPv ? buildOdo(customPv) : null;
-    var tariffOdo = tariffPv ? buildOdo(tariffPv) : null;
-
-    // Десктоп-карточка: чипы-пилюли.
-    function pillHTML(f) {
-      var info = f[2] ? '<span class="icon reco-card__info" aria-hidden="true" style="--icon: ' + INFO + '"></span>' : "";
-      var rest = f[1] ? " " + f[1] : "";
-      return '<div class="reco-card__feature">' +
-        '<span class="icon reco-card__check" aria-hidden="true" style="--icon: ' + CHECK + '"></span>' +
-        '<span class="reco-card__feature-text"><b class="reco-card__feature-b">' + f[0] + "</b>" + rest + info + "</span></div>";
-    }
-    // Мобайл-карточка: чек-лист как в сетке тарифов.
-    function liHTML(f) {
-      var info = f[2] ? '<span class="icon pricing__info" aria-hidden="true" style="--icon: ' + INFO + '"></span>' : "";
-      var rest = f[1] ? " " + f[1] : "";
-      return '<li class="pricing__feature">' +
-        '<span class="icon pricing__check" aria-hidden="true" style="--icon: ' + CHECK + '"></span>' +
-        '<span class="pricing__feature-text"><b class="pricing__feature-b">' + f[0] + "</b>" + rest + info + "</span></li>";
-    }
-    function set(root, sel, val, html) {
-      var el = root && root.querySelector(sel);
-      if (el) { if (html) el.innerHTML = val; else el.textContent = val; }
-    }
-    function render(i, animate) {
-      var s = SCENARIOS[i];
-      var plan = PLANS[s.plan];
-      var total = fmt(plan.total) + " ₽ за 12 месяцев";
-      // Десктоп (кастом)
-      if (custom) {
-        set(custom, ".reco-card__name", plan.name);
-        set(custom, ".reco-card__desc", s.desc);
-        set(custom, ".reco-card__total", total);
-        custom.querySelector(".reco-card__features").innerHTML = plan.features.map(pillHTML).join("");
-      }
-      // Мобайл (стандартная)
-      if (tariff) {
-        set(document, ".reco__desc", s.desc);
-        set(tariff, ".pricing__name", plan.name);
-        set(tariff, ".pricing__save", "Экономия " + fmt(plan.save) + " ₽");
-        set(tariff, ".pricing__total", total);
-        tariff.querySelector(".pricing__features").innerHTML = plan.features.map(liHTML).join("");
-      }
-      // Контент меняем мгновенно, без fade — анимируется только стоимость,
-      // которая катится одометром, как в тарифах.
-      var doAnim = animate && !reduce.matches;
-      if (customOdo) setOdo(customOdo, plan.price, doAnim);
-      if (tariffOdo) setOdo(tariffOdo, plan.price, doAnim);
-    }
-
-    chips.forEach(function (chip, i) {
-      chip.addEventListener("click", function () {
-        chips.forEach(function (c) {
-          c.classList.remove("reco-scenario--active");
-          c.setAttribute("aria-checked", "false");
-        });
-        chip.classList.add("reco-scenario--active");
-        chip.setAttribute("aria-checked", "true");
-        render(i, true);
-      });
-    });
-    // Дефолт — «Сайт компании» (index 1): карточка уже отрендерена в HTML,
-    // одометр цены позиционируем под активный сценарий без анимации.
-    var activeIdx = 0;
-    chips.forEach(function (c, i) {
-      if (c.classList.contains("reco-scenario--active")) activeIdx = i;
-    });
-    var startPrice = PLANS[SCENARIOS[activeIdx].plan].price;
-    if (customOdo) setOdo(customOdo, startPrice, false);
-    if (tariffOdo) setOdo(tariffOdo, startPrice, false);
-  })();
 
   /* ---------- WhyHero: эффект «фонарика» ---------- */
   (function () {
@@ -449,7 +321,7 @@
       var y = (e.clientY / window.innerHeight - 0.5) * 2;
       cancelAnimationFrame(raf);
       raf = requestAnimationFrame(function () {
-        var t = "translate(" + (x * 9).toFixed(1) + "px, " + (y * 6).toFixed(1) + "px)";
+        var t = "translate(" + (x * 9).toFixed(1) + "px, calc(-50% + " + (y * 6).toFixed(1) + "px))";
         if (left) left.style.transform = t;
         if (right) right.style.transform = t;
       });
