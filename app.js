@@ -103,7 +103,7 @@
       year: { months: 12 },
       three: { months: 36 },
     };
-    // Цена ₽/мес по тарифам (Year / Optimo / Century / Millenium) и периодам — как на timeweb.
+    // Цена ₽/мес по тарифам (Year / Optimo / Century / Millennium) и периодам — как на timeweb.
     // Зачёркнутая «старая» цена и экономия считаются относительно помесячной.
     var PRICES = {
       month: [393, 634, 887, 1285],
