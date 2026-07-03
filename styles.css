@@ -3941,10 +3941,20 @@ body.menu-open {
   display: flex;
   flex-direction: column;
   padding: 24px;
-  background: var(--color-white);
-  border: 1px solid var(--color-border-soft);
+  background: var(--color-surface);
+  /* прозрачная рамка в покое — чтобы при появлении на ховере не было сдвига */
+  border: 1px solid transparent;
   border-radius: var(--radius-card);
-  box-shadow: var(--shadow-soft);
+  transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Ховер возвращает прежний вид: белая карточка с обводкой и тенью */
+@media (hover: hover) {
+  .blog__card:hover {
+    background: var(--color-white);
+    border-color: var(--color-border-soft);
+    box-shadow: var(--shadow-soft);
+  }
 }
 
 .blog__top {
@@ -4319,7 +4329,15 @@ body.menu-open {
    ============================================ */
 
 .cta {
-  padding-top: 100px;
+  margin-top: var(--section-gap);
+}
+
+/* Карточка как у .support__card, но кремовый фон (в цвет футера)
+   и без тени/обводки. */
+.cta__card {
+  padding: 56px 40px;
+  background: var(--color-surface);
+  border-radius: 32px;
 }
 
 .cta__inner {
@@ -4359,8 +4377,8 @@ body.menu-open {
 }
 
 @media (max-width: 768px) {
-  .cta {
-    padding-top: 56px;
+  .cta__card {
+    padding: 40px 24px;
   }
 
   .cta__title {
@@ -4402,7 +4420,7 @@ body.menu-open {
    ============================================ */
 
 .faq {
-  padding: 80px 0 72px;
+  padding: var(--section-gap) 0 0;
 }
 
 .faq__inner {
@@ -4425,7 +4443,7 @@ body.menu-open {
 
 .faq__item {
   padding: 0 16px;
-  background: var(--color-surface-2);
+  background: var(--color-surface);
   border-radius: var(--radius-button-l);
 }
 
@@ -4525,7 +4543,7 @@ ol.faq__answer-list {
 
 @media (max-width: 480px) {
   .faq {
-    padding: 48px 0;
+    padding: var(--section-gap) 0 0;
   }
 }
 
@@ -4535,7 +4553,6 @@ ol.faq__answer-list {
 
 .footer {
   padding: 48px 0 56px;
-  border-top: 1px solid var(--color-border);
 }
 
 .footer__main {
@@ -4971,8 +4988,22 @@ ol.faq__answer-list {
 }
 
 @media (max-width: 480px) {
+  /* Первый экран целиком: hero тянется на высоту окна, лента брендов
+     прижата к низу — экран заканчивается на «Уже с нами». */
+  .hero {
+    min-height: calc(100vh - 60px);
+    min-height: calc(100svh - 60px);
+    padding-bottom: 24px;
+  }
+
+  /* Контент центрируется по вертикали: два auto-отступа делят свободное
+     место поровну — над рейтингом и между CTA и лентой брендов. */
   .hero__rating {
-    margin-top: 40px;
+    margin-top: auto;
+  }
+
+  .hero__brands {
+    margin-top: auto;
   }
 
   .hero__title {
@@ -5000,9 +5031,5 @@ ol.faq__answer-list {
     white-space: normal;
     text-align: center;
     padding: 0 var(--page-gutter);
-  }
-
-  .hero__brands {
-    margin-top: 48px;
   }
 }
