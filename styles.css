@@ -782,6 +782,11 @@ body.menu-open {
   z-index: 1;
 }
 
+/* Иллюстрация над контентом hero — только на мобиле (см. медиазапрос ниже). */
+.hero__mob-illustration {
+  display: none;
+}
+
 @media (max-width: 768px) {
   .hero__pattern {
     opacity: 0.32;
@@ -2322,11 +2327,10 @@ body.menu-open {
 .migration__img {
   position: absolute;
   top: 0;
-  right: 0;
+  right: 48px;
   height: 100%;
   width: auto;
-  object-fit: cover;
-  object-position: left center;
+  object-fit: contain;
   pointer-events: none;
   user-select: none;
 }
@@ -2411,15 +2415,15 @@ body.menu-open {
     flex-direction: column;
   }
 
-  /* На мобиле — отдельная адаптированная картинка (perenos-new-mob.jpg),
-     композиция уже отцентрована, кадрируем по центру без сдвигов. */
+  /* На мобиле картинка сверху, целиком по высоте (без обрезки) и чуть уже. */
   .migration__img {
     position: static;
     order: -1;
+    align-self: center;
     width: 100%;
-    height: 220px;
-    object-fit: cover;
-    object-position: center;
+    max-width: 300px;
+    height: auto;
+    object-fit: contain;
   }
 
   .migration__content {
@@ -4996,10 +5000,21 @@ ol.faq__answer-list {
     padding-bottom: 24px;
   }
 
-  /* Контент центрируется по вертикали: два auto-отступа делят свободное
-     место поровну — над рейтингом и между CTA и лентой брендов. */
+  /* Иллюстрация над контентом. Ассет 2x (400px) → 200px в CSS.
+     margin: auto auto 0 — прижата к контенту снизу без отступа, а верхний
+     auto вместе с auto у ленты центрирует весь блок по вертикали. */
+  .hero__mob-illustration {
+    display: block;
+    width: 200px;
+    aspect-ratio: 1 / 1;
+    margin: auto auto 0;
+    background: url(assets/illustrations/mob-hero.png) no-repeat center / contain;
+  }
+
+  /* Рейтинг примыкает к иллюстрации без отступа; центрирование блока
+     обеспечивают auto-отступы у иллюстрации (сверху) и ленты брендов. */
   .hero__rating {
-    margin-top: auto;
+    margin-top: 0;
   }
 
   .hero__brands {
