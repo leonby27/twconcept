@@ -87,6 +87,19 @@
     });
   })();
 
+  /* ---------- Header: полупрозрачный фон + блюр при скролле (мобиле/планшет) ---------- */
+  (function () {
+    var header = document.querySelector(".header");
+    if (!header) return;
+    var mq = window.matchMedia("(max-width: 1024px)");
+    var onScroll = function () {
+      header.classList.toggle("header--scrolled", mq.matches && window.scrollY > 4);
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    mq.addEventListener("change", onScroll);
+    onScroll();
+  })();
+
   /* ---------- FAQ: аккордеон ---------- */
   document.querySelectorAll(".faq__question").forEach(function (btn) {
     btn.addEventListener("click", function () {
@@ -96,25 +109,49 @@
     });
   });
 
-  /* ---------- Pricing: период (категория — косметика) ---------- */
+  /* ---------- Pricing: период + категория (Классический/Премиум) ---------- */
   (function () {
     var PERIODS = {
       month: { months: 1 },
       year: { months: 12 },
       three: { months: 36 },
     };
-    // Цена ₽/мес по тарифам (Year / Optimo / Century / Millennium) и периодам — как на timeweb.
-    // Зачёркнутая «старая» цена и экономия считаются относительно помесячной.
-    var PRICES = {
-      month: [393, 634, 887, 1285],
-      year:  [244, 392, 553, 806],
-      three: [180, 272, 381, 554],
-    };
-    var cards = document.querySelectorAll(".pricing__grid .pricing__card");
-    var periodSeg = document.querySelector(".pricing__seg--period");
-    if (!cards.length || !periodSeg) return;
-
     var order = ["month", "year", "three"];
+
+    // Цена ₽/мес по тарифам и периодам — как на timeweb.
+    // Зачёркнутая «старая» цена и экономия считаются относительно помесячной.
+    var CATEGORIES = {
+      classic: {
+        grid: document.querySelector(".pricing__grid--classic"),
+        // Year / Optimo / Century / Millennium
+        prices: {
+          month: [393, 634, 887, 1285],
+          year:  [244, 392, 553, 806],
+          three: [180, 272, 381, 554],
+        },
+      },
+      premium: {
+        grid: document.querySelector(".pricing__grid--premium"),
+        // 1 Сайт / Eterno / Premium (4-й слот — баннер переноса, без цены)
+        prices: {
+          month: [852, 2473, 5388],
+          year:  [537, 1534, 4140],
+          three: [366, 1161, 4140],
+        },
+      },
+    };
+
+    var periodSeg = document.querySelector(".pricing__seg--period");
+    if (!periodSeg) return;
+
+    Object.keys(CATEGORIES).forEach(function (key) {
+      var cat = CATEGORIES[key];
+      cat.cards = cat.grid ? Array.prototype.slice.call(cat.grid.querySelectorAll(".pricing__card")) : [];
+      cat.odos = cat.cards.map(function (card) {
+        var pv = card.querySelector(".pricing__price-value");
+        return pv ? buildOdo(pv) : null;
+      });
+    });
 
     /* Бегунок сегмент-контролов: белая плашка переезжает к активной кнопке. */
     function setupThumb(seg) {
@@ -140,24 +177,20 @@
         seg.querySelector(".pricing__seg-btn");
     }
 
-    var odos = [];
-    cards.forEach(function (card) {
-      var pv = card.querySelector(".pricing__price-value");
-      odos.push(pv ? buildOdo(pv) : null);
-    });
-
-    function render(periodId, animate) {
+    function renderCategory(key, periodId, animate) {
+      var cat = CATEGORIES[key];
+      if (!cat.grid) return;
       var p = PERIODS[periodId];
       var word = p.months === 1 ? "месяц" : "месяцев";
-      cards.forEach(function (card, i) {
-        var price = PRICES[periodId][i];
+      cat.cards.forEach(function (card, i) {
+        var price = cat.prices[periodId][i];
         if (price == null) return;
-        var month = PRICES.month[i];
+        var month = cat.prices.month[i];
         var total = price * p.months;
         var save = (month - price) * p.months;
         var tt = card.querySelector(".pricing__total");
         var sv = card.querySelector(".pricing__save");
-        if (odos[i]) setOdo(odos[i], price, animate);
+        if (cat.odos[i]) setOdo(cat.odos[i], price, animate);
         if (tt) tt.textContent = fmt(total) + " ₽ за " + p.months + " " + word;
         if (sv) {
           if (save > 0) { sv.textContent = "Экономия " + fmt(save) + " ₽"; sv.classList.remove("pricing__save--empty"); }
@@ -165,6 +198,18 @@
         }
       });
     }
+
+    var activeCategory = "classic";
+    function renderActive(periodId, animate) {
+      renderCategory(activeCategory, periodId, animate);
+    }
+
+    // Индекс активного периода — общий для период-переключателя и категорий
+    // (при смене категории нужно отрендерить её под уже выбранный период).
+    var activeIdx = 0;
+    periodSeg.querySelectorAll(".pricing__seg-btn").forEach(function (b, i) {
+      if (b.classList.contains("pricing__seg-btn--active")) activeIdx = i;
+    });
 
     var periodThumb = setupThumb(periodSeg);
     periodSeg.querySelectorAll(".pricing__seg-btn").forEach(function (btn, idx) {
@@ -176,58 +221,70 @@
         btn.classList.add("pricing__seg-btn--active");
         btn.setAttribute("aria-pressed", "true");
         moveThumb(periodThumb, btn, true);
-        render(order[idx] || "year", true);
+        activeIdx = idx;
+        renderActive(order[idx] || "year", true);
       });
     });
 
-    // Инициализация одометра под активный период (без анимации).
-    var activeIdx = 0;
-    periodSeg.querySelectorAll(".pricing__seg-btn").forEach(function (b, i) {
-      if (b.classList.contains("pricing__seg-btn--active")) activeIdx = i;
+    // Инициализация одометра под активный период (без анимации) — сразу для
+    // обеих категорий, чтобы скрытая вкладка не мигала стартовыми цифрами.
+    var initialPeriod = order[activeIdx] || "year";
+    Object.keys(CATEGORIES).forEach(function (key) {
+      renderCategory(key, initialPeriod, false);
     });
-    render(order[activeIdx] || "year", false);
 
     // На мобиле тарифы — горизонтальная лента: по умолчанию центрируем
-    // Optimo+, а «Подобрать тариф» переносим вниз, под карточки.
-    (function () {
-      var grid = document.querySelector(".pricing__grid");
-      var popular = document.querySelector(".pricing__card--popular");
-      var pick = document.querySelector(".pricing__pick");
+    // популярную карточку активной категории, «Подобрать тариф» — под ленту.
+    var pick = document.querySelector(".pricing__pick");
+    var pickHome = pick && pick.parentNode; // .pricing__controls
+    var mobileMq = window.matchMedia("(max-width: 768px)");
+
+    function currentGrid() {
+      var cat = CATEGORIES[activeCategory];
+      return cat && cat.grid;
+    }
+    function placePick() {
+      var grid = currentGrid();
+      if (!pick || !grid) return;
+      if (mobileMq.matches) {
+        grid.parentNode.insertBefore(pick, grid.nextSibling);
+        pick.classList.add("pricing__pick--below");
+      } else if (pickHome && pick.parentNode !== pickHome) {
+        pickHome.appendChild(pick);
+        pick.classList.remove("pricing__pick--below");
+      }
+    }
+    function centerPopular() {
+      if (!mobileMq.matches) return;
+      var grid = currentGrid();
+      var popular = grid && grid.querySelector(".pricing__card--popular");
       if (!grid || !popular) return;
-      var mq = window.matchMedia("(max-width: 768px)");
-      var pickHome = pick && pick.parentNode; // .pricing__controls
+      var gridRect = grid.getBoundingClientRect();
+      var pRect = popular.getBoundingClientRect();
+      var delta = (pRect.left - gridRect.left) - (grid.clientWidth - popular.offsetWidth) / 2;
+      grid.scrollLeft += delta;
+    }
+    function syncMobile() { placePick(); centerPopular(); }
+    requestAnimationFrame(syncMobile);
+    window.addEventListener("load", syncMobile);
+    mobileMq.addEventListener("change", syncMobile);
 
-      function placePick() {
-        if (!pick) return;
-        if (mq.matches) {
-          if (pick.parentNode !== grid.parentNode) {
-            grid.parentNode.insertBefore(pick, grid.nextSibling);
-            pick.classList.add("pricing__pick--below");
-          }
-        } else if (pickHome && pick.parentNode !== pickHome) {
-          pickHome.appendChild(pick);
-          pick.classList.remove("pricing__pick--below");
-        }
-      }
-      function centerPopular() {
-        if (!mq.matches) return;
-        var gridRect = grid.getBoundingClientRect();
-        var pRect = popular.getBoundingClientRect();
-        var delta = (pRect.left - gridRect.left) - (grid.clientWidth - popular.offsetWidth) / 2;
-        grid.scrollLeft += delta;
-      }
-      function sync() { placePick(); centerPopular(); }
-      requestAnimationFrame(sync);
-      window.addEventListener("load", sync);
-      mq.addEventListener("change", sync);
-    })();
+    // «Включено в каждом тарифе»: почтовая квота больше на премиум-тарифах.
+    var mailQuota = document.querySelector("[data-mail-quota]");
+    function syncMailQuota() {
+      if (!mailQuota) return;
+      mailQuota.textContent = mailQuota.getAttribute("data-" + activeCategory) || mailQuota.textContent;
+    }
 
-    // Категория — только переключение активной кнопки
+    // Категория: переключение активной вкладки + видимой сетки тарифов
     var catSeg = document.querySelector(".pricing__seg:not(.pricing__seg--period)");
     var catThumb = catSeg ? setupThumb(catSeg) : null;
     if (catSeg) {
-      catSeg.querySelectorAll(".pricing__seg-btn").forEach(function (btn) {
+      var catKeys = ["classic", "premium"];
+      catSeg.querySelectorAll(".pricing__seg-btn").forEach(function (btn, idx) {
+        var key = catKeys[idx] || "classic";
         btn.addEventListener("click", function () {
+          if (activeCategory === key) return;
           catSeg.querySelectorAll(".pricing__seg-btn").forEach(function (b) {
             b.classList.remove("pricing__seg-btn--active");
             b.setAttribute("aria-pressed", "false");
@@ -235,6 +292,14 @@
           btn.classList.add("pricing__seg-btn--active");
           btn.setAttribute("aria-pressed", "true");
           moveThumb(catThumb, btn, true);
+          activeCategory = key;
+          Object.keys(CATEGORIES).forEach(function (k) {
+            var cat = CATEGORIES[k];
+            if (cat.grid) cat.grid.hidden = k !== key;
+          });
+          renderActive(order[activeIdx] || "year", false);
+          syncMailQuota();
+          requestAnimationFrame(syncMobile);
         });
       });
     }

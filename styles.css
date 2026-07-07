@@ -372,6 +372,7 @@ button {
   z-index: 100;
   padding-bottom: 12px;
   background: var(--color-white);
+  transition: background-color 0.2s ease, backdrop-filter 0.2s ease;
 }
 
 /* Открытое мобильное меню: шапка прибита к верху, фон не скроллится */
@@ -564,6 +565,10 @@ body.menu-open {
   flex-shrink: 0;
 }
 
+.header__mob-register {
+  display: none;
+}
+
 .header__burger-line {
   display: block;
   width: 100%;
@@ -697,6 +702,19 @@ body.menu-open {
     top: 60px;
     padding-top: 8px;
   }
+
+  /* Шапка зафиксирована при скролле на мобиле/планшете. */
+  .header {
+    position: sticky;
+    top: 0;
+  }
+
+  /* При скролле фон полупрозрачный + блюр (класс ставит app.js). */
+  .header.header--scrolled {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
 }
 
 @media (max-width: 480px) {
@@ -706,6 +724,24 @@ body.menu-open {
 
   .header__menu-actions {
     display: flex;
+  }
+
+  .header__top {
+    gap: 12px;
+  }
+
+  .header__burger {
+    order: -1;
+  }
+
+  .header__mob-register {
+    display: inline-flex;
+    margin-left: auto;
+  }
+
+  .header__logo img,
+  .header__logo-svg {
+    width: 120px;
   }
 }
 
@@ -1816,6 +1852,12 @@ body.menu-open {
   margin-top: 40px;
 }
 
+/* [hidden] специфичнее .pricing__grid{display}, поэтому переключение
+   категории (Классический/Премиум) через атрибут реально скрывает сетку. */
+.pricing__grid[hidden] {
+  display: none;
+}
+
 .pricing__card {
   position: relative;
   display: flex;
@@ -2085,6 +2127,46 @@ body.menu-open {
   height: 16px;
   margin-top: 4px;
   color: var(--color-accent);
+}
+
+/* Карточка-баннер вместо 4-го тарифа во вкладке «Премиум» — тот же формат
+   карточки, но без цены: короткий питч + список + CTA в конец. */
+.pricing__card--banner {
+  justify-content: flex-start;
+}
+
+.pricing__card--banner .pricing__name {
+  margin-top: 0;
+}
+
+.pricing__banner-text {
+  margin-top: 12px;
+  font-size: 16px;
+  line-height: 22px;
+  color: var(--color-text-warm-60);
+}
+
+.pricing__banner-list {
+  display: grid;
+  gap: 12px;
+  width: 100%;
+  margin-top: 20px;
+  list-style: none;
+}
+
+.pricing__banner-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 16px;
+  line-height: 24px;
+  color: var(--color-black-100);
+}
+
+/* Кнопка прижата к низу карточки — независимо от высоты, которую задаёт
+   выравнивание по соседним тарифным карточкам в ряду. */
+.pricing__card--banner .pricing__cta {
+  margin-top: auto;
 }
 
 /* «А также в каждом тарифе» — лейбл по центру, ниже ряд белых пилюль */
