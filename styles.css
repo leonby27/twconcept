@@ -21,16 +21,16 @@
   --color-black-100: var(--color-dark);  /* Black/100% */
   --color-white: #ffffff;                /* White/100% */
   --color-text-main: var(--color-dark);
-  --color-text-main-80: rgba(53, 41, 41, 0.8);
-  --color-text-main-60: rgba(53, 41, 41, 0.6);
-  --color-text-main-50: rgba(53, 41, 41, 0.5);
-  --color-text-warm-60: rgba(53, 41, 41, 0.6);  /* тёплый приглушённый — описания тарифов */
+  --color-text-main-80: rgba(65, 53, 53, 0.8);
+  --color-text-main-60: rgba(65, 53, 53, 0.6);
+  --color-text-main-50: rgba(65, 53, 53, 0.5);
+  --color-text-warm-60: rgba(65, 53, 53, 0.6);  /* тёплый приглушённый — описания тарифов */
   --color-accent: #dc6655;
   --color-accent-hover: #c95a4a;
   --color-border: #dbdbdb;
   --color-surface: #f9f5f2;
   --color-surface-2: #f2edea;            /* утопленный тон на кремовом (FAQ) */
-  --color-dark: #352929;                 /* тёмная панель навигации в шапке */
+  --color-dark: #413535;                 /* тёмная панель навигации в шапке */
 
   /* Fonts: --font-roboto и --font-inter задаются next/font в layout.tsx.
      Заголовки — загруженный Inter (нейтральный гротеск), системный
@@ -296,12 +296,12 @@ button {
 
 /* Тёмная кнопка (вторичный CTA: миграция, «оставить отзыв») */
 .btn--dark {
-  background: #4d3b3b;
+  background: var(--color-dark);
   color: var(--color-white);
 }
 
 .btn--dark:hover {
-  background: #413232;
+  background: #342a2a;
 }
 
 /* ---- Премиум-слой: только устройства с курсором и без reduced motion.
@@ -791,22 +791,22 @@ body.menu-open {
 
 .hero__illu--shield {
   top: clamp(0px, 2vw, 24px);
-  left: calc(var(--hero-illu-edge) - 40px);
+  left: calc(var(--hero-illu-edge) + 30px);
 }
 
 .hero__illu--doc {
   top: clamp(8px, 3vw, 40px);
-  right: calc(var(--hero-illu-edge) - 40px);
+  right: calc(var(--hero-illu-edge) + 30px);
 }
 
 .hero__illu--server {
   bottom: clamp(24px, 5vw, 70px);
-  left: calc(var(--hero-illu-edge) - 40px);
+  left: calc(var(--hero-illu-edge) + 30px);
 }
 
 .hero__illu--folder {
   bottom: clamp(32px, 5.5vw, 80px);
-  right: calc(var(--hero-illu-edge) - 40px);
+  right: calc(var(--hero-illu-edge) + 30px);
 }
 
 @media (max-width: 1024px) {
@@ -882,6 +882,48 @@ body.menu-open {
   }
   .hero__brands {
     animation-delay: 0.4s;
+  }
+
+  /* Иллюстрации по углам «прилетают» на позиции из прозрачности: чуть из
+     своего угла + масштаб, по очереди (быстрый стаггер). Финальный кадр =
+     покой (translate 0, scale 1), совпадает с инлайн-стилями скролл-эффекта. */
+  @keyframes hero-illu-in {
+    from {
+      opacity: 0;
+      transform: translate(var(--illu-in-x, 0), var(--illu-in-y, 0)) scale(0.8);
+    }
+    to {
+      opacity: 1;
+      transform: translate(0, 0) scale(1);
+    }
+  }
+
+  /* fill: backwards (не both!) — держит стартовый кадр во время задержки, но
+     после завершения НЕ фиксирует финал, иначе анимация перекрывала бы
+     inline-transform скролл-эффекта, и движение/исчезновение по скроллу не
+     работало бы. */
+  .hero__illu {
+    animation: hero-illu-in 0.45s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+  }
+  .hero__illu--shield {
+    --illu-in-x: -50px;
+    --illu-in-y: -40px;
+    animation-delay: 0.05s;
+  }
+  .hero__illu--doc {
+    --illu-in-x: 50px;
+    --illu-in-y: -40px;
+    animation-delay: 0.12s;
+  }
+  .hero__illu--server {
+    --illu-in-x: -50px;
+    --illu-in-y: 40px;
+    animation-delay: 0.19s;
+  }
+  .hero__illu--folder {
+    --illu-in-x: 50px;
+    --illu-in-y: 40px;
+    animation-delay: 0.26s;
   }
 
   @keyframes hero-fade {
@@ -1443,7 +1485,7 @@ body.menu-open {
   flex-shrink: 0;
   min-width: 180px;
   padding: 15px 12px;
-  background: #4d3b3b;
+  background: var(--color-dark);
   border: 0;
   border-radius: var(--radius-button-l);
   font-family: var(--font-text);

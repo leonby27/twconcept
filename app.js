@@ -374,6 +374,49 @@
     });
   })();
 
+  /* ---------- Hero illu: разъезд к краям + фейд при скролле ---------- */
+  (function () {
+    var illus = document.querySelectorAll(".hero__illu");
+    if (!illus.length || reduce.matches) return;
+    var mq = window.matchMedia("(min-width: 1025px)");
+    var raf = 0;
+    function update() {
+      raf = 0;
+      if (!mq.matches) {
+        illus.forEach(function (el) {
+          el.style.transform = "";
+          el.style.opacity = "";
+          el.style.filter = "";
+        });
+        return;
+      }
+      // Прогресс 0→1 за первые ~420px скролла: иллюстрации разлетаются по
+      // диагонали к углам (левые влево, правые вправо; верхние вверх, нижние
+      // вниз), приближаются (scale) и размываются, плавно исчезая.
+      var progress = Math.min(window.scrollY / 420, 1);
+      var hShift = progress * 140;
+      var vShift = progress * 110;
+      var scale = (1 + progress * 0.35).toFixed(3);
+      var blur = (progress * 10).toFixed(1);
+      var opacity = (1 - progress).toFixed(3);
+      illus.forEach(function (el) {
+        var right = el.classList.contains("hero__illu--doc") ||
+          el.classList.contains("hero__illu--folder");
+        var top = el.classList.contains("hero__illu--shield") ||
+          el.classList.contains("hero__illu--doc");
+        var x = (right ? hShift : -hShift).toFixed(1);
+        var y = (top ? -vShift : vShift).toFixed(1);
+        el.style.transform = "translate(" + x + "px, " + y + "px) scale(" + scale + ")";
+        el.style.filter = "blur(" + blur + "px)";
+        el.style.opacity = opacity;
+      });
+    }
+    function onScroll() { if (!raf) raf = requestAnimationFrame(update); }
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll, { passive: true });
+    update();
+  })();
+
   /* ---------- Появление блоков при скролле ---------- */
   (function () {
     if (reduce.matches) return;
