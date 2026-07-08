@@ -374,25 +374,6 @@
     });
   })();
 
-  /* ---------- Hero decor: параллакс от курсора ---------- */
-  (function () {
-    var left = document.querySelector(".hero__decor--left");
-    var right = document.querySelector(".hero__decor--right");
-    if (!left && !right) return;
-    if (reduce.matches || window.matchMedia("(max-width: 1024px)").matches) return;
-    var raf = 0;
-    window.addEventListener("mousemove", function (e) {
-      var x = (e.clientX / window.innerWidth - 0.5) * 2;
-      var y = (e.clientY / window.innerHeight - 0.5) * 2;
-      cancelAnimationFrame(raf);
-      raf = requestAnimationFrame(function () {
-        var t = "translate(" + (x * 9).toFixed(1) + "px, calc(-50% + " + (y * 6).toFixed(1) + "px))";
-        if (left) left.style.transform = t;
-        if (right) right.style.transform = t;
-      });
-    });
-  })();
-
   /* ---------- Появление блоков при скролле ---------- */
   (function () {
     if (reduce.matches) return;

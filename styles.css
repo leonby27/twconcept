@@ -16,13 +16,15 @@
   --font-inter: "Inter";
   --font-roboto: "Roboto";
   /* Colors */
-  --color-black-100: #4d3b3b;            /* Black/100% */
+  /* Text/иконки приведены к цвету тёмной панели навигации (--color-dark),
+     чтобы в интерфейсе был один тёмный тон, а не три похожих чёрных. */
+  --color-black-100: var(--color-dark);  /* Black/100% */
   --color-white: #ffffff;                /* White/100% */
-  --color-text-main: #211e1e;
-  --color-text-main-80: rgba(33, 30, 30, 0.8);
-  --color-text-main-60: rgba(33, 30, 30, 0.6);
-  --color-text-main-50: rgba(33, 30, 30, 0.5);
-  --color-text-warm-60: rgba(77, 59, 59, 0.6);  /* тёплый приглушённый — описания тарифов */
+  --color-text-main: var(--color-dark);
+  --color-text-main-80: rgba(53, 41, 41, 0.8);
+  --color-text-main-60: rgba(53, 41, 41, 0.6);
+  --color-text-main-50: rgba(53, 41, 41, 0.5);
+  --color-text-warm-60: rgba(53, 41, 41, 0.6);  /* тёплый приглушённый — описания тарифов */
   --color-accent: #dc6655;
   --color-accent-hover: #c95a4a;
   --color-border: #dbdbdb;
@@ -294,12 +296,12 @@ button {
 
 /* Тёмная кнопка (вторичный CTA: миграция, «оставить отзыв») */
 .btn--dark {
-  background: var(--color-text-main);
+  background: #4d3b3b;
   color: var(--color-white);
 }
 
 .btn--dark:hover {
-  background: #000;
+  background: #413232;
 }
 
 /* ---- Премиум-слой: только устройства с курсором и без reduced motion.
@@ -330,6 +332,10 @@ button {
   .btn--white:hover,
   .btn--outline:hover {
     box-shadow: 0 4px 12px rgba(33, 30, 30, 0.07);
+  }
+
+  .btn--dark:hover {
+    box-shadow: 0 6px 16px rgba(77, 59, 59, 0.35);
   }
 
   /* Утилита для будущих карточек: подъём + мягкая тень */
@@ -767,31 +773,44 @@ body.menu-open {
   }
 }
 
-/* Цветные иллюстрации по бокам — слой за центральным контентом.
-   Параллакс от курсора задаёт HeroDecor.tsx (transform). Ассеты 2x → ~½. */
-.hero__decor {
-  display: none; /* временно скрыты боковые иллюстрации hero */
+/* 3D-иллюстрации по 4 углам вокруг центрального контента hero — слой за
+   текстом. Привязаны к границе контентной области (--container-max): на узких
+   экранах уходят за край и обрезаются (overflow-x: clip на html/body).
+   Белый фон ассетов сливается с фоном hero, рамка/тень не нужны.
+   --hero-illu-edge — горизонтальная граница контентной области от центра. */
+.hero__illu {
+  --hero-illu-edge: calc(50% - var(--container-max) / 2);
   position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
   z-index: 0;
-  width: clamp(200px, 28vw, 420px);
+  width: 180px;
   height: auto;
-  aspect-ratio: 840 / 1050;
+  aspect-ratio: 1 / 1;
   pointer-events: none;
   user-select: none;
 }
 
-.hero__decor--left {
-  left: clamp(-190px, -12vw, -80px);
+.hero__illu--shield {
+  top: clamp(0px, 2vw, 24px);
+  left: calc(var(--hero-illu-edge) - 40px);
 }
 
-.hero__decor--right {
-  right: clamp(-190px, -12vw, -80px);
+.hero__illu--doc {
+  top: clamp(8px, 3vw, 40px);
+  right: calc(var(--hero-illu-edge) - 40px);
+}
+
+.hero__illu--server {
+  bottom: clamp(24px, 5vw, 70px);
+  left: calc(var(--hero-illu-edge) - 40px);
+}
+
+.hero__illu--folder {
+  bottom: clamp(32px, 5.5vw, 80px);
+  right: calc(var(--hero-illu-edge) - 40px);
 }
 
 @media (max-width: 1024px) {
-  .hero__decor {
+  .hero__illu {
     display: none;
   }
 }
@@ -850,11 +869,6 @@ body.menu-open {
   .hero__cta,
   .hero__brands {
     animation: hero-rise 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
-  }
-
-  /* Плавный параллакс иллюстраций за курсором (transform из HeroDecor.tsx) */
-  .hero__decor {
-    transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
   }
 
   .hero__rating {
@@ -1429,7 +1443,7 @@ body.menu-open {
   flex-shrink: 0;
   min-width: 180px;
   padding: 15px 12px;
-  background: var(--color-text-main);
+  background: #4d3b3b;
   border: 0;
   border-radius: var(--radius-button-l);
   font-family: var(--font-text);
@@ -1565,12 +1579,6 @@ body.menu-open {
   }
 }
 
-.products__card--dark {
-  background: #161414 url(assets/photos/vds.png) right center / cover no-repeat;
-  border-color: rgba(255, 255, 255, 0.08);
-  color: var(--color-white);
-}
-
 .products__top {
   display: flex;
   align-items: flex-start;
@@ -1590,10 +1598,6 @@ body.menu-open {
   transition: transform 0.15s ease, color 0.15s ease;
 }
 
-.products__card--dark .products__arrow {
-  color: rgba(255, 255, 255, 0.6);
-}
-
 .products__price {
   margin-top: 28px;
   font-family: var(--font-heading);
@@ -1601,10 +1605,6 @@ body.menu-open {
   font-size: 20px;
   line-height: 24px;
   color: var(--color-text-main);
-}
-
-.products__card--dark .products__price {
-  color: var(--color-white);
 }
 
 .products__name {
@@ -1628,10 +1628,6 @@ body.menu-open {
   max-width: 460px;
 }
 
-.products__card--dark .products__text {
-  color: rgba(255, 255, 255, 0.8);
-}
-
 @media (hover: hover) and (prefers-reduced-motion: no-preference) {
   .products__card:hover {
     transform: translateY(-3px);
@@ -1641,10 +1637,6 @@ body.menu-open {
   .products__card:hover .products__arrow {
     transform: translate(2px, -2px);
     color: var(--color-accent);
-  }
-
-  .products__card--dark:hover .products__arrow {
-    color: var(--color-white);
   }
 }
 
