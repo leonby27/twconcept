@@ -234,25 +234,12 @@
     });
 
     // На мобиле тарифы — горизонтальная лента: по умолчанию центрируем
-    // популярную карточку активной категории, «Подобрать тариф» — под ленту.
-    var pick = document.querySelector(".pricing__pick");
-    var pickHome = pick && pick.parentNode; // .pricing__controls
+    // популярную карточку активной категории.
     var mobileMq = window.matchMedia("(max-width: 768px)");
 
     function currentGrid() {
       var cat = CATEGORIES[activeCategory];
       return cat && cat.grid;
-    }
-    function placePick() {
-      var grid = currentGrid();
-      if (!pick || !grid) return;
-      if (mobileMq.matches) {
-        grid.parentNode.insertBefore(pick, grid.nextSibling);
-        pick.classList.add("pricing__pick--below");
-      } else if (pickHome && pick.parentNode !== pickHome) {
-        pickHome.appendChild(pick);
-        pick.classList.remove("pricing__pick--below");
-      }
     }
     function centerPopular() {
       if (!mobileMq.matches) return;
@@ -264,7 +251,7 @@
       var delta = (pRect.left - gridRect.left) - (grid.clientWidth - popular.offsetWidth) / 2;
       grid.scrollLeft += delta;
     }
-    function syncMobile() { placePick(); centerPopular(); }
+    function syncMobile() { centerPopular(); }
     requestAnimationFrame(syncMobile);
     window.addEventListener("load", syncMobile);
     mobileMq.addEventListener("change", syncMobile);
@@ -344,6 +331,14 @@
       bubble.setAttribute("role", "tooltip");
       bubble.textContent = tip;
       wrap.appendChild(bubble);
+
+      // Клик мышью не должен ничего менять: :focus-within показывает тултип
+      // только для клавиатурной навигации (Tab), поэтому глушим сам фокус
+      // по клику — иначе тултип «залипает» после ухода курсора (клик даёт
+      // фокус, а он снимается только на blur, а не на mouseleave).
+      wrap.addEventListener("mousedown", function (e) {
+        e.preventDefault();
+      });
     });
   })();
 
