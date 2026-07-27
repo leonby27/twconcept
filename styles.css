@@ -5142,3 +5142,348 @@ ol.faq__answer-list {
     padding: 0 var(--page-gutter);
   }
 }
+
+/* ============================================
+   Registration modal — Figma 24853:3998
+   ============================================ */
+
+.registration-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  place-items: start center;
+  padding: 16px;
+  overflow-y: auto;
+  opacity: 0;
+  transition: opacity 0.18s ease;
+}
+
+.registration-modal[hidden] {
+  display: none;
+}
+
+.registration-modal.is-open {
+  opacity: 1;
+}
+
+.registration-modal__backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  background: rgba(33, 30, 30, 0.56);
+}
+
+.registration-modal__dialog {
+  --registration-ink: #4d3b3b;
+  position: relative;
+  z-index: 1;
+  width: 432px;
+  min-height: 514px;
+  margin: max(16px, calc((100vh - 514px) / 2)) auto;
+  margin: max(16px, calc((100dvh - 514px) / 2)) auto;
+  padding: 40px 48px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  background: var(--color-white);
+  border-radius: 16px;
+  color: var(--registration-ink);
+  box-shadow: 0 24px 64px rgba(33, 30, 30, 0.18);
+  transform: translateY(8px) scale(0.985);
+  transition: transform 0.18s ease;
+}
+
+.registration-modal.is-open .registration-modal__dialog {
+  transform: translateY(0) scale(1);
+}
+
+.registration-modal__close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+}
+
+.registration-modal__close img {
+  width: 28px;
+  height: 28px;
+}
+
+.registration-modal__head {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+}
+
+.registration-modal__title {
+  width: 100%;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 40px;
+  text-align: center;
+}
+
+.registration-modal__tabs {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 11px;
+  width: 100%;
+  height: 36px;
+  padding: 2px;
+  background: rgba(77, 59, 59, 0.1);
+  border-radius: 8px;
+}
+
+.registration-modal__tabs::before {
+  content: "";
+  position: absolute;
+  top: 2px;
+  bottom: 2px;
+  left: 2px;
+  width: calc((100% - 15px) / 2);
+  border-radius: 6px;
+  background: var(--color-white);
+  transition: transform 0.18s ease;
+}
+
+.registration-modal__tabs[data-active="company"]::before {
+  transform: translateX(calc(100% + 11px));
+}
+
+.registration-modal__tab {
+  position: relative;
+  z-index: 1;
+  flex: 1 0 0;
+  min-width: 0;
+  height: 32px;
+  padding: 6px 12px;
+  border-radius: 12px;
+  font-family: var(--font-text);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+  color: rgba(77, 59, 59, 0.6);
+}
+
+.registration-modal__tab--active {
+  color: var(--registration-ink);
+}
+
+.registration-modal__form,
+.registration-modal__fields,
+.registration-modal__field,
+.registration-modal__customer-fields,
+.registration-modal__actions,
+.registration-modal__agreements {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  width: 100%;
+}
+
+.registration-modal__form {
+  gap: 20px;
+}
+
+.registration-modal__fields {
+  gap: 16px;
+}
+
+.registration-modal__field {
+  gap: 8px;
+}
+
+.registration-modal__customer-fields {
+  gap: 16px;
+}
+
+.registration-modal__customer-fields[hidden] {
+  display: none;
+}
+
+.registration-modal__label {
+  font-family: var(--font-text);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 16px;
+  color: var(--registration-ink);
+}
+
+.registration-modal__input {
+  width: 100%;
+  height: 48px;
+  padding: 4px 12px;
+  border: 1px solid rgba(77, 59, 59, 0.15);
+  border-radius: 12px;
+  outline: none;
+  background: var(--color-white);
+  font-family: var(--font-heading);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 24px;
+  color: var(--registration-ink);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.registration-modal__input:focus {
+  border-color: rgba(77, 59, 59, 0.2);
+}
+
+.registration-modal__partner {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
+  width: 100%;
+}
+
+.registration-modal__partner-toggle {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  height: 20px;
+  font-family: var(--font-text);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 16px;
+  color: rgba(77, 59, 59, 0.6);
+}
+
+.registration-modal__partner-toggle img {
+  width: 20px;
+  height: 20px;
+  transition: transform 0.15s ease;
+}
+
+.registration-modal__partner-toggle[aria-expanded="true"] img {
+  transform: rotate(180deg);
+}
+
+.registration-modal__partner-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.registration-modal__partner-field[hidden] {
+  display: none;
+}
+
+.registration-modal__actions {
+  gap: 12px;
+}
+
+.registration-modal__submit {
+  width: 100%;
+  height: 48px;
+  padding: 14px 16px;
+  border-radius: 8px;
+  background: #dc6655;
+  font-family: var(--font-text);
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 20px;
+  color: var(--color-white);
+  transition: background-color 0.15s ease;
+}
+
+.registration-modal__agreements {
+  gap: 6px;
+}
+
+.registration-modal__agreement {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 20px;
+  font-family: var(--font-text);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 20px;
+  letter-spacing: -0.2px;
+  color: var(--registration-ink);
+  cursor: pointer;
+}
+
+.registration-modal__agreement a {
+  text-decoration: underline;
+  text-underline-position: from-font;
+}
+
+.registration-modal__checkbox {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.registration-modal__checkmark {
+  position: relative;
+  width: 18px;
+  height: 18px;
+  flex: 0 0 18px;
+  border: 1.5px solid rgba(77, 59, 59, 0.15);
+  border-radius: 5px;
+  background: var(--color-white);
+}
+
+.registration-modal__checkbox:checked + .registration-modal__checkmark {
+  border-color: transparent;
+  background: rgba(220, 102, 85, 0.07)
+    url(assets/figma-registration/b1729587ab817d94c02b8ef24c571ab7f001586a.svg) no-repeat center;
+}
+
+.registration-modal__checkbox:focus-visible + .registration-modal__checkmark {
+  box-shadow: 0 0 0 2px rgba(220, 102, 85, 0.22);
+}
+
+@media (hover: hover) {
+  .registration-modal__close:hover {
+    background: rgba(77, 59, 59, 0.06);
+  }
+
+  .registration-modal__submit:hover {
+    background: var(--color-accent-hover);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .registration-modal,
+  .registration-modal__dialog,
+  .registration-modal__tabs::before,
+  .registration-modal__partner-toggle img {
+    transition: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .registration-modal {
+    padding: 8px;
+  }
+
+  .registration-modal__dialog {
+    width: 100%;
+    min-height: 0;
+    padding: 32px 24px;
+  }
+
+  .registration-modal__agreement {
+    align-items: flex-start;
+  }
+
+  .registration-modal__checkmark {
+    margin-top: 1px;
+  }
+}

@@ -546,4 +546,136 @@
     window.addEventListener("resize", check, { passive: true });
     check();
   })();
+
+  /* ---------- Попап регистрации (Figma 24853:3998) ---------- */
+  (function () {
+    var modal = document.getElementById("registration-modal");
+    if (!modal) return;
+
+    var dialog = modal.querySelector(".registration-modal__dialog");
+    var email = modal.querySelector("[data-registration-email]");
+    var form = modal.querySelector("[data-registration-form]");
+    var typeInput = modal.querySelector("[data-registration-type-input]");
+    var tabs = modal.querySelector(".registration-modal__tabs");
+    var panels = modal.querySelectorAll("[data-registration-panel]");
+    var partnerToggle = modal.querySelector("[data-registration-partner-toggle]");
+    var partnerField = document.getElementById("registration-partner-field");
+    var previousFocus = null;
+    var closeTimer = null;
+
+    var triggerLabels = /^(Регистрация|Начать бесплатно|Попробовать бесплатно)$/;
+    var triggers = Array.prototype.filter.call(document.querySelectorAll("a, button"), function (el) {
+      return !modal.contains(el) && triggerLabels.test(el.textContent.replace(/\s+/g, " ").trim());
+    });
+
+    function openModal(trigger) {
+      if (closeTimer) {
+        window.clearTimeout(closeTimer);
+        closeTimer = null;
+      }
+      previousFocus = trigger || document.activeElement;
+      modal.hidden = false;
+      modal.setAttribute("aria-hidden", "false");
+      requestAnimationFrame(function () {
+        modal.classList.add("is-open");
+        if (email) email.focus();
+      });
+    }
+
+    function closeModal() {
+      if (modal.hidden) return;
+      modal.classList.remove("is-open");
+      modal.setAttribute("aria-hidden", "true");
+      var finish = function () {
+        modal.hidden = true;
+        closeTimer = null;
+        if (previousFocus && typeof previousFocus.focus === "function") previousFocus.focus();
+      };
+      if (reduce.matches) finish();
+      else closeTimer = window.setTimeout(finish, 180);
+    }
+
+    triggers.forEach(function (trigger) {
+      trigger.addEventListener("click", function (e) {
+        e.preventDefault();
+        openModal(trigger);
+      });
+    });
+
+    modal.querySelectorAll("[data-registration-close]").forEach(function (close) {
+      close.addEventListener("click", closeModal);
+    });
+
+    function syncCustomerType(type) {
+      if (typeInput) typeInput.value = type;
+      if (tabs) tabs.setAttribute("data-active", type);
+      panels.forEach(function (panel) {
+        var active = panel.getAttribute("data-registration-panel") === type;
+        panel.hidden = !active;
+        panel.querySelectorAll("input").forEach(function (input) {
+          input.disabled = !active;
+        });
+      });
+    }
+
+    modal.querySelectorAll("[data-registration-type]").forEach(function (tab) {
+      tab.addEventListener("click", function () {
+        var type = tab.getAttribute("data-registration-type") || "person";
+        modal.querySelectorAll("[data-registration-type]").forEach(function (item) {
+          var active = item === tab;
+          item.classList.toggle("registration-modal__tab--active", active);
+          item.setAttribute("aria-selected", String(active));
+        });
+        syncCustomerType(type);
+      });
+    });
+
+    if (partnerToggle && partnerField) {
+      partnerToggle.addEventListener("click", function () {
+        var expanded = partnerToggle.getAttribute("aria-expanded") === "true";
+        partnerToggle.setAttribute("aria-expanded", String(!expanded));
+        partnerField.hidden = expanded;
+        if (!expanded) {
+          var input = partnerField.querySelector("input");
+          if (input) input.focus();
+        }
+      });
+    }
+
+    modal.querySelectorAll('a[href="#"]').forEach(function (link) {
+      link.addEventListener("click", function (e) { e.preventDefault(); });
+    });
+
+    if (form) {
+      form.addEventListener("submit", function (e) {
+        e.preventDefault();
+        if (!form.checkValidity()) form.reportValidity();
+      });
+    }
+
+    document.addEventListener("keydown", function (e) {
+      if (modal.hidden) return;
+      if (e.key === "Escape") {
+        e.preventDefault();
+        closeModal();
+        return;
+      }
+      if (e.key !== "Tab" || !dialog) return;
+
+      var focusable = Array.prototype.filter.call(
+        dialog.querySelectorAll('button, input, a[href], [tabindex]:not([tabindex="-1"])'),
+        function (el) { return !el.disabled && !el.hidden && el.offsetParent !== null; }
+      );
+      if (!focusable.length) return;
+      var first = focusable[0];
+      var last = focusable[focusable.length - 1];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    });
+  })();
 })();

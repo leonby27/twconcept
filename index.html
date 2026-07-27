@@ -2049,6 +2049,156 @@
         </footer>
       </div>
     </main>
+    <div class="registration-modal" id="registration-modal" hidden aria-hidden="true">
+      <div class="registration-modal__backdrop" data-registration-close></div>
+      <section
+        class="registration-modal__dialog"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="registration-title"
+        tabindex="-1"
+      >
+        <button
+          class="registration-modal__close"
+          type="button"
+          aria-label="Закрыть окно регистрации"
+          data-registration-close
+        >
+          <img src="assets/figma-registration/eaaa68870d217d7f46f0d5fec7b96c58382ed4e3.svg" alt="" />
+        </button>
+
+        <div class="registration-modal__head">
+          <h2 class="registration-modal__title" id="registration-title">Регистрация</h2>
+          <div class="registration-modal__tabs" role="tablist" aria-label="Тип клиента" data-active="person">
+            <button
+              class="registration-modal__tab registration-modal__tab--active"
+              type="button"
+              role="tab"
+              id="registration-person-tab"
+              aria-controls="registration-person-fields"
+              aria-selected="true"
+              data-registration-type="person"
+            >
+              Физ. лицо
+            </button>
+            <button
+              class="registration-modal__tab"
+              type="button"
+              role="tab"
+              id="registration-company-tab"
+              aria-controls="registration-company-fields"
+              aria-selected="false"
+              data-registration-type="company"
+            >
+              Юр. лицо
+            </button>
+          </div>
+        </div>
+
+        <form class="registration-modal__form" action="#" data-registration-form>
+          <input type="hidden" name="customer-type" value="person" data-registration-type-input />
+          <div class="registration-modal__fields">
+            <label class="registration-modal__field">
+              <span class="registration-modal__label">Email</span>
+              <input
+                class="registration-modal__input"
+                type="email"
+                name="email"
+                autocomplete="email"
+                required
+                data-registration-email
+              />
+            </label>
+            <div
+              class="registration-modal__customer-fields"
+              id="registration-person-fields"
+              role="tabpanel"
+              aria-labelledby="registration-person-tab"
+              data-registration-panel="person"
+            >
+              <label class="registration-modal__field">
+                <span class="registration-modal__label">Имя</span>
+                <input class="registration-modal__input" type="text" name="name" autocomplete="name" required />
+              </label>
+            </div>
+            <div
+              class="registration-modal__customer-fields"
+              id="registration-company-fields"
+              role="tabpanel"
+              aria-labelledby="registration-company-tab"
+              data-registration-panel="company"
+              hidden
+            >
+              <label class="registration-modal__field">
+                <span class="registration-modal__label">ИНН</span>
+                <input
+                  class="registration-modal__input"
+                  type="text"
+                  name="inn"
+                  inputmode="numeric"
+                  autocomplete="off"
+                  disabled
+                  required
+                />
+              </label>
+              <label class="registration-modal__field">
+                <span class="registration-modal__label">Название организации</span>
+                <input
+                  class="registration-modal__input"
+                  type="text"
+                  name="organization"
+                  autocomplete="organization"
+                  disabled
+                  required
+                />
+              </label>
+            </div>
+            <div class="registration-modal__partner">
+              <button
+                class="registration-modal__partner-toggle"
+                type="button"
+                aria-expanded="false"
+                aria-controls="registration-partner-field"
+                data-registration-partner-toggle
+              >
+                <span>У меня есть код партнера</span>
+                <img
+                  src="assets/figma-registration/6e05ccc4ef5ccb995f20593b233cb2decdd65dd7.svg"
+                  alt=""
+                  width="20"
+                  height="20"
+                />
+              </button>
+              <label class="registration-modal__partner-field" id="registration-partner-field" hidden>
+                <span class="visually-hidden">Код партнера</span>
+                <input
+                  class="registration-modal__input"
+                  type="text"
+                  name="partner-code"
+                  autocomplete="off"
+                />
+              </label>
+            </div>
+          </div>
+
+          <div class="registration-modal__actions">
+            <button class="registration-modal__submit" type="submit">Зарегистрироваться</button>
+            <div class="registration-modal__agreements">
+              <label class="registration-modal__agreement">
+                <input class="registration-modal__checkbox" type="checkbox" name="terms" checked required />
+                <span class="registration-modal__checkmark" aria-hidden="true"></span>
+                <span>Я согласен с <a href="#">условиями</a></span>
+              </label>
+              <label class="registration-modal__agreement">
+                <input class="registration-modal__checkbox" type="checkbox" name="newsletter" />
+                <span class="registration-modal__checkmark" aria-hidden="true"></span>
+                <span>Я даю <a href="#">согласие</a> на получение рассылок</span>
+              </label>
+            </div>
+          </div>
+        </form>
+      </section>
+    </div>
     <script src="app.js" defer></script>
   </body>
 </html>
