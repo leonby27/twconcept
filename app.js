@@ -87,6 +87,205 @@
     });
   })();
 
+  /* ---------- Header: поиск поверх пунктов тёмного меню ---------- */
+  (function () {
+    var bar = document.querySelector(".header__bar");
+    var trigger = document.querySelector(".header__search");
+    var panel = document.querySelector(".header__search-panel");
+    if (!bar || !trigger || !panel) return;
+
+    var form = panel.querySelector(".header__search-form");
+    var input = panel.querySelector(".header__search-input");
+    var close = panel.querySelector(".header__search-close");
+    var desktop = window.matchMedia("(min-width: 1025px)");
+    var closeTimer = null;
+
+    function openSearch() {
+      if (!desktop.matches) return;
+      if (closeTimer) window.clearTimeout(closeTimer);
+      closeTimer = null;
+      panel.hidden = false;
+      panel.setAttribute("aria-hidden", "false");
+      trigger.setAttribute("aria-expanded", "true");
+      bar.classList.add("header__bar--search-open");
+      document.dispatchEvent(new CustomEvent("header-search-open"));
+      window.requestAnimationFrame(function () {
+        panel.classList.add("is-open");
+        if (input) input.focus();
+      });
+    }
+
+    function closeSearch(returnFocus) {
+      if (panel.hidden) return;
+      if (closeTimer) window.clearTimeout(closeTimer);
+      panel.classList.remove("is-open");
+      if (returnFocus && desktop.matches) trigger.focus();
+      panel.setAttribute("aria-hidden", "true");
+      trigger.setAttribute("aria-expanded", "false");
+      bar.classList.remove("header__bar--search-open");
+
+      function finishClose() {
+        panel.hidden = true;
+        closeTimer = null;
+      }
+
+      if (reduce.matches) finishClose();
+      else closeTimer = window.setTimeout(finishClose, 160);
+    }
+
+    trigger.addEventListener("click", openSearch);
+    if (close) close.addEventListener("click", function () { closeSearch(true); });
+    if (form) form.addEventListener("submit", function (e) { e.preventDefault(); });
+
+    document.addEventListener("keydown", function (e) {
+      if (!panel.hidden && e.key === "Escape") {
+        e.preventDefault();
+        closeSearch(true);
+      }
+    });
+
+    desktop.addEventListener("change", function (e) {
+      if (!e.matches) closeSearch(false);
+    });
+  })();
+
+  /* ---------- Header: пустые мегаменю хостинга и доменов по ховеру ---------- */
+  (function () {
+    var triggers = Array.prototype.slice.call(document.querySelectorAll("[data-mega-trigger]"));
+    var menu = document.querySelector("[data-mega-menu]");
+    if (!triggers.length || !menu) return;
+
+    var desktop = window.matchMedia("(min-width: 1025px)");
+    var activeTrigger = null;
+    var closeTimer = null;
+    var transitionTimer = null;
+    var transitionType = null;
+    var suppressFocusOpen = false;
+
+    function clearCloseTimer() {
+      if (!closeTimer) return;
+      window.clearTimeout(closeTimer);
+      closeTimer = null;
+    }
+
+    function clearTransition() {
+      if (transitionTimer) window.clearTimeout(transitionTimer);
+      transitionTimer = null;
+      transitionType = null;
+      menu.classList.remove("header__mega--closing");
+    }
+
+    function showMenu(trigger) {
+      triggers.forEach(function (item) {
+        item.setAttribute("aria-expanded", String(item === trigger));
+      });
+      activeTrigger = trigger;
+      menu.hidden = false;
+    }
+
+    function openMenu(trigger) {
+      if (!desktop.matches) return;
+      clearCloseTimer();
+
+      if (transitionType === "switch") {
+        activeTrigger = trigger;
+        return;
+      }
+
+      if (transitionType === "close") clearTransition();
+
+      if (activeTrigger && activeTrigger !== trigger && !menu.hidden && !reduce.matches) {
+        triggers.forEach(function (item) { item.setAttribute("aria-expanded", "false"); });
+        activeTrigger = trigger;
+        transitionType = "switch";
+        menu.classList.add("header__mega--closing");
+        transitionTimer = window.setTimeout(function () {
+          transitionTimer = null;
+          transitionType = null;
+          var target = activeTrigger;
+          menu.hidden = true;
+          menu.classList.remove("header__mega--closing");
+          window.requestAnimationFrame(function () {
+            if (desktop.matches && activeTrigger === target) showMenu(target);
+          });
+        }, 120);
+        return;
+      }
+
+      if (activeTrigger && activeTrigger !== trigger) menu.hidden = true;
+      showMenu(trigger);
+    }
+
+    function closeMenu(returnFocus) {
+      clearCloseTimer();
+      if (transitionType === "close") return;
+      clearTransition();
+      var focusTarget = returnFocus ? activeTrigger : null;
+      triggers.forEach(function (item) { item.setAttribute("aria-expanded", "false"); });
+
+      function finishClose() {
+        transitionTimer = null;
+        transitionType = null;
+        menu.hidden = true;
+        menu.classList.remove("header__mega--closing");
+        activeTrigger = null;
+        if (focusTarget) {
+          suppressFocusOpen = true;
+          focusTarget.focus();
+          suppressFocusOpen = false;
+        }
+      }
+
+      if (menu.hidden || reduce.matches) {
+        finishClose();
+        return;
+      }
+
+      transitionType = "close";
+      menu.classList.add("header__mega--closing");
+      transitionTimer = window.setTimeout(finishClose, 120);
+    }
+
+    function scheduleClose() {
+      clearCloseTimer();
+      closeTimer = window.setTimeout(function () { closeMenu(false); }, 100);
+    }
+
+    triggers.forEach(function (trigger) {
+      trigger.addEventListener("mouseenter", function () { openMenu(trigger); });
+      trigger.addEventListener("mouseleave", scheduleClose);
+      trigger.addEventListener("focus", function () {
+        if (!suppressFocusOpen) openMenu(trigger);
+      });
+    });
+
+    menu.addEventListener("mouseenter", function () {
+      clearCloseTimer();
+      if (transitionType === "close") {
+        clearTransition();
+        if (activeTrigger) showMenu(activeTrigger);
+      }
+    });
+    menu.addEventListener("mouseleave", scheduleClose);
+
+    document.addEventListener("focusin", function (e) {
+      if (!activeTrigger || menu.contains(e.target) || triggers.some(function (item) { return item.contains(e.target); })) return;
+      closeMenu(false);
+    });
+
+    document.addEventListener("keydown", function (e) {
+      if (activeTrigger && e.key === "Escape") closeMenu(true);
+    });
+
+    document.addEventListener("header-search-open", function () {
+      closeMenu(false);
+    });
+
+    desktop.addEventListener("change", function () {
+      closeMenu(false);
+    });
+  })();
+
   /* ---------- Header: полупрозрачный фон + блюр при скролле (мобиле/планшет) ---------- */
   (function () {
     var header = document.querySelector(".header");
@@ -558,10 +757,14 @@
     var typeInput = modal.querySelector("[data-registration-type-input]");
     var tabs = modal.querySelector(".registration-modal__tabs");
     var panels = modal.querySelectorAll("[data-registration-panel]");
+    var terms = modal.querySelector('input[name="terms"]');
+    var submit = modal.querySelector(".registration-modal__submit");
     var partnerToggle = modal.querySelector("[data-registration-partner-toggle]");
     var partnerField = document.getElementById("registration-partner-field");
     var previousFocus = null;
     var closeTimer = null;
+    var resizeTimer = null;
+    var resizeCleanup = null;
 
     var triggerLabels = /^(Регистрация|Начать бесплатно|Попробовать бесплатно)$/;
     var triggers = Array.prototype.filter.call(document.querySelectorAll("a, button"), function (el) {
@@ -584,6 +787,7 @@
 
     function closeModal() {
       if (modal.hidden) return;
+      if (resizeCleanup) resizeCleanup();
       modal.classList.remove("is-open");
       modal.setAttribute("aria-hidden", "true");
       var finish = function () {
@@ -593,6 +797,40 @@
       };
       if (reduce.matches) finish();
       else closeTimer = window.setTimeout(finish, 180);
+    }
+
+    function animateDialogHeight(update) {
+      if (!dialog || reduce.matches) {
+        update();
+        return;
+      }
+      if (resizeCleanup) resizeCleanup();
+
+      var startHeight = dialog.getBoundingClientRect().height;
+      update();
+      dialog.style.height = "";
+      var endHeight = dialog.getBoundingClientRect().height;
+      if (Math.abs(endHeight - startHeight) < 1) return;
+
+      dialog.style.height = startHeight + "px";
+      dialog.classList.add("registration-modal__dialog--resizing");
+      void dialog.offsetHeight;
+
+      var cleanup = function (e) {
+        if (e && e.propertyName !== "height") return;
+        dialog.removeEventListener("transitionend", cleanup);
+        dialog.style.height = "";
+        dialog.classList.remove("registration-modal__dialog--resizing");
+        if (resizeTimer) window.clearTimeout(resizeTimer);
+        resizeTimer = null;
+        resizeCleanup = null;
+      };
+      resizeCleanup = cleanup;
+      dialog.addEventListener("transitionend", cleanup);
+      requestAnimationFrame(function () {
+        dialog.style.height = endHeight + "px";
+      });
+      resizeTimer = window.setTimeout(cleanup, 320);
     }
 
     triggers.forEach(function (trigger) {
@@ -606,6 +844,48 @@
       close.addEventListener("click", closeModal);
     });
 
+    function validationMessage(input) {
+      var empty = !input.value.trim();
+      if (input.name === "email") return empty ? "Введите email" : "Введите корректный email";
+      if (input.name === "name") return "Введите имя";
+      if (input.name === "inn") {
+        return empty ? "Введите ИНН" : "ИНН должен состоять из 10 или 12 цифр";
+      }
+      if (input.name === "organization") return "Введите название организации";
+      return "Проверьте значение поля";
+    }
+
+    function clearFieldError(input) {
+      var errorId = input.getAttribute("aria-errormessage");
+      var error = errorId && document.getElementById(errorId);
+      input.classList.remove("registration-modal__input--error");
+      input.removeAttribute("aria-invalid");
+      if (error) error.textContent = "";
+    }
+
+    function validateField(input) {
+      var empty = input.required && !input.value.trim();
+      if (input.disabled || (!empty && input.validity.valid)) {
+        clearFieldError(input);
+        return true;
+      }
+      var errorId = input.getAttribute("aria-errormessage");
+      var error = errorId && document.getElementById(errorId);
+      input.classList.add("registration-modal__input--error");
+      input.setAttribute("aria-invalid", "true");
+      if (error) error.textContent = validationMessage(input);
+      return false;
+    }
+
+    if (form) {
+      form.querySelectorAll(".registration-modal__input[required]").forEach(function (input) {
+        input.addEventListener("input", function () {
+          if (input.getAttribute("aria-invalid") !== "true") return;
+          animateDialogHeight(function () { validateField(input); });
+        });
+      });
+    }
+
     function syncCustomerType(type) {
       if (typeInput) typeInput.value = type;
       if (tabs) tabs.setAttribute("data-active", type);
@@ -614,6 +894,7 @@
         panel.hidden = !active;
         panel.querySelectorAll("input").forEach(function (input) {
           input.disabled = !active;
+          if (!active) clearFieldError(input);
         });
       });
     }
@@ -621,20 +902,24 @@
     modal.querySelectorAll("[data-registration-type]").forEach(function (tab) {
       tab.addEventListener("click", function () {
         var type = tab.getAttribute("data-registration-type") || "person";
-        modal.querySelectorAll("[data-registration-type]").forEach(function (item) {
-          var active = item === tab;
-          item.classList.toggle("registration-modal__tab--active", active);
-          item.setAttribute("aria-selected", String(active));
+        animateDialogHeight(function () {
+          modal.querySelectorAll("[data-registration-type]").forEach(function (item) {
+            var active = item === tab;
+            item.classList.toggle("registration-modal__tab--active", active);
+            item.setAttribute("aria-selected", String(active));
+          });
+          syncCustomerType(type);
         });
-        syncCustomerType(type);
       });
     });
 
     if (partnerToggle && partnerField) {
       partnerToggle.addEventListener("click", function () {
         var expanded = partnerToggle.getAttribute("aria-expanded") === "true";
-        partnerToggle.setAttribute("aria-expanded", String(!expanded));
-        partnerField.hidden = expanded;
+        animateDialogHeight(function () {
+          partnerToggle.setAttribute("aria-expanded", String(!expanded));
+          partnerField.hidden = expanded;
+        });
         if (!expanded) {
           var input = partnerField.querySelector("input");
           if (input) input.focus();
@@ -649,9 +934,22 @@
     if (form) {
       form.addEventListener("submit", function (e) {
         e.preventDefault();
-        if (!form.checkValidity()) form.reportValidity();
+        var invalid = [];
+        animateDialogHeight(function () {
+          form.querySelectorAll(".registration-modal__input[required]").forEach(function (input) {
+            if (!validateField(input)) invalid.push(input);
+          });
+        });
+        if (invalid.length) invalid[0].focus();
       });
     }
+
+    function syncSubmitState() {
+      if (!terms || !submit) return;
+      submit.disabled = !terms.checked;
+    }
+    if (terms) terms.addEventListener("change", syncSubmitState);
+    syncSubmitState();
 
     document.addEventListener("keydown", function (e) {
       if (modal.hidden) return;
