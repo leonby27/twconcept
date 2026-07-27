@@ -42,6 +42,11 @@
   --container-max: 1300px;   /* общая макс. ширина: контент и шапка по одной линии */
   --page-gutter: 24px;       /* боковые поля контента на узких экранах */
   --header-gutter: 36px;     /* боковые поля хедера (мобильное меню) */
+  --header-bar-height: 64px;
+  --header-search-panel-width: 37.132%;
+  --header-search-field: #4b3f3f;
+  --header-height-mobile: 60px;
+  --header-mega-height: 220px;
 
   /* Вертикальный ритм между секциями.
      Стандартный зазор — всегда --section-gap. Исключение «связанная
@@ -86,6 +91,7 @@
 @media (max-width: 1280px) {
   :root {
     --header-gutter: 24px;
+    --header-mega-height: 200px;
   }
 }
 
@@ -119,6 +125,12 @@
 html {
   overflow-x: hidden;
   overflow-x: clip;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
 }
 
 body {
@@ -482,9 +494,10 @@ body.menu-open {
 
 /* --- Тёмная панель навигации по продуктам --- */
 .header__bar {
+  position: relative;
   display: flex;
   align-items: stretch;
-  height: 58px;
+  height: var(--header-bar-height);
   width: min(var(--container-max), 100% - var(--page-gutter) * 2);
   margin-inline: auto;
   overflow: hidden;
@@ -499,6 +512,10 @@ body.menu-open {
   justify-content: space-between;
   min-width: 0;
   padding-inline: 20px;
+}
+
+.header__bar--search-open .header__bar-nav {
+  pointer-events: none;
 }
 
 .header__bar-link {
@@ -516,10 +533,20 @@ body.menu-open {
   transition: background 0.15s ease;
 }
 
+.header__bar-link--menu[aria-expanded="true"] {
+  background: rgba(255, 255, 255, 0.1);
+}
+
 .header__bar-caret {
   width: 11px;
   height: 6px;
   opacity: 0.5;
+  transition: transform 0.18s ease, opacity 0.18s ease;
+}
+
+.header__bar-link[aria-expanded="true"] .header__bar-caret {
+  opacity: 1;
+  transform: rotate(180deg);
 }
 
 .header__bar-div {
@@ -540,7 +567,7 @@ body.menu-open {
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  width: 58px;
+  width: var(--header-bar-height);
   border-left: 1px solid rgba(255, 255, 255, 0.08);
   background: rgba(255, 255, 255, 0.05);
   color: var(--color-white);
@@ -552,9 +579,166 @@ body.menu-open {
   height: 24px;
 }
 
+.header__search-panel {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 1;
+  display: flex;
+  align-items: stretch;
+  width: var(--header-search-panel-width);
+  height: 100%;
+  padding: 8px 8px 8px 36px;
+  background: linear-gradient(
+    90deg,
+    rgba(65, 53, 53, 0) 0,
+    var(--color-dark) 24px,
+    var(--color-dark) 100%
+  );
+}
+
+.header__search-panel[hidden] {
+  display: none;
+}
+
+.header__search-form {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  min-width: 0;
+  margin: 0;
+  padding: 0 8px 0 10px;
+  border: 0;
+  border-radius: var(--radius-button-s);
+  background: var(--header-search-field);
+}
+
+.header__search-field-icon {
+  display: block;
+  width: 20px;
+  height: 20px;
+  margin-right: 10px;
+  flex-shrink: 0;
+}
+
+.header__search-input {
+  width: 100%;
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  font-family: var(--font-text);
+  font-weight: 400;
+  font-size: 15px;
+  line-height: 18px;
+  color: var(--color-white);
+  appearance: none;
+}
+
+.header__search-input::placeholder {
+  color: rgba(255, 255, 255, 0.58);
+}
+
+.header__search-input::-webkit-search-cancel-button {
+  display: none;
+}
+
+.header__search-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--color-white);
+  transition: opacity 0.15s ease;
+}
+
+.header__search-close-icon {
+  display: block;
+  width: 11px;
+  height: 11px;
+}
+
+.header__search:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: -4px;
+}
+
+.header__search-close:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
 @media (hover: hover) {
   .header__search:hover {
     background: rgba(255, 255, 255, 0.12);
+  }
+
+  .header__search-close:hover {
+    opacity: 0.86;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .header__search-panel {
+    opacity: 0;
+    transform: translateX(12px);
+    transition: opacity 0.16s ease-out, transform 0.16s ease-out;
+  }
+
+  .header__search-panel.is-open {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* --- Пустое мегаменю для разделов с кареткой --- */
+.header__mega {
+  position: absolute;
+  top: calc(100% - 4px);
+  left: 50%;
+  z-index: 2;
+  width: min(var(--container-max), calc(100% - var(--page-gutter) * 2));
+  height: var(--header-mega-height);
+  border: 1px solid var(--color-border-card);
+  border-radius: var(--radius-card-s);
+  background: var(--color-white);
+  box-shadow: 0 24px 64px rgba(33, 30, 30, 0.14), 0 4px 12px rgba(33, 30, 30, 0.06);
+  transform: translateX(-50%);
+}
+
+.header__mega[hidden] {
+  display: none;
+}
+
+.header__bar-link--menu:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .header__mega:not([hidden]) {
+    animation: header-mega-in 0.16s ease-out;
+  }
+
+  .header__mega.header__mega--closing {
+    animation: header-mega-out 0.12s ease-in forwards;
+  }
+
+  @keyframes header-mega-in {
+    from {
+      opacity: 0;
+      transform: translate(-50%, -6px);
+    }
+  }
+
+  @keyframes header-mega-out {
+    to {
+      opacity: 0;
+      transform: translate(-50%, -4px);
+    }
   }
 }
 
@@ -640,7 +824,7 @@ body.menu-open {
   color: var(--color-black-100);
 }
 
-.header__menu-group .header__menu-link + .header__menu-link {
+.header__menu-group > .header__menu-link + .header__menu-link {
   border-top: 1px solid var(--color-border-card);
 }
 
@@ -701,12 +885,16 @@ body.menu-open {
 
   /* Компактнее верх на мобиле: шапка ниже, меню плотнее к ней. */
   .header__top {
-    height: 60px;
+    height: var(--header-height-mobile);
   }
 
   .header__menu {
-    top: 60px;
+    top: var(--header-height-mobile);
     padding-top: 8px;
+  }
+
+  html {
+    scroll-padding-top: var(--header-height-mobile);
   }
 
   /* Шапка зафиксирована при скролле на мобиле/планшете. */
@@ -994,10 +1182,18 @@ body.menu-open {
 }
 
 .hero__rating-reviews {
+  color: inherit;
   text-decoration: underline;
   text-decoration-color: rgba(77, 59, 59, 0.15);
   text-decoration-thickness: 1.5px;
   text-decoration-skip-ink: none;
+  text-underline-offset: 2px;
+  transition: text-decoration-color 0.15s ease;
+}
+
+.hero__rating-reviews:hover,
+.hero__rating-reviews:focus-visible {
+  text-decoration-color: rgba(77, 59, 59, 0.55);
 }
 
 .hero__rating-stars {
@@ -5140,5 +5336,380 @@ ol.faq__answer-list {
     white-space: normal;
     text-align: center;
     padding: 0 var(--page-gutter);
+  }
+}
+
+/* ============================================
+   Registration modal — Figma 24853:3998
+   ============================================ */
+
+.registration-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  place-items: start center;
+  padding: 16px;
+  overflow-y: auto;
+  opacity: 0;
+  transition: opacity 0.18s ease;
+}
+
+.registration-modal[hidden] {
+  display: none;
+}
+
+.registration-modal.is-open {
+  opacity: 1;
+}
+
+.registration-modal__backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  background: rgba(33, 30, 30, 0.56);
+}
+
+.registration-modal__dialog {
+  --registration-ink: #4d3b3b;
+  --registration-error: #c43d32;
+  position: relative;
+  z-index: 1;
+  width: 432px;
+  min-height: 514px;
+  margin: max(16px, calc((100vh - 514px) / 2)) auto;
+  margin: max(16px, calc((100dvh - 514px) / 2)) auto;
+  padding: 40px 48px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  background: var(--color-white);
+  border-radius: 16px;
+  color: var(--registration-ink);
+  box-shadow: 0 24px 64px rgba(33, 30, 30, 0.18);
+  transform: translateY(8px) scale(0.985);
+  transition: transform 0.18s ease, height 0.24s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.registration-modal__dialog--resizing {
+  overflow: hidden;
+}
+
+.registration-modal.is-open .registration-modal__dialog {
+  transform: translateY(0) scale(1);
+}
+
+.registration-modal__close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+}
+
+.registration-modal__close img {
+  width: 28px;
+  height: 28px;
+}
+
+.registration-modal__head {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+}
+
+.registration-modal__title {
+  width: 100%;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 40px;
+  text-align: center;
+}
+
+.registration-modal__tabs {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 11px;
+  width: 100%;
+  height: 36px;
+  padding: 2px;
+  background: rgba(77, 59, 59, 0.1);
+  border-radius: 8px;
+}
+
+.registration-modal__tabs::before {
+  content: "";
+  position: absolute;
+  top: 2px;
+  bottom: 2px;
+  left: 2px;
+  width: calc((100% - 15px) / 2);
+  border-radius: 6px;
+  background: var(--color-white);
+  transition: transform 0.18s ease;
+}
+
+.registration-modal__tabs[data-active="company"]::before {
+  transform: translateX(calc(100% + 11px));
+}
+
+.registration-modal__tab {
+  position: relative;
+  z-index: 1;
+  flex: 1 0 0;
+  min-width: 0;
+  height: 32px;
+  padding: 6px 12px;
+  border-radius: 12px;
+  font-family: var(--font-text);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+  color: rgba(77, 59, 59, 0.6);
+}
+
+.registration-modal__tab--active {
+  color: var(--registration-ink);
+}
+
+.registration-modal__form,
+.registration-modal__fields,
+.registration-modal__field,
+.registration-modal__customer-fields,
+.registration-modal__actions,
+.registration-modal__agreements {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  width: 100%;
+}
+
+.registration-modal__form {
+  gap: 20px;
+}
+
+.registration-modal__fields {
+  gap: 16px;
+}
+
+.registration-modal__field {
+  gap: 8px;
+}
+
+.registration-modal__customer-fields {
+  gap: 16px;
+}
+
+.registration-modal__customer-fields[hidden] {
+  display: none;
+}
+
+.registration-modal__label {
+  font-family: var(--font-text);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 16px;
+  color: var(--registration-ink);
+}
+
+.registration-modal__input {
+  width: 100%;
+  height: 48px;
+  padding: 4px 12px;
+  border: 1px solid rgba(77, 59, 59, 0.15);
+  border-radius: 12px;
+  outline: none;
+  background: var(--color-white);
+  font-family: var(--font-heading);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 24px;
+  color: var(--registration-ink);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.registration-modal__input:focus {
+  border-color: rgba(77, 59, 59, 0.2);
+}
+
+.registration-modal__input--error,
+.registration-modal__input--error:focus {
+  border-color: var(--registration-error);
+}
+
+.registration-modal__error {
+  display: none;
+  margin-top: -4px;
+  font-family: var(--font-text);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 20px;
+  color: var(--registration-error);
+}
+
+.registration-modal__input--error + .registration-modal__error {
+  display: block;
+}
+
+.registration-modal__partner {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
+  width: 100%;
+}
+
+.registration-modal__partner-toggle {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  height: 20px;
+  font-family: var(--font-text);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 16px;
+  color: rgba(77, 59, 59, 0.6);
+}
+
+.registration-modal__partner-toggle img {
+  width: 20px;
+  height: 20px;
+  transition: transform 0.15s ease;
+}
+
+.registration-modal__partner-toggle[aria-expanded="true"] img {
+  transform: rotate(180deg);
+}
+
+.registration-modal__partner-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.registration-modal__partner-field[hidden] {
+  display: none;
+}
+
+.registration-modal__actions {
+  gap: 12px;
+}
+
+.registration-modal__submit {
+  width: 100%;
+  height: 48px;
+  padding: 14px 16px;
+  border-radius: var(--radius-button-s);
+  background: #dc6655;
+  font-family: var(--font-text);
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 20px;
+  color: var(--color-white);
+  transition: background-color 0.15s ease;
+}
+
+.registration-modal__submit:disabled {
+  background: rgba(77, 59, 59, 0.15);
+  color: rgba(77, 59, 59, 0.6);
+  cursor: not-allowed;
+}
+
+.registration-modal__agreements {
+  gap: 6px;
+}
+
+.registration-modal__agreement {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 20px;
+  font-family: var(--font-text);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 20px;
+  letter-spacing: -0.2px;
+  color: var(--registration-ink);
+  cursor: pointer;
+}
+
+.registration-modal__agreement a {
+  text-decoration: underline;
+  text-underline-position: from-font;
+}
+
+.registration-modal__checkbox {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.registration-modal__checkmark {
+  position: relative;
+  width: 18px;
+  height: 18px;
+  flex: 0 0 18px;
+  border: 1.5px solid rgba(77, 59, 59, 0.15);
+  border-radius: 5px;
+  background: var(--color-white);
+}
+
+.registration-modal__checkbox:checked + .registration-modal__checkmark {
+  border-color: transparent;
+  background: rgba(220, 102, 85, 0.07)
+    url(assets/figma-registration/b1729587ab817d94c02b8ef24c571ab7f001586a.svg) no-repeat center;
+}
+
+.registration-modal__checkbox:focus-visible + .registration-modal__checkmark {
+  box-shadow: 0 0 0 2px rgba(220, 102, 85, 0.22);
+}
+
+@media (hover: hover) {
+  .registration-modal__close:hover {
+    background: rgba(77, 59, 59, 0.06);
+  }
+
+  .registration-modal__submit:not(:disabled):hover {
+    background: var(--color-accent-hover);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .registration-modal,
+  .registration-modal__dialog,
+  .registration-modal__tabs::before,
+  .registration-modal__partner-toggle img {
+    transition: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .registration-modal {
+    padding: 8px;
+  }
+
+  .registration-modal__dialog {
+    width: 100%;
+    min-height: 0;
+    padding: 32px 24px;
+  }
+
+  .registration-modal__agreement {
+    align-items: flex-start;
+  }
+
+  .registration-modal__checkmark {
+    margin-top: 1px;
   }
 }
