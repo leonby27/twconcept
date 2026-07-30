@@ -781,7 +781,10 @@
 
     var triggerLabels = /^(Регистрация|Начать бесплатно|Попробовать бесплатно)$/;
     var triggers = Array.prototype.filter.call(document.querySelectorAll("a, button"), function (el) {
-      return !modal.contains(el) && triggerLabels.test(el.textContent.replace(/\s+/g, " ").trim());
+      return (
+        !modal.contains(el) &&
+        (el.hasAttribute("data-registration-open") || triggerLabels.test(el.textContent.replace(/\s+/g, " ").trim()))
+      );
     });
 
     function openModal(trigger) {
