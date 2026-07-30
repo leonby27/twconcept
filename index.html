@@ -470,14 +470,6 @@
           <div class="container">
             <h2 class="section-head__title pricing__heading">Тарифы хостинга</h2>
             <div class="pricing__controls">
-              <div class="pricing__seg pricing__seg--period" role="group" aria-label="Период оплаты">
-                <button type="button" class="pricing__seg-btn" aria-pressed="false">За месяц</button
-                ><button type="button" class="pricing__seg-btn pricing__seg-btn--active" aria-pressed="true">
-                  За год<span class="pricing__seg-off">−30%</span></button
-                ><button type="button" class="pricing__seg-btn" aria-pressed="false">
-                  За 3 года<span class="pricing__seg-off">−50%</span>
-                </button>
-              </div>
               <div class="pricing__seg" role="group" aria-label="Категория тарифов">
                 <button type="button" class="pricing__seg-btn pricing__seg-btn--active" aria-pressed="true">
                   <span
@@ -495,6 +487,22 @@
                   >Премиум
                 </button>
               </div>
+              <div class="pricing__seg pricing__seg--period" role="group" aria-label="Период оплаты">
+                <button type="button" class="pricing__seg-btn" aria-pressed="false">За месяц</button
+                ><button type="button" class="pricing__seg-btn pricing__seg-btn--active" aria-pressed="true">
+                  За год<span class="pricing__seg-off">−30%</span></button
+                ><button type="button" class="pricing__seg-btn" aria-pressed="false">
+                  За 3 года<span class="pricing__seg-off">−50%</span>
+                </button>
+              </div>
+              <a href="#" class="pricing__pick"
+                ><span
+                  class="icon pricing__pick-icon"
+                  aria-hidden="true"
+                  style="--icon: url(assets/icons/solid/navigation.svg)"
+                ></span
+                >Подобрать тариф в&nbsp;один клик</a
+              >
             </div>
             <div class="pricing__grid pricing__grid--classic">
               <article class="pricing__card">
@@ -1195,17 +1203,17 @@
               ><img src="assets/cms/cms-2.svg" alt="" width="60" height="60" loading="lazy"
             /></span>
           </div>
-          <h2 class="cms__title">Установка любой CMS в&nbsp;2&nbsp;клика</h2>
+          <h2 class="cms__title">Простая установка любой CMS</h2>
           <p class="cms__text">
             Наш хостинг специально оптимизирован для<!-- -->
-            <a href="#" class="cms__link">1С-Битрикс</a>,<!-- -->
-            <a href="#" class="cms__link">WordPress</a>,<!-- -->
-            <a href="#" class="cms__link">Joomla</a>,<!-- -->
-            <a href="#" class="cms__link">MODX</a>,<!-- -->
-            <a href="#" class="cms__link">OpenCart</a> и других
-            <a href="#" class="cms__link">CMS</a>
+            <a href="https://timeweb.com/ru/services/cms/bitrix/" class="cms__link">1С-Битрикс</a>,<!-- -->
+            <a href="https://timeweb.com/ru/services/cms/wordpress/" class="cms__link">WordPress</a>,<!-- -->
+            <a href="https://timeweb.com/ru/services/cms/joomla/" class="cms__link">Joomla</a>,<!-- -->
+            <a href="https://timeweb.com/ru/services/cms/modx/" class="cms__link">MODX</a>,<!-- -->
+            <a href="https://timeweb.com/ru/services/cms/opencart/" class="cms__link">OpenCart</a> и других
+            <a href="https://timeweb.com/ru/services/cms/" class="cms__link">CMS</a>
           </p>
-          <a href="#" class="btn btn--dark cms__cta">Создать сайт с&nbsp;автоустановкой CMS</a>
+          <button type="button" class="btn btn--dark cms__cta" data-registration-open>Создать аккаунт</button>
         </div>
       </section>
       <section class="infra">

@@ -1955,7 +1955,8 @@ body.menu-open {
   text-align: center;
 }
 
-/* Панель управления тарифами: слева сегмент категории, справа — период оплаты. */
+/* Панель управления тарифами: слева сегмент категории, по центру
+   период оплаты, справа — подбор тарифа. */
 .pricing__controls {
   display: flex;
   flex-wrap: wrap;
@@ -2047,6 +2048,31 @@ body.menu-open {
   line-height: 16px;
   font-weight: 500;
   color: var(--color-accent);
+}
+
+.pricing__pick {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 48px;
+  padding: 0 20px 0 18px;
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 16px;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 20px;
+  color: var(--color-black-100);
+  transition: background-color 0.15s ease;
+}
+
+.pricing__pick:hover {
+  background: rgba(0, 0, 0, 0.08);
+}
+
+.pricing__pick-icon {
+  width: 20px;
+  height: 20px;
+  color: var(--color-icon);
 }
 
 .pricing__grid {
@@ -2535,6 +2561,14 @@ body.menu-open {
     margin-left: 4px;
     vertical-align: -4px;
   }
+
+  /* «Подобрать тариф» переносится под ленту тарифов (см. app.js). */
+  .pricing__pick--below {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    margin-top: 20px;
+  }
 }
 
 @media (max-width: 480px) {
@@ -2559,11 +2593,6 @@ body.menu-open {
     width: 100%;
   }
 
-  /* В колонке категория остаётся сверху, период — под ней (порядок в DOM теперь обратный). */
-  .pricing__seg:not(.pricing__seg--period) {
-    order: -1;
-  }
-
   /* В колонке flex-basis 456px читался бы как высота — сбрасываем */
   .pricing__seg--period {
     flex: 0 0 auto;
@@ -2575,6 +2604,10 @@ body.menu-open {
     justify-content: center;
     height: 44px;
     padding: 10px 8px;
+  }
+
+  .pricing__pick {
+    justify-content: center;
   }
 }
 
@@ -2917,7 +2950,7 @@ body.menu-open {
 }
 
 /* ============================================
-   CMS — «Установка любой CMS в 2 клика»
+   CMS — «Простая установка любой CMS»
    ряд логотипов + заголовок + описание + CTA, по центру
    ============================================ */
 .cms {

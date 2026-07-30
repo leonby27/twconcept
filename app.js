@@ -433,12 +433,25 @@
     });
 
     // На мобиле тарифы — горизонтальная лента: по умолчанию центрируем
-    // популярную карточку активной категории.
+    // популярную карточку активной категории, «Подобрать тариф» — под ленту.
+    var pick = document.querySelector(".pricing__pick");
+    var pickHome = pick && pick.parentNode; // .pricing__controls
     var mobileMq = window.matchMedia("(max-width: 768px)");
 
     function currentGrid() {
       var cat = CATEGORIES[activeCategory];
       return cat && cat.grid;
+    }
+    function placePick() {
+      var grid = currentGrid();
+      if (!pick || !grid) return;
+      if (mobileMq.matches) {
+        grid.parentNode.insertBefore(pick, grid.nextSibling);
+        pick.classList.add("pricing__pick--below");
+      } else if (pickHome && pick.parentNode !== pickHome) {
+        pickHome.appendChild(pick);
+        pick.classList.remove("pricing__pick--below");
+      }
     }
     function centerPopular() {
       if (!mobileMq.matches) return;
@@ -450,7 +463,7 @@
       var delta = (pRect.left - gridRect.left) - (grid.clientWidth - popular.offsetWidth) / 2;
       grid.scrollLeft += delta;
     }
-    function syncMobile() { centerPopular(); }
+    function syncMobile() { placePick(); centerPopular(); }
     requestAnimationFrame(syncMobile);
     window.addEventListener("load", syncMobile);
     mobileMq.addEventListener("change", syncMobile);
@@ -768,7 +781,10 @@
 
     var triggerLabels = /^(Регистрация|Начать бесплатно|Попробовать бесплатно)$/;
     var triggers = Array.prototype.filter.call(document.querySelectorAll("a, button"), function (el) {
-      return !modal.contains(el) && triggerLabels.test(el.textContent.replace(/\s+/g, " ").trim());
+      return (
+        !modal.contains(el) &&
+        (el.hasAttribute("data-registration-open") || triggerLabels.test(el.textContent.replace(/\s+/g, " ").trim()))
+      );
     });
 
     function openModal(trigger) {
