@@ -339,6 +339,7 @@
 
     var periodSeg = document.querySelector(".pricing__seg--period");
     if (!periodSeg) return;
+    var showRenewal = !!document.querySelector(".pricing[data-show-renewal]");
 
     Object.keys(CATEGORIES).forEach(function (key) {
       var cat = CATEGORIES[key];
@@ -387,7 +388,11 @@
         var tt = card.querySelector(".pricing__total");
         var sv = card.querySelector(".pricing__save");
         if (cat.odos[i]) setOdo(cat.odos[i], price, animate);
-        if (tt) tt.textContent = fmt(total) + " ₽ за " + p.months + " " + word;
+        if (tt) {
+          // Страница хостинга: к годовой сумме дописываем цену продления (= помесячная)
+          var renewal = showRenewal && p.months > 1 ? " · продление " + fmt(month) + " ₽/мес" : "";
+          tt.textContent = fmt(total) + " ₽ за " + p.months + " " + word + renewal;
+        }
         if (sv) {
           if (save > 0) { sv.textContent = "Экономия " + fmt(save) + " ₽"; sv.classList.remove("pricing__save--empty"); }
           else { sv.textContent = ""; sv.classList.add("pricing__save--empty"); }
