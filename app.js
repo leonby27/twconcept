@@ -313,9 +313,8 @@
     var PERIODS = {
       month: { months: 1 },
       year: { months: 12 },
-      three: { months: 36 },
     };
-    var order = ["month", "year", "three"];
+    var order = ["month", "year"];
 
     // Цена ₽/мес по тарифам и периодам — как на timeweb.
     // Зачёркнутая «старая» цена и экономия считаются относительно помесячной.
@@ -326,7 +325,6 @@
         prices: {
           month: [393, 634, 887, 1285],
           year:  [244, 392, 553, 806],
-          three: [180, 272, 381, 554],
         },
       },
       premium: {
@@ -335,7 +333,6 @@
         prices: {
           month: [852, 2473, 5388],
           year:  [537, 1534, 4140],
-          three: [366, 1161, 4140],
         },
       },
     };
@@ -399,8 +396,12 @@
     }
 
     var activeCategory = "classic";
-    function renderActive(periodId, animate) {
-      renderCategory(activeCategory, periodId, animate);
+    // Рендерим обе категории: на мобиле они стоят в одной ленте и видны
+    // одновременно, а на десктопе скрытая вкладка уже готова к переключению.
+    function renderAll(periodId, animate) {
+      Object.keys(CATEGORIES).forEach(function (key) {
+        renderCategory(key, periodId, animate);
+      });
     }
 
     // Индекс активного периода — общий для период-переключателя и категорий
@@ -421,7 +422,7 @@
         btn.setAttribute("aria-pressed", "true");
         moveThumb(periodThumb, btn, true);
         activeIdx = idx;
-        renderActive(order[idx] || "year", true);
+        renderAll(order[idx] || "year", true);
       });
     });
 
@@ -432,21 +433,18 @@
       renderCategory(key, initialPeriod, false);
     });
 
-    // На мобиле тарифы — горизонтальная лента: по умолчанию центрируем
-    // популярную карточку активной категории, «Подобрать тариф» — под ленту.
+    // На мобиле все тарифы — одна горизонтальная лента (общий контейнер
+    // обеих сеток, без переключателя категорий): по умолчанию центрируем
+    // Optimo, «Подобрать тариф» — под ленту.
     var pick = document.querySelector(".pricing__pick");
     var pickHome = pick && pick.parentNode; // .pricing__controls
+    var scroller = document.querySelector(".pricing__grids");
     var mobileMq = window.matchMedia("(max-width: 768px)");
 
-    function currentGrid() {
-      var cat = CATEGORIES[activeCategory];
-      return cat && cat.grid;
-    }
     function placePick() {
-      var grid = currentGrid();
-      if (!pick || !grid) return;
+      if (!pick || !scroller) return;
       if (mobileMq.matches) {
-        grid.parentNode.insertBefore(pick, grid.nextSibling);
+        scroller.parentNode.insertBefore(pick, scroller.nextSibling);
         pick.classList.add("pricing__pick--below");
       } else if (pickHome && pick.parentNode !== pickHome) {
         pickHome.appendChild(pick);
@@ -454,14 +452,14 @@
       }
     }
     function centerPopular() {
-      if (!mobileMq.matches) return;
-      var grid = currentGrid();
-      var popular = grid && grid.querySelector(".pricing__card--popular");
-      if (!grid || !popular) return;
-      var gridRect = grid.getBoundingClientRect();
+      if (!mobileMq.matches || !scroller) return;
+      var classic = CATEGORIES.classic.grid;
+      var popular = classic && classic.querySelector(".pricing__card--popular");
+      if (!popular) return;
+      var sRect = scroller.getBoundingClientRect();
       var pRect = popular.getBoundingClientRect();
-      var delta = (pRect.left - gridRect.left) - (grid.clientWidth - popular.offsetWidth) / 2;
-      grid.scrollLeft += delta;
+      var delta = (pRect.left - sRect.left) - (scroller.clientWidth - popular.offsetWidth) / 2;
+      scroller.scrollLeft += delta;
     }
     function syncMobile() { placePick(); centerPopular(); }
     requestAnimationFrame(syncMobile);
@@ -496,7 +494,6 @@
             var cat = CATEGORIES[k];
             if (cat.grid) cat.grid.hidden = k !== key;
           });
-          renderActive(order[activeIdx] || "year", false);
           syncMailQuota();
           requestAnimationFrame(syncMobile);
         });
@@ -759,7 +756,7 @@
     check();
   })();
 
-  /* ---------- Попап регистрации (Figma 24853:3998) ---------- */
+  /* ---------- Попап регистрации: email + кнопка-стрелка, код партнёра ---------- */
   (function () {
     var modal = document.getElementById("registration-modal");
     if (!modal) return;
@@ -767,9 +764,6 @@
     var dialog = modal.querySelector(".registration-modal__dialog");
     var email = modal.querySelector("[data-registration-email]");
     var form = modal.querySelector("[data-registration-form]");
-    var typeInput = modal.querySelector("[data-registration-type-input]");
-    var tabs = modal.querySelector(".registration-modal__tabs");
-    var panels = modal.querySelectorAll("[data-registration-panel]");
     var terms = modal.querySelector('input[name="terms"]');
     var submit = modal.querySelector(".registration-modal__submit");
     var partnerToggle = modal.querySelector("[data-registration-partner-toggle]");
@@ -793,6 +787,11 @@
         closeTimer = null;
       }
       previousFocus = trigger || document.activeElement;
+      // Код партнёра при каждом открытии свёрнут
+      if (partnerToggle && partnerField) {
+        partnerToggle.setAttribute("aria-expanded", "false");
+        partnerField.hidden = true;
+      }
       modal.hidden = false;
       modal.setAttribute("aria-hidden", "false");
       requestAnimationFrame(function () {
@@ -863,11 +862,6 @@
     function validationMessage(input) {
       var empty = !input.value.trim();
       if (input.name === "email") return empty ? "Введите email" : "Введите корректный email";
-      if (input.name === "name") return "Введите имя";
-      if (input.name === "inn") {
-        return empty ? "Введите ИНН" : "ИНН должен состоять из 10 или 12 цифр";
-      }
-      if (input.name === "organization") return "Введите название организации";
       return "Проверьте значение поля";
     }
 
@@ -881,7 +875,7 @@
 
     function validateField(input) {
       var empty = input.required && !input.value.trim();
-      if (input.disabled || (!empty && input.validity.valid)) {
+      if (!empty && input.validity.valid) {
         clearFieldError(input);
         return true;
       }
@@ -901,33 +895,6 @@
         });
       });
     }
-
-    function syncCustomerType(type) {
-      if (typeInput) typeInput.value = type;
-      if (tabs) tabs.setAttribute("data-active", type);
-      panels.forEach(function (panel) {
-        var active = panel.getAttribute("data-registration-panel") === type;
-        panel.hidden = !active;
-        panel.querySelectorAll("input").forEach(function (input) {
-          input.disabled = !active;
-          if (!active) clearFieldError(input);
-        });
-      });
-    }
-
-    modal.querySelectorAll("[data-registration-type]").forEach(function (tab) {
-      tab.addEventListener("click", function () {
-        var type = tab.getAttribute("data-registration-type") || "person";
-        animateDialogHeight(function () {
-          modal.querySelectorAll("[data-registration-type]").forEach(function (item) {
-            var active = item === tab;
-            item.classList.toggle("registration-modal__tab--active", active);
-            item.setAttribute("aria-selected", String(active));
-          });
-          syncCustomerType(type);
-        });
-      });
-    });
 
     if (partnerToggle && partnerField) {
       partnerToggle.addEventListener("click", function () {
