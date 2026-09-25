@@ -1941,9 +1941,10 @@ body.menu-open {
   }
 }
 
+/* Два периода (месяц / год) — ширина под них, как у сегмента категорий */
 .pricing__seg--period {
-  flex: 1 1 456px;
-  max-width: 480px;
+  flex: 0 1 320px;
+  max-width: 320px;
 }
 
 .pricing__seg--period .pricing__seg-btn {
@@ -2470,14 +2471,14 @@ body.menu-open {
 }
 
 @media (max-width: 768px) {
-  /* Скидочные плашки в переключателе периода на мобиле убираем. */
-  .pricing__seg-off {
-    display: none;
-  }
-
   /* Без переключателя Классический/Премиум: все тарифы в одной ленте. */
   .pricing__seg:not(.pricing__seg--period) {
     display: none;
+  }
+
+  /* Остаётся один переключатель периода — по центру */
+  .pricing__controls {
+    justify-content: center;
   }
 
   /* Обе сетки «растворяются» в общем контейнере (display: contents),
