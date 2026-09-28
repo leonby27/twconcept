@@ -3619,14 +3619,14 @@ body.menu-open {
   flex-direction: column;
   height: 160px;
   padding: 23px;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  /* Светлее фона плашки, чтобы карточки читались на тёмной «серверной»;
+     brightness слегка гасит засвет фото, просвечивающего сквозь блюр. */
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 24px;
-  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
-  /* brightness гасит «засвет» от яркого фона дата-центра, просвечивающего
-     сквозь блюр (цвет самой плашки не меняем). */
-  -webkit-backdrop-filter: blur(15px) brightness(0.55);
-  backdrop-filter: blur(15px) brightness(0.55);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  -webkit-backdrop-filter: blur(18px) brightness(0.65);
+  backdrop-filter: blur(18px) brightness(0.65);
 }
 
 .infra__cell-icon {
@@ -3689,8 +3689,8 @@ body.menu-open {
        выключаем backdrop-filter и кладём сплошную тёмную плашку. */
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
-    background: rgba(20, 18, 17, 0.88);
-    border-color: rgba(255, 255, 255, 0.08);
+    background: rgba(40, 36, 34, 0.9);
+    border-color: rgba(255, 255, 255, 0.1);
   }
 
   /* компактно: текст сразу под иконкой, без растягивания на всю высоту */
@@ -5446,7 +5446,7 @@ ol.faq__answer-list {
 .registration-modal__agreement {
   position: relative;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 8px;
   min-height: 20px;
   font-family: var(--font-text);
@@ -5479,6 +5479,7 @@ ol.faq__answer-list {
   height: 18px;
   flex: 0 0 18px;
   border: 1.5px solid rgba(77, 59, 59, 0.15);
+  margin-top: 1px;
   border-radius: 5px;
   background: var(--color-white);
 }
@@ -5520,14 +5521,6 @@ ol.faq__answer-list {
     width: 100%;
     min-height: 0;
     padding: 24px 20px;
-  }
-
-  .registration-modal__agreement {
-    align-items: flex-start;
-  }
-
-  .registration-modal__checkmark {
-    margin-top: 1px;
   }
 }
 
