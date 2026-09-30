@@ -11,7 +11,7 @@
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Roboto:wght@400;500&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="styles.css?v=20260930-vk-blue" />
   </head>
   <body>
     <header class="header">
@@ -1689,6 +1689,15 @@
             </div>
           </div>
 
+          <div class="registration-modal__social">
+            <div class="registration-modal__divider"><span>или</span></div>
+            <button class="registration-modal__vk" type="button" data-registration-vk>
+              <span class="icon registration-modal__vk-icon" aria-hidden="true" style="--icon: url(assets/icons/social/vk.svg)"></span>
+              <span>Продолжить через VK</span>
+            </button>
+            <span class="registration-modal__vk-status" role="status" data-registration-vk-status></span>
+          </div>
+
           <div class="registration-modal__agreements">
             <label class="registration-modal__agreement">
               <input class="registration-modal__checkbox" type="checkbox" name="terms" checked required />
@@ -1704,6 +1713,6 @@
         </form>
       </section>
     </div>
-    <script src="app.js" defer></script>
+    <script src="app.js?v=20260930-vk-blue" defer></script>
   </body>
 </html>

@@ -761,7 +761,7 @@
     check();
   })();
 
-  /* ---------- Попап регистрации: email + кнопка-стрелка, код партнёра ---------- */
+  /* ---------- Попап регистрации: email, код партнёра, VK ---------- */
   (function () {
     var modal = document.getElementById("registration-modal");
     if (!modal) return;
@@ -771,6 +771,8 @@
     var form = modal.querySelector("[data-registration-form]");
     var terms = modal.querySelector('input[name="terms"]');
     var submit = modal.querySelector(".registration-modal__submit");
+    var vkButton = modal.querySelector("[data-registration-vk]");
+    var vkStatus = modal.querySelector("[data-registration-vk-status]");
     var partnerToggle = modal.querySelector("[data-registration-partner-toggle]");
     var partnerField = document.getElementById("registration-partner-field");
     var previousFocus = null;
@@ -792,6 +794,7 @@
         closeTimer = null;
       }
       previousFocus = trigger || document.activeElement;
+      if (vkStatus) vkStatus.textContent = "";
       // Код партнёра при каждом открытии свёрнут
       if (partnerToggle && partnerField) {
         partnerToggle.setAttribute("aria-expanded", "false");
@@ -932,9 +935,18 @@
       });
     }
 
+    if (vkButton && vkStatus) {
+      vkButton.addEventListener("click", function () {
+        animateDialogHeight(function () {
+          vkStatus.textContent = "Регистрация через VK пока недоступна";
+        });
+      });
+    }
+
     function syncSubmitState() {
       if (!terms || !submit) return;
       submit.disabled = !terms.checked;
+      if (vkButton) vkButton.disabled = !terms.checked;
     }
     if (terms) terms.addEventListener("change", syncSubmitState);
     syncSubmitState();

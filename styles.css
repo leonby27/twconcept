@@ -27,6 +27,7 @@
   --color-text-warm-60: rgba(65, 53, 53, 0.6);  /* тёплый приглушённый — описания тарифов */
   --color-accent: #dc6655;
   --color-accent-hover: #c95a4a;
+  --color-vk: #0077ff;
   --color-border: #dbdbdb;
   --color-surface: #f9f5f2;
   --color-surface-2: #f2edea;            /* утопленный тон на кремовом (FAQ) */
@@ -5179,8 +5180,7 @@ ol.faq__answer-list {
 }
 
 /* ============================================
-   Registration modal — структура по макету менеджера: заголовок, подпись
-   про тест, email + кнопка-стрелка, код партнёра, согласия
+   Registration modal — email, код партнёра, VK, согласия
    ============================================ */
 
 .registration-modal {
@@ -5215,7 +5215,7 @@ ol.faq__answer-list {
   --registration-error: #c43d32;
   position: relative;
   z-index: 1;
-  width: 432px;
+  width: min(432px, 100%);
   margin: auto;
   padding: 32px;
   display: flex;
@@ -5439,6 +5439,76 @@ ol.faq__answer-list {
   cursor: not-allowed;
 }
 
+/* Альтернативный способ регистрации */
+.registration-modal__social {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.registration-modal__divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--color-text-main-60);
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.registration-modal__divider::before,
+.registration-modal__divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--color-border-soft);
+}
+
+.registration-modal__vk {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 48px;
+  padding: 10px 16px;
+  border: 1px solid var(--color-border-soft);
+  border-radius: var(--radius-button-s);
+  background: var(--color-white);
+  color: var(--color-text-main);
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 24px;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.registration-modal__vk-icon {
+  width: 20px;
+  height: 20px;
+  flex: 0 0 20px;
+  color: var(--color-vk);
+}
+
+.registration-modal__vk:focus-visible {
+  outline: 2px solid var(--color-dark);
+  outline-offset: 2px;
+}
+
+.registration-modal__vk:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.registration-modal__vk-status {
+  display: none;
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--color-text-main-60);
+}
+
+.registration-modal__vk-status:not(:empty) {
+  display: block;
+}
+
 .registration-modal__agreements {
   gap: 6px;
 }
@@ -5502,12 +5572,18 @@ ol.faq__answer-list {
   .registration-modal__submit:not(:disabled):hover {
     background: var(--color-accent-hover);
   }
+
+  .registration-modal__vk:not(:disabled):hover {
+    background: var(--color-surface);
+    border-color: var(--color-border);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .registration-modal,
   .registration-modal__dialog,
-  .registration-modal__partner-caret {
+  .registration-modal__partner-caret,
+  .registration-modal__vk {
     transition: none;
   }
 }
