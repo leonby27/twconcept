@@ -11,7 +11,7 @@
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Roboto:wght@400;500&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="styles.css?v=20260930-vk-blue" />
+    <link rel="stylesheet" href="styles.css?v=20260930-task-modal-fix" />
   </head>
   <body>
     <header class="header">
@@ -266,20 +266,13 @@
               >Попробовать 10&nbsp;дней бесплатно</a
             ><a href="#hosting-tariffs" class="btn btn--outline btn--l">Смотреть тарифы</a>
           </div>
-          <p class="hero__cta-note hero__cta-note--wide">
-            PHP, MySQL, любая CMS, SSL и&nbsp;почта есть даже в&nbsp;младшем тарифе. Дешевле бывает&nbsp;— но обычно без
-            баз данных и&nbsp;с&nbsp;заметно меньшей мощностью.
-          </p>
         </div>
       </section>
       <div class="band">
-        <section class="pricing pricing--all" id="hosting-tariffs" data-show-renewal>
+        <section class="pricing pricing--all" id="hosting-tariffs">
           <div class="container">
             <h2 class="section-head__title pricing__heading">Тарифы хостинга</h2>
-            <p class="pricing__intro">
-              Семь тарифов одним списком: обычные и&nbsp;премиум различаются мощностью процессора и&nbsp;приоритетом
-              поддержки, а&nbsp;набор возможностей у&nbsp;них одинаковый.
-            </p>
+            <p class="pricing__intro">Стандартный и мощный хостинг различаются мощностью и объёмом ресурсов.</p>
             <div class="pricing__controls">
               <div class="pricing__seg pricing__seg--period" role="group" aria-label="Период оплаты">
                 <button type="button" class="pricing__seg-btn" aria-pressed="false">За месяц</button
@@ -291,12 +284,11 @@
             <div class="pricing__grids">
               <div class="pricing__group">
                 <h3 class="pricing__group-title">Стандартный хостинг</h3>
-                <span class="pricing__group-note">для большинства сайтов</span>
               </div>
               <div class="pricing__grid pricing__grid--classic">
                 <article class="pricing__card">
                   <h3 class="pricing__name">Year</h3>
-                  <p class="pricing__desc">Сайт-визитка или&nbsp;лендинг</p>
+                  <p class="pricing__desc">Идеальное решение для&nbsp;сайта-визитки</p>
                   <span class="pricing__save"
                     >Экономия
                     <!-- -->1&nbsp;788<!-- -->
@@ -348,7 +340,7 @@
                         aria-hidden="true"
                         style="--icon: url(assets/icons/solid/check.svg)"
                       ></span
-                      ><span class="pricing__feature-text"><b class="pricing__feature-b">2 базы данных</b></span>
+                      ><span class="pricing__feature-text"><b class="pricing__feature-b">2 Базы данных</b></span>
                     </li>
                     <li class="pricing__feature">
                       <span
@@ -369,7 +361,7 @@
                 <article class="pricing__card pricing__card--popular">
                   <span class="pricing__badge">Выбор клиентов</span>
                   <h3 class="pricing__name">Optimo</h3>
-                  <p class="pricing__desc">Блог, портфолио, галерея</p>
+                  <p class="pricing__desc">Выбор популярных блогеров и&nbsp;сайтов-галерей</p>
                   <span class="pricing__save"
                     >Экономия
                     <!-- -->2&nbsp;904<!-- -->
@@ -421,7 +413,7 @@
                         aria-hidden="true"
                         style="--icon: url(assets/icons/solid/check.svg)"
                       ></span
-                      ><span class="pricing__feature-text"><b class="pricing__feature-b">∞ баз данных</b></span>
+                      ><span class="pricing__feature-text"><b class="pricing__feature-b">∞ Базы данных</b></span>
                     </li>
                     <li class="pricing__feature">
                       <span
@@ -441,7 +433,7 @@
                 </article>
                 <article class="pricing__card">
                   <h3 class="pricing__name">Century</h3>
-                  <p class="pricing__desc">Сайт компании, магазин</p>
+                  <p class="pricing__desc">Наилучший вариант для&nbsp;сайта вашей компании</p>
                   <span class="pricing__save"
                     >Экономия
                     <!-- -->4&nbsp;008<!-- -->
@@ -493,7 +485,7 @@
                         aria-hidden="true"
                         style="--icon: url(assets/icons/solid/check.svg)"
                       ></span
-                      ><span class="pricing__feature-text"><b class="pricing__feature-b">∞ баз данных</b></span>
+                      ><span class="pricing__feature-text"><b class="pricing__feature-b">∞ Базы данных</b></span>
                     </li>
                     <li class="pricing__feature">
                       <span
@@ -513,7 +505,7 @@
                 </article>
                 <article class="pricing__card">
                   <h3 class="pricing__name">Millennium</h3>
-                  <p class="pricing__desc">Десятки сайтов студии</p>
+                  <p class="pricing__desc">Продвинутое решение для крупных e-commerce&nbsp;проектов</p>
                   <span class="pricing__save"
                     >Экономия
                     <!-- -->5&nbsp;748<!-- -->
@@ -565,7 +557,7 @@
                         aria-hidden="true"
                         style="--icon: url(assets/icons/solid/check.svg)"
                       ></span
-                      ><span class="pricing__feature-text"><b class="pricing__feature-b">∞ баз данных</b></span>
+                      ><span class="pricing__feature-text"><b class="pricing__feature-b">∞ Базы данных</b></span>
                     </li>
                     <li class="pricing__feature">
                       <span
@@ -586,13 +578,12 @@
               </div>
               <div class="pricing__group">
                 <h3 class="pricing__group-title">Мощный хостинг</h3>
-                <span class="pricing__group-note">мощнее процессор, приоритет в&nbsp;поддержке</span>
               </div>
               <div class="pricing__grid pricing__grid--premium">
                 <article class="pricing__card">
                   <span class="pricing__badge pricing__badge--premium">Премиум</span>
                   <h3 class="pricing__name">1Сайт</h3>
-                  <p class="pricing__desc">Один проект под&nbsp;нагрузкой</p>
+                  <p class="pricing__desc">Для небольшого интернет-магазина и&nbsp;сайта компании</p>
                   <span class="pricing__save pricing__save--empty"></span>
                   <p class="pricing__price">
                     <span class="pricing__price-value">537<!-- -->&nbsp;₽</span
@@ -635,7 +626,7 @@
                         aria-hidden="true"
                         style="--icon: url(assets/icons/solid/check.svg)"
                       ></span
-                      ><span class="pricing__feature-text"><b class="pricing__feature-b">1 база данных</b></span>
+                      ><span class="pricing__feature-text"><b class="pricing__feature-b">1 База данных</b></span>
                     </li>
                     <li class="pricing__feature">
                       <span
@@ -653,17 +644,18 @@
                     </li>
                   </ul>
                 </article>
-                <article class="pricing__card">
+                <article class="pricing__card pricing__card--popular">
+                  <span class="pricing__badge">Выбор клиентов</span>
                   <span class="pricing__badge pricing__badge--premium">Премиум</span>
                   <h3 class="pricing__name">Eterno</h3>
-                  <p class="pricing__desc">Когда сайт упирается в&nbsp;лимит</p>
+                  <p class="pricing__desc">Для крупного интернет-магазина</p>
                   <span class="pricing__save pricing__save--empty"></span>
                   <p class="pricing__price">
                     <span class="pricing__price-value">1534<!-- -->&nbsp;₽</span
                     ><span class="pricing__price-suffix">/мес</span>
                   </p>
                   <p class="pricing__total"></p>
-                  <a href="#" class="btn pricing__cta btn--dark">Начать бесплатно</a>
+                  <a href="#" class="btn pricing__cta btn--primary">Начать бесплатно</a>
                   <ul class="pricing__features">
                     <li class="pricing__feature">
                       <span
@@ -699,7 +691,7 @@
                         aria-hidden="true"
                         style="--icon: url(assets/icons/solid/check.svg)"
                       ></span
-                      ><span class="pricing__feature-text"><b class="pricing__feature-b">∞ баз данных</b></span>
+                      ><span class="pricing__feature-text"><b class="pricing__feature-b">∞ Базы данных</b></span>
                     </li>
                     <li class="pricing__feature">
                       <span
@@ -720,7 +712,7 @@
                 <article class="pricing__card">
                   <span class="pricing__badge pricing__badge--premium">Премиум</span>
                   <h3 class="pricing__name">Premium</h3>
-                  <p class="pricing__desc">Десяток магазинов на&nbsp;одном счёте</p>
+                  <p class="pricing__desc">Для масштабных проектов</p>
                   <span class="pricing__save pricing__save--empty"></span>
                   <p class="pricing__price">
                     <span class="pricing__price-value">4140<!-- -->&nbsp;₽</span
@@ -750,7 +742,7 @@
                         style="--icon: url(assets/icons/solid/check.svg)"
                       ></span
                       ><span class="pricing__feature-text"
-                        ><b class="pricing__feature-b">∞ сайтов</b> с&nbsp;изоляцией<span
+                        ><b class="pricing__feature-b">99999 сайтов</b> с&nbsp;изоляцией<span
                           class="icon pricing__info"
                           aria-hidden="true"
                           style="--icon: url(assets/icons/solid/info.svg)"
@@ -763,7 +755,7 @@
                         aria-hidden="true"
                         style="--icon: url(assets/icons/solid/check.svg)"
                       ></span
-                      ><span class="pricing__feature-text"><b class="pricing__feature-b">∞ баз данных</b></span>
+                      ><span class="pricing__feature-text"><b class="pricing__feature-b">∞ Базы данных</b></span>
                     </li>
                     <li class="pricing__feature">
                       <span
@@ -782,25 +774,89 @@
                   </ul>
                 </article>
                 <article class="pricing__card pricing__card--banner">
-                  <h3 class="pricing__name">Нужна мощность?</h3>
-                    <p class="pricing__banner-text">
-                      Опишите проект&nbsp;— посчитаем нагрузку и&nbsp;подберём тариф. Если хватит обычного, так и&nbsp;скажем:
-                      продавать лишнее не&nbsp;станем.
-                    </p>
-                    <a href="#" class="btn pricing__cta btn--dark">Запросить расчёт</a>
+                  <h3 class="pricing__name">Остались вопросы?</h3>
+                  <p class="pricing__banner-text">
+                    Поможем выбрать тариф и&nbsp;настроить хостинг под ваш проект&nbsp;— бесплатно проконсультируем
+                  </p>
+                  <ul class="pricing__banner-list">
+                    <li>
+                      <span
+                        class="icon pricing__check"
+                        aria-hidden="true"
+                        style="--icon: url(assets/icons/solid/check.svg)"
+                      ></span
+                      >Поддержка 24/7
+                    </li>
+                    <li>
+                      <span
+                        class="icon pricing__check"
+                        aria-hidden="true"
+                        style="--icon: url(assets/icons/solid/check.svg)"
+                      ></span
+                      >Отвечаем за&nbsp;15 минут
+                    </li>
+                    <li>
+                      <span
+                        class="icon pricing__check"
+                        aria-hidden="true"
+                        style="--icon: url(assets/icons/solid/check.svg)"
+                      ></span
+                      >Бесплатная консультация
+                    </li>
+                  </ul>
+                  <a href="#" class="btn pricing__cta btn--dark">Написать в поддержку</a>
                 </article>
               </div>
             </div>
-            <div class="pricing__notes">
-              <p class="pricing__note">
-                Все тарифы включают: 10&nbsp;ГБ почты, SSL, ежедневные бэкапы, DNS-редактор, автоустановку CMS
-                и&nbsp;изоляцию сайтов. Домен .RU или .РФ дарим на&nbsp;любом тарифе, включая младший.
-              </p>
-              <p class="pricing__note">
-                Входная цена <b>244&nbsp;₽</b>&nbsp;— это два сайта, 15&nbsp;ГБ NVMe, базы данных и&nbsp;автоустановка CMS.
-                Тарифы дешевле на&nbsp;рынке встречаются, но&nbsp;чаще всего без PHP, MySQL и&nbsp;CMS: на&nbsp;таком
-                не&nbsp;запустить ни&nbsp;WordPress, ни&nbsp;1С-Битрикс.
-              </p>
+            <div class="pricing__included">
+              <span class="pricing__included-label">Включено в каждом тарифе:</span>
+              <div class="pricing__incards">
+                <article class="incard">
+                  <span class="incard__tile" aria-hidden="true"
+                    ><img class="incard__glyph" src="assets/icons/duotone/envelope-simple.svg" alt=""
+                  /></span>
+                  <div class="incard__body">
+                    <h3 class="incard__title" data-mail-quota data-classic="10 ГБ почтовой квоты бесплатно" data-premium="15 ГБ почтовой квоты бесплатно">10 ГБ почтовой<br />квоты бесплатно</h3>
+                    <p class="incard__text">Храните почту и&nbsp;управляйте ящиками.</p>
+                  </div>
+                </article>
+                <article class="incard">
+                  <span class="incard__tile" aria-hidden="true"
+                    ><img class="incard__glyph" src="assets/icons/duotone/globe-hemisphere-west.svg" alt=""
+                  /></span>
+                  <div class="incard__body">
+                    <h3 class="incard__title">Домен .ru или&nbsp;.рф бесплатно</h3>
+                    <p class="incard__text">При оплате хостинга сразу за&nbsp;год</p>
+                  </div>
+                </article>
+                <article class="incard">
+                  <span class="incard__tile" aria-hidden="true"
+                    ><img class="incard__glyph" src="assets/icons/duotone/desktop.svg" alt=""
+                  /></span>
+                  <div class="incard__body">
+                    <h3 class="incard__title">Автобэкапы каждый день</h3>
+                    <p class="incard__text">С возможностью восстановления</p>
+                  </div>
+                </article>
+                <article class="incard">
+                  <span class="incard__tile" aria-hidden="true"
+                    ><img class="incard__glyph" src="assets/icons/duotone/database.svg" alt=""
+                  /></span>
+                  <div class="incard__body">
+                    <h3 class="incard__title">Бесплатный<br />DNS-хостинг</h3>
+                    <p class="incard__text">Размещайте домены и&nbsp;настраивайте их</p>
+                  </div>
+                </article>
+                <article class="incard">
+                  <span class="incard__tile" aria-hidden="true"
+                    ><img class="incard__glyph" src="assets/icons/duotone/shield-check.svg" alt=""
+                  /></span>
+                  <div class="incard__body">
+                    <h3 class="incard__title">Бесплатный SSL-сертификат</h3>
+                    <p class="incard__text">Let’s Encrypt для базовой защиты сайта</p>
+                  </div>
+                </article>
+              </div>
             </div>
           </div>
         </section>
@@ -870,97 +926,378 @@
           </div>
         </div>
       </section>
-      <section class="rating-strip" id="reviews" aria-label="Рейтинг">
+      <section class="reviews" id="reviews">
         <div class="container">
-          <div class="rating-strip__card">
-            <div class="rating-strip__main">
-              <p class="rating-strip__score">4.8</p>
-              <span class="rating-strip__stars" aria-label="Оценка 4.8 из 5"
-                ><img src="assets/star-full.svg" alt="" width="20" height="20" /><img
-                  src="assets/star-full.svg" alt="" width="20" height="20" /><img
-                  src="assets/star-full.svg" alt="" width="20" height="20" /><img
-                  src="assets/star-full.svg" alt="" width="20" height="20" /><img
-                  src="assets/star-last.svg" alt="" width="20" height="20" /></span
-              >
-              <p class="rating-strip__count">на&nbsp;основе <b>7&nbsp;125</b> отзывов клиентов</p>
-            </div>
-            <p class="rating-strip__text">
-              75% из&nbsp;них&nbsp;— про качественную поддержку. Мы&nbsp;решаем 80% вопросов за&nbsp;15&nbsp;минут, круглосуточно.
+          <h2 class="section-head__title reviews__heading">Клиенты о&nbsp;нас</h2>
+          <div class="reviews__panel">
+            <p class="reviews__lead">
+              <span class="reviews__lead-accent">Множество</span>
+              <!-- -->отзывов наших клиентов&nbsp;— про качественную поддержку
             </p>
+            <p class="reviews__rating">
+              <img src="assets/star-full.svg" alt="" width="20" height="20" /><strong>4.8</strong
+              ><span class="reviews__rating-note">на основе 7125 отзывов</span>
+            </p>
+            <div class="reviews__platforms" role="group" aria-label="Площадки отзывов">
+              <button type="button" class="reviews__platform reviews__platform--active" aria-pressed="true">
+                <span class="reviews__badge" style="background: var(--color-accent)">★</span>Все отзывы<span
+                  class="reviews__platform-rating"
+                  >4.8</span
+                ></button
+              ><button type="button" class="reviews__platform" aria-pressed="false">
+                <span class="reviews__badge" style="background: #fc3f1d">Я</span>Яндекс<span
+                  class="reviews__platform-rating"
+                  >4.9</span
+                ></button
+              ><button type="button" class="reviews__platform" aria-pressed="false">
+                <span class="reviews__badge" style="background: #2e9e60">H</span>Hosters<span
+                  class="reviews__platform-rating"
+                  >4.9</span
+                ></button
+              ><button type="button" class="reviews__platform" aria-pressed="false">
+                <span class="reviews__badge" style="background: #e4002b">Y</span>Yell<span
+                  class="reviews__platform-rating"
+                  >4.8</span
+                ></button
+              ><button type="button" class="reviews__platform" aria-pressed="false">
+                <span class="reviews__badge" style="background: #4285f4">G</span>Google<span
+                  class="reviews__platform-rating"
+                  >4.7</span
+                ></button
+              ><button type="button" class="reviews__platform" aria-pressed="false">
+                <span class="reviews__badge reviews__badge--dark" style="background: #ffdd2d">Т</span>Т-Банк<span
+                  class="reviews__platform-rating"
+                  >4.7</span
+                ></button
+              ><button type="button" class="reviews__platform" aria-pressed="false">
+                <span class="reviews__badge" style="background: var(--color-accent)">★</span>Hostings<span
+                  class="reviews__platform-rating"
+                  >4.5</span
+                ></button
+              ><button type="button" class="reviews__platform" aria-pressed="false">
+                <span class="reviews__badge" style="background: #19aa1e">2</span>2GIS<span
+                  class="reviews__platform-rating"
+                  >4.9</span
+                >
+              </button>
+            </div>
+            <div class="reviews__filters" role="group" aria-label="Темы отзывов">
+              <button type="button" class="reviews__chip" aria-pressed="false">Сервис</button
+              ><button type="button" class="reviews__chip" aria-pressed="false">Поддержка</button
+              ><button type="button" class="reviews__chip" aria-pressed="false">Цена</button
+              ><button type="button" class="reviews__chip" aria-pressed="false">Панель управления</button
+              ><button type="button" class="reviews__chip" aria-pressed="false">Интерфейс</button
+              ><button type="button" class="reviews__chip" aria-pressed="false">Скорость</button
+              ><button type="button" class="reviews__chip" aria-pressed="false">Качество</button>
+            </div>
+            <div class="reviews__carousel">
+              <button type="button" class="reviews__arrow reviews__arrow--prev" aria-label="Предыдущие отзывы">
+                ‹
+              </button>
+              <div class="reviews__track">
+                <article class="reviews__card">
+                  <div class="reviews__person">
+                    <span class="reviews__badge" style="background: #fc3f1d">Я</span>
+                    <div>
+                      <p class="reviews__name">Дмитрий</p>
+                      <p class="reviews__date">27 мая на Яндекс</p>
+                    </div>
+                  </div>
+                  <div class="reviews__stars" aria-label="Оценка 5 из 5">
+                    <img src="assets/star-full.svg" alt="" width="16" height="16" /><img
+                      src="assets/star-full.svg"
+                      alt=""
+                      width="16"
+                      height="16"
+                    /><img src="assets/star-full.svg" alt="" width="16" height="16" /><img
+                      src="assets/star-full.svg"
+                      alt=""
+                      width="16"
+                      height="16"
+                    /><img src="assets/star-full.svg" alt="" width="16" height="16" />
+                  </div>
+                  <p class="reviews__text">
+                    Радует стабильная работа, низкая цена и техподдержка. Все проблемы решаются в кратчайшие сроки, хотя
+                    они возникают редко.
+                  </p>
+                  <a href="#" class="reviews__more">Читать полностью ›</a>
+                </article>
+                <article class="reviews__card">
+                  <div class="reviews__person">
+                    <span class="reviews__badge reviews__badge--dark" style="background: #ffdd2d">Т</span>
+                    <div>
+                      <p class="reviews__name">Анна</p>
+                      <p class="reviews__date">14 апреля на Т-Банк</p>
+                    </div>
+                  </div>
+                  <div class="reviews__stars" aria-label="Оценка 5 из 5">
+                    <img src="assets/star-full.svg" alt="" width="16" height="16" /><img
+                      src="assets/star-full.svg"
+                      alt=""
+                      width="16"
+                      height="16"
+                    /><img src="assets/star-full.svg" alt="" width="16" height="16" /><img
+                      src="assets/star-full.svg"
+                      alt=""
+                      width="16"
+                      height="16"
+                    /><img src="assets/star-full.svg" alt="" width="16" height="16" />
+                  </div>
+                  <p class="reviews__text">
+                    Перенесла сайт с другого хостинга за вечер. Поддержка помогла настроить SSL и почту — всё заработало
+                    без простоя.
+                  </p>
+                  <a href="#" class="reviews__more">Читать полностью ›</a>
+                </article>
+                <article class="reviews__card">
+                  <div class="reviews__person">
+                    <span class="reviews__badge" style="background: var(--color-accent)">★</span>
+                    <div>
+                      <p class="reviews__name">Сергей</p>
+                      <p class="reviews__date">2 июня на Hostings</p>
+                    </div>
+                  </div>
+                  <div class="reviews__stars" aria-label="Оценка 5 из 5">
+                    <img src="assets/star-full.svg" alt="" width="16" height="16" /><img
+                      src="assets/star-full.svg"
+                      alt=""
+                      width="16"
+                      height="16"
+                    /><img src="assets/star-full.svg" alt="" width="16" height="16" /><img
+                      src="assets/star-full.svg"
+                      alt=""
+                      width="16"
+                      height="16"
+                    /><img src="assets/star-full.svg" alt="" width="16" height="16" />
+                  </div>
+                  <p class="reviews__text">
+                    Пользуюсь больше трёх лет. Аптайм держится отлично, панель понятная, тарифы адекватные. Рекомендую.
+                  </p>
+                  <a href="#" class="reviews__more">Читать полностью ›</a>
+                </article>
+                <article class="reviews__card">
+                  <div class="reviews__person">
+                    <span class="reviews__badge" style="background: #fc3f1d">Я</span>
+                    <div>
+                      <p class="reviews__name">Марина</p>
+                      <p class="reviews__date">19 марта на Яндекс</p>
+                    </div>
+                  </div>
+                  <div class="reviews__stars" aria-label="Оценка 4 из 5">
+                    <img src="assets/star-full.svg" alt="" width="16" height="16" /><img
+                      src="assets/star-full.svg"
+                      alt=""
+                      width="16"
+                      height="16"
+                    /><img src="assets/star-full.svg" alt="" width="16" height="16" /><img
+                      src="assets/star-full.svg"
+                      alt=""
+                      width="16"
+                      height="16"
+                    /><img src="assets/star-last.svg" alt="" width="16" height="16" />
+                  </div>
+                  <p class="reviews__text">
+                    В целом довольна, скорость хорошая. Пару раз ждала ответ поддержки чуть дольше обычного, но вопрос
+                    решили.
+                  </p>
+                  <a href="#" class="reviews__more">Читать полностью ›</a>
+                </article>
+                <article class="reviews__card">
+                  <div class="reviews__person">
+                    <span class="reviews__badge reviews__badge--dark" style="background: #ffdd2d">Т</span>
+                    <div>
+                      <p class="reviews__name">Алексей</p>
+                      <p class="reviews__date">8 мая на Т-Банк</p>
+                    </div>
+                  </div>
+                  <div class="reviews__stars" aria-label="Оценка 5 из 5">
+                    <img src="assets/star-full.svg" alt="" width="16" height="16" /><img
+                      src="assets/star-full.svg"
+                      alt=""
+                      width="16"
+                      height="16"
+                    /><img src="assets/star-full.svg" alt="" width="16" height="16" /><img
+                      src="assets/star-full.svg"
+                      alt=""
+                      width="16"
+                      height="16"
+                    /><img src="assets/star-full.svg" alt="" width="16" height="16" />
+                  </div>
+                  <p class="reviews__text">
+                    Запустил интернет-магазин за один день. Бесплатный период дал спокойно всё протестировать перед
+                    оплатой.
+                  </p>
+                  <a href="#" class="reviews__more">Читать полностью ›</a>
+                </article>
+                <article class="reviews__card">
+                  <div class="reviews__person">
+                    <span class="reviews__badge" style="background: var(--color-accent)">★</span>
+                    <div>
+                      <p class="reviews__name">Ольга</p>
+                      <p class="reviews__date">25 февраля на Hostings</p>
+                    </div>
+                  </div>
+                  <div class="reviews__stars" aria-label="Оценка 5 из 5">
+                    <img src="assets/star-full.svg" alt="" width="16" height="16" /><img
+                      src="assets/star-full.svg"
+                      alt=""
+                      width="16"
+                      height="16"
+                    /><img src="assets/star-full.svg" alt="" width="16" height="16" /><img
+                      src="assets/star-full.svg"
+                      alt=""
+                      width="16"
+                      height="16"
+                    /><img src="assets/star-full.svg" alt="" width="16" height="16" />
+                  </div>
+                  <p class="reviews__text">
+                    Удобная админка и быстрый деплой. Резервные копии выручали не раз — данные всегда на месте.
+                  </p>
+                  <a href="#" class="reviews__more">Читать полностью ›</a>
+                </article>
+                <article class="reviews__card">
+                  <div class="reviews__person">
+                    <span class="reviews__badge" style="background: #fc3f1d">Я</span>
+                    <div>
+                      <p class="reviews__name">Иван</p>
+                      <p class="reviews__date">11 июня на Яндекс</p>
+                    </div>
+                  </div>
+                  <div class="reviews__stars" aria-label="Оценка 5 из 5">
+                    <img src="assets/star-full.svg" alt="" width="16" height="16" /><img
+                      src="assets/star-full.svg"
+                      alt=""
+                      width="16"
+                      height="16"
+                    /><img src="assets/star-full.svg" alt="" width="16" height="16" /><img
+                      src="assets/star-full.svg"
+                      alt=""
+                      width="16"
+                      height="16"
+                    /><img src="assets/star-full.svg" alt="" width="16" height="16" />
+                  </div>
+                  <p class="reviews__text">
+                    Цена за год приятно удивила, плюс домен в подарок. Сервер ни разу не подвёл за всё время.
+                  </p>
+                  <a href="#" class="reviews__more">Читать полностью ›</a>
+                </article>
+                <article class="reviews__card">
+                  <div class="reviews__person">
+                    <span class="reviews__badge reviews__badge--dark" style="background: #ffdd2d">Т</span>
+                    <div>
+                      <p class="reviews__name">Екатерина</p>
+                      <p class="reviews__date">30 апреля на Т-Банк</p>
+                    </div>
+                  </div>
+                  <div class="reviews__stars" aria-label="Оценка 4 из 5">
+                    <img src="assets/star-full.svg" alt="" width="16" height="16" /><img
+                      src="assets/star-full.svg"
+                      alt=""
+                      width="16"
+                      height="16"
+                    /><img src="assets/star-full.svg" alt="" width="16" height="16" /><img
+                      src="assets/star-full.svg"
+                      alt=""
+                      width="16"
+                      height="16"
+                    /><img src="assets/star-last.svg" alt="" width="16" height="16" />
+                  </div>
+                  <p class="reviews__text">
+                    Хороший хостинг для небольших проектов. Интерфейс местами хочется упростить, но со своими задачами
+                    справляется.
+                  </p>
+                  <a href="#" class="reviews__more">Читать полностью ›</a>
+                </article>
+              </div>
+              <button type="button" class="reviews__arrow reviews__arrow--next" aria-label="Следующие отзывы">›</button>
+            </div>
+            <div class="reviews__foot">
+              <span class="reviews__credit">Сделано на MyReviews</span>
+              <div class="reviews__dots" aria-hidden="true">
+                <span class="reviews__dot reviews__dot--active"></span><span class="reviews__dot"></span
+                ><span class="reviews__dot"></span><span class="reviews__dot"></span><span class="reviews__dot"></span
+                ><span class="reviews__dot"></span><span class="reviews__dot"></span><span class="reviews__dot"></span
+                ><span class="reviews__dot"></span><span class="reviews__dot"></span>
+              </div>
+              <a href="#" class="btn btn--m btn--dark reviews__cta">Оставить отзыв</a>
+            </div>
           </div>
         </div>
       </section>
       <section class="tasks">
         <div class="container">
           <h2 class="section-head__title tasks__heading">Хостинг под&nbsp;вашу задачу</h2>
-          <p class="tasks__lead">Шесть частых случаев. У&nbsp;каждого&nbsp;— тариф, с&nbsp;которого обычно начинают.</p>
+          <p class="tasks__lead">
+            От&nbsp;пет-проекта до&nbsp;интернет-магазина и&nbsp;корпоративной инфраструктуры. В&nbsp;любой момент можно
+            расширить сайт, усилить защиту, ускорить загрузку или подключить корпоративную почту.
+          </p>
           <div class="tasks__grid">
-            <a href="#hosting-tariffs" class="tasks__card">
+            <button type="button" class="tasks__card" data-registration-open data-registration-tariff="Year" aria-haspopup="dialog" aria-controls="registration-modal">
               <span class="icon tasks__icon" aria-hidden="true" style="--icon: url(assets/icons/duotone/rocket-launch.svg)"></span>
-              <h3 class="tasks__title">Старт проекта</h3>
-              <p class="tasks__text">Лендинг или визитка, пара страниц, форма заявки.</p>
-              <div class="tasks__foot">
-                <p class="tasks__plan"><b>Year</b> 244&nbsp;₽/мес при&nbsp;оплате за&nbsp;год</p>
+              <span class="tasks__title">Старт проекта</span>
+              <span class="tasks__text">Запуск бизнеса, монетизация хобби. Быстрый запуск несложных проектов.</span>
+              <span class="tasks__foot">
+                <span class="tasks__plan"><b>Year</b> 244&nbsp;₽/мес при&nbsp;оплате за&nbsp;год</span>
                 <span class="tasks__go" aria-hidden="true"
                   ><span class="icon tasks__go-icon" style="--icon: url(assets/icons/solid/arrow-right.svg)"></span
                 ></span>
-              </div>
-            </a>
-            <a href="#hosting-tariffs" class="tasks__card">
+              </span>
+            </button>
+            <button type="button" class="tasks__card" data-registration-open data-registration-tariff="Optimo" aria-haspopup="dialog" aria-controls="registration-modal">
               <span class="icon tasks__icon" aria-hidden="true" style="--icon: url(assets/icons/duotone/pencil-simple.svg)"></span>
-              <h3 class="tasks__title">Блог и&nbsp;портфолио</h3>
-              <p class="tasks__text">WordPress с&nbsp;темой и&nbsp;плагинами, регулярные публикации.</p>
-              <div class="tasks__foot">
-                <p class="tasks__plan"><b>Optimo</b> 392&nbsp;₽/мес при&nbsp;оплате за&nbsp;год</p>
+              <span class="tasks__title">Блог и&nbsp;портфолио</span>
+              <span class="tasks__text">WordPress с&nbsp;темой и&nbsp;плагинами, регулярные публикации.</span>
+              <span class="tasks__foot">
+                <span class="tasks__plan"><b>Optimo</b> 392&nbsp;₽/мес при&nbsp;оплате за&nbsp;год</span>
                 <span class="tasks__go" aria-hidden="true"
                   ><span class="icon tasks__go-icon" style="--icon: url(assets/icons/solid/arrow-right.svg)"></span
                 ></span>
-              </div>
-            </a>
-            <a href="#hosting-tariffs" class="tasks__card">
+              </span>
+            </button>
+            <button type="button" class="tasks__card" data-registration-open data-registration-tariff="Century" aria-haspopup="dialog" aria-controls="registration-modal">
               <span class="icon tasks__icon" aria-hidden="true" style="--icon: url(assets/icons/duotone/shopping-cart.svg)"></span>
-              <h3 class="tasks__title">Интернет-магазин</h3>
-              <p class="tasks__text">Каталог и&nbsp;корзина, интеграции с&nbsp;1С и&nbsp;доставкой.</p>
-              <div class="tasks__foot">
-                <p class="tasks__plan"><b>Century</b> 553&nbsp;₽/мес при&nbsp;оплате за&nbsp;год</p>
+              <span class="tasks__title">Интернет-магазин</span>
+              <span class="tasks__text">Нишевые бутики и&nbsp;высоконагруженные магазины с&nbsp;круглосуточным трафиком.</span>
+              <span class="tasks__foot">
+                <span class="tasks__plan"><b>Century</b> 553&nbsp;₽/мес при&nbsp;оплате за&nbsp;год</span>
                 <span class="tasks__go" aria-hidden="true"
                   ><span class="icon tasks__go-icon" style="--icon: url(assets/icons/solid/arrow-right.svg)"></span
                 ></span>
-              </div>
-            </a>
-            <a href="#hosting-tariffs" class="tasks__card">
+              </span>
+            </button>
+            <button type="button" class="tasks__card" data-registration-open data-registration-tariff="Century" aria-haspopup="dialog" aria-controls="registration-modal">
               <span class="icon tasks__icon" aria-hidden="true" style="--icon: url(assets/icons/duotone/buildings.svg)"></span>
-              <h3 class="tasks__title">Корпоративный сайт</h3>
-              <p class="tasks__text">Сайт компании, почта на&nbsp;домене, документы для&nbsp;юрлица.</p>
-              <div class="tasks__foot">
-                <p class="tasks__plan"><b>Century</b> 553&nbsp;₽/мес при&nbsp;оплате за&nbsp;год</p>
+              <span class="tasks__title">Корпоративный сайт</span>
+              <span class="tasks__text">Проекты любой сложности на&nbsp;любых стеках, с&nbsp;неограниченным количеством почтовых ящиков и&nbsp;надёжной защитой.</span>
+              <span class="tasks__foot">
+                <span class="tasks__plan"><b>Century</b> 553&nbsp;₽/мес при&nbsp;оплате за&nbsp;год</span>
                 <span class="tasks__go" aria-hidden="true"
                   ><span class="icon tasks__go-icon" style="--icon: url(assets/icons/solid/arrow-right.svg)"></span
                 ></span>
-              </div>
-            </a>
-            <a href="#hosting-tariffs" class="tasks__card">
+              </span>
+            </button>
+            <button type="button" class="tasks__card" data-registration-open data-registration-tariff="Year" aria-haspopup="dialog" aria-controls="registration-modal">
               <span class="icon tasks__icon" aria-hidden="true" style="--icon: url(assets/icons/duotone/shield-check.svg)"></span>
-              <h3 class="tasks__title">Госучреждение или&nbsp;юрлицо</h3>
-              <p class="tasks__text">152-ФЗ, данные в&nbsp;России, закрывающие документы и&nbsp;ЭДО&nbsp;— на&nbsp;любом тарифе. Берите по&nbsp;числу сайтов.</p>
-              <div class="tasks__foot">
-                <p class="tasks__plan"><b>Year</b> 244&nbsp;₽/мес при&nbsp;оплате за&nbsp;год</p>
+              <span class="tasks__title">Госучреждение или&nbsp;юрлицо</span>
+              <span class="tasks__text">Надёжная защита данных и&nbsp;соответствие законодательству. Безналичные платежи и&nbsp;документооборот через ЭДО.</span>
+              <span class="tasks__foot">
+                <span class="tasks__plan"><b>Year</b> 244&nbsp;₽/мес при&nbsp;оплате за&nbsp;год</span>
                 <span class="tasks__go" aria-hidden="true"
                   ><span class="icon tasks__go-icon" style="--icon: url(assets/icons/solid/arrow-right.svg)"></span
                 ></span>
-              </div>
-            </a>
-            <a href="#hosting-tariffs" class="tasks__card">
+              </span>
+            </button>
+            <button type="button" class="tasks__card" data-registration-open data-registration-tariff="Millennium" aria-haspopup="dialog" aria-controls="registration-modal">
               <span class="icon tasks__icon" aria-hidden="true" style="--icon: url(assets/icons/duotone/folder.svg)"></span>
-              <h3 class="tasks__title">Студия или&nbsp;агентство</h3>
-              <p class="tasks__text">Десятки клиентских сайтов, каждый изолирован.</p>
-              <div class="tasks__foot">
-                <p class="tasks__plan"><b>Millennium</b> 806&nbsp;₽/мес при&nbsp;оплате за&nbsp;год</p>
+              <span class="tasks__title">Студия или&nbsp;агентство</span>
+              <span class="tasks__text">Защита клиентских данных и&nbsp;соответствие требованиям закона. Безналичная оплата и&nbsp;документы через ЭДО.</span>
+              <span class="tasks__foot">
+                <span class="tasks__plan"><b>Millennium</b> 806&nbsp;₽/мес при&nbsp;оплате за&nbsp;год</span>
                 <span class="tasks__go" aria-hidden="true"
                   ><span class="icon tasks__go-icon" style="--icon: url(assets/icons/solid/arrow-right.svg)"></span
                 ></span>
-              </div>
-            </a>
+              </span>
+            </button>
           </div>
         </div>
       </section>
@@ -1633,6 +1970,12 @@
 
         <div class="registration-modal__head">
           <h2 class="registration-modal__title" id="registration-title">Регистрация</h2>
+          <p class="registration-modal__subtitle" data-registration-scenario-subtitle hidden>10 дней бесплатно, без оплаты и&nbsp;привязки карты</p>
+        </div>
+
+        <div class="registration-modal__plan" data-registration-plan hidden>
+          <span class="registration-modal__plan-caption" data-registration-scenario></span>
+          <strong class="registration-modal__plan-name">Тариф <span data-registration-plan-name></span></strong>
         </div>
 
         <form class="registration-modal__form" action="#" data-registration-form novalidate>
@@ -1713,6 +2056,6 @@
         </form>
       </section>
     </div>
-    <script src="app.js?v=20260930-vk-blue" defer></script>
+    <script src="app.js?v=20260930-task-modal-fix" defer></script>
   </body>
 </html>
