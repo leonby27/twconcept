@@ -5276,6 +5276,33 @@ ol.faq__answer-list {
   text-align: left;
 }
 
+.registration-modal__plan {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px 16px;
+  border: 1px solid var(--color-border-soft);
+  border-radius: var(--radius-button-s);
+  background: var(--color-surface);
+}
+
+.registration-modal__plan[hidden] {
+  display: none;
+}
+
+.registration-modal__plan-caption {
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--color-text-main-60);
+}
+
+.registration-modal__plan-name {
+  font-family: var(--font-heading);
+  font-size: 16px;
+  line-height: 22px;
+  color: var(--color-text-main);
+}
+
 .registration-modal__form,
 .registration-modal__fields,
 .registration-modal__field,
@@ -5674,15 +5701,6 @@ ol.faq__answer-list {
   width: auto;
 }
 
-/* Сноска под кнопками — длинная, в несколько строк */
-.hero__cta-note--wide {
-  max-width: 520px;
-  font-size: 14px;
-  line-height: 20px;
-  text-align: center;
-  white-space: normal;
-}
-
 /* ---- Тарифы: вся линейка (без переключателя категорий) ---- */
 .pricing__intro {
   max-width: 720px;
@@ -5717,30 +5735,6 @@ ol.faq__answer-list {
   color: var(--color-text-main);
 }
 
-.pricing__group-note {
-  font-size: 16px;
-  line-height: 22px;
-  color: var(--color-text-main-60);
-}
-
-.pricing__notes {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  max-width: 760px;
-  margin-top: 32px;
-}
-
-.pricing__note {
-  font-size: 15px;
-  line-height: 22px;
-  color: var(--color-text-main-60);
-}
-
-.pricing__note b {
-  color: var(--color-text-main);
-}
-
 @media (max-width: 768px) {
   /* На мобиле все тарифы — одна лента; группы подписаны бейджем «Премиум» */
   .pricing__group {
@@ -5751,55 +5745,6 @@ ol.faq__answer-list {
     font-size: 16px;
     line-height: 22px;
   }
-}
-
-/* ---- Полоса рейтинга ---- */
-.rating-strip {
-  margin-top: var(--section-gap);
-}
-
-.rating-strip__card {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px 32px;
-  padding: 28px 32px;
-  background: var(--color-surface);
-  border-radius: var(--radius-card-s);
-}
-
-.rating-strip__main {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px 14px;
-}
-
-.rating-strip__score {
-  font-family: var(--font-heading);
-  font-weight: 700;
-  font-size: 44px;
-  line-height: 48px;
-  color: var(--color-text-main);
-}
-
-.rating-strip__stars {
-  display: inline-flex;
-  gap: 2px;
-}
-
-.rating-strip__count {
-  font-size: 16px;
-  line-height: 22px;
-  color: var(--color-text-main);
-}
-
-.rating-strip__text {
-  max-width: 460px;
-  font-size: 15px;
-  line-height: 22px;
-  color: var(--color-text-main-60);
 }
 
 /* ---- Хостинг под вашу задачу / Бесплатные инструменты: шапка ---- */
@@ -5846,6 +5791,7 @@ ol.faq__answer-list {
 
 .tasks__card {
   padding: 24px;
+  text-align: left;
 }
 
 .tasks__icon {
@@ -5979,10 +5925,6 @@ ol.faq__answer-list {
     gap: 16px;
     margin-top: 32px;
   }
-
-  .rating-strip__card {
-    padding: 24px;
-  }
 }
 
 @media (max-width: 480px) {
@@ -5999,16 +5941,6 @@ ol.faq__answer-list {
   .tools__card {
     padding: 20px;
   }
-
-  .rating-strip__card {
-    padding: 20px;
-  }
-
-  .rating-strip__score {
-    font-size: 36px;
-    line-height: 40px;
-  }
-
   .hero__offer {
     margin-top: 20px;
   }

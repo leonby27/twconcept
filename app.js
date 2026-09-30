@@ -771,6 +771,10 @@
     var form = modal.querySelector("[data-registration-form]");
     var terms = modal.querySelector('input[name="terms"]');
     var submit = modal.querySelector(".registration-modal__submit");
+    var selectedPlan = modal.querySelector("[data-registration-plan]");
+    var selectedPlanName = modal.querySelector("[data-registration-plan-name]");
+    var selectedScenario = modal.querySelector("[data-registration-scenario]");
+    var scenarioSubtitle = modal.querySelector("[data-registration-scenario-subtitle]");
     var vkButton = modal.querySelector("[data-registration-vk]");
     var vkStatus = modal.querySelector("[data-registration-vk-status]");
     var partnerToggle = modal.querySelector("[data-registration-partner-toggle]");
@@ -795,6 +799,16 @@
       }
       previousFocus = trigger || document.activeElement;
       if (vkStatus) vkStatus.textContent = "";
+      var tariff = trigger && trigger.getAttribute("data-registration-tariff");
+      if (selectedPlan && selectedPlanName && selectedScenario) {
+        selectedPlan.hidden = !tariff;
+        if (scenarioSubtitle) scenarioSubtitle.hidden = !tariff;
+        if (tariff) {
+          var title = trigger.querySelector(".tasks__title");
+          selectedPlanName.textContent = tariff;
+          selectedScenario.textContent = title ? "Для «" + title.textContent.replace(/\s+/g, " ").trim() + "» подойдёт" : "Для вашей задачи подойдёт";
+        }
+      }
       // Код партнёра при каждом открытии свёрнут
       if (partnerToggle && partnerField) {
         partnerToggle.setAttribute("aria-expanded", "false");
