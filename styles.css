@@ -5615,15 +5615,37 @@ ol.faq__answer-list {
   }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 768px) {
   .registration-modal {
-    padding: 8px;
+    display: block;
+    padding: 0;
+    overflow: hidden;
   }
 
   .registration-modal__dialog {
     width: 100%;
-    min-height: 0;
-    padding: 24px 20px;
+    height: 100vh;
+    height: 100dvh;
+    margin: 0;
+    padding: calc(var(--page-gutter) + env(safe-area-inset-top)) var(--page-gutter)
+      calc(var(--page-gutter) + env(safe-area-inset-bottom));
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    border-radius: 0;
+    box-shadow: none;
+    transform: none;
+  }
+
+  .registration-modal.is-open .registration-modal__dialog {
+    transform: none;
+  }
+
+  .registration-modal__close {
+    position: fixed;
+    top: calc(var(--page-gutter) + env(safe-area-inset-top));
+    right: var(--page-gutter);
+    z-index: 2;
+    background: var(--color-white);
   }
 }
 

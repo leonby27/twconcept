@@ -779,6 +779,7 @@
     var vkStatus = modal.querySelector("[data-registration-vk-status]");
     var partnerToggle = modal.querySelector("[data-registration-partner-toggle]");
     var partnerField = document.getElementById("registration-partner-field");
+    var mobileModal = window.matchMedia("(max-width: 768px)");
     var previousFocus = null;
     var closeTimer = null;
     var resizeTimer = null;
@@ -816,9 +817,11 @@
       }
       modal.hidden = false;
       modal.setAttribute("aria-hidden", "false");
+      if (dialog) dialog.scrollTop = 0;
       requestAnimationFrame(function () {
         modal.classList.add("is-open");
-        if (email) email.focus();
+        if (mobileModal.matches && dialog) dialog.focus();
+        else if (email) email.focus();
       });
     }
 
@@ -837,7 +840,7 @@
     }
 
     function animateDialogHeight(update) {
-      if (!dialog || reduce.matches) {
+      if (!dialog || reduce.matches || mobileModal.matches) {
         update();
         return;
       }
